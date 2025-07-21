@@ -1,0 +1,2 @@
+# Google ADK
+google-adk==1.7.0
