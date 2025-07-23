@@ -140,7 +140,7 @@ def extract_frames_and_upload_to_gcs(
             gcs_blob_name = os.path.join(gcs_folder, frame_filename)
 
             # Encode the frame to JPEG format in memory
-            encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), 90]
+            encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), 100]
             result, encoded_image = cv2.imencode('.jpg', frame, encode_param)
 
             if not result:
@@ -191,6 +191,7 @@ def extract_frames_and_upload_to_gcs(
                         if result_cropped:
                             # Generate unique filename for the cropped face
                             cropped_face_filename = f"{video_filename_base}_{timestamp_prefix}_frame_{current_frame_index:07d}_face_{i:02d}.jpg"
+                            # gcs_cropped_blob_name = os.path.join(cropped_faces_gcs_folder, cropped_face_filename)
                             gcs_cropped_blob_name = 'school/' + cropped_face_filename
 
                             # Upload the cropped face to the CROPPED FACES GCS bucket
