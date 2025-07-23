@@ -1,12 +1,14 @@
 import { Container, Title, Text, Paper, Stack, AppShell, ActionIcon, Grid } from '@mantine/core'
-import { IconDashboard, IconUsers, IconCalendar, IconChartBar, IconSettings } from '@tabler/icons-react'
+import { IconDashboard, IconUsers, IconCalendar, IconChartBar, IconSettings, IconAlertTriangle } from '@tabler/icons-react'
 import { useDisclosure, useMediaQuery } from '@mantine/hooks'
+import { useNavigate } from 'react-router-dom';
 import AppBar from '../components/AppBar'
 import CrowdHeatMap from '../components/CrowdHeatMap'
 
 function AdminDashboard() {
   const [opened, { toggle }] = useDisclosure();
   const isSmallScreen = useMediaQuery('(max-width: 768px)');
+  const navigate = useNavigate();
 
   const handleMenuClick = () => {
     toggle();
@@ -48,16 +50,18 @@ function AdminDashboard() {
               size="lg"
               style={{ justifyContent: 'flex-start', width: '100%' }}
               leftSection={<IconCalendar size={16} />}
+              onClick={() => navigate('/admin/dashboard/command')}
             >
-              <Text size="sm">Events</Text>
+              <Text size="sm">Command center</Text>
             </ActionIcon>
             <ActionIcon
               variant="subtle"
               size="lg"
               style={{ justifyContent: 'flex-start', width: '100%' }}
-              leftSection={<IconUsers size={16} />}
+              leftSection={<IconAlertTriangle size={16} />}
+              onClick={() => navigate('/admin/Incident-management')}
             >
-              <Text size="sm">Users</Text>
+              <Text size="sm">Incident management</Text>
             </ActionIcon>
             <ActionIcon
               variant="subtle"

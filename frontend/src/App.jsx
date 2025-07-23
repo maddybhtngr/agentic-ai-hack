@@ -2,8 +2,10 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Login from './pages/Login'
 import Signup from './pages/Signup'
 import AdminDashboard from './pages/AdminDashboard'
+import CommandCenter from './pages/CommandCenter'
 import StaffDashboard from './pages/StaffDashboard'
 import AttendeeDashboard from './pages/AttendeeDashboard'
+import IncidentManagement from './pages/IncidentManagement'
 
 function App() {
   return (
@@ -13,6 +15,8 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
+        <Route path="/admin/dashboard/command" element={<CommandCenter />} />
+        <Route path="/admin/Incident-management" element={<IncidentManagement />} />
         <Route path="/staff/dashboard" element={<StaffDashboard />} />
         <Route path="/attendee/dashboard" element={<AttendeeDashboard />} />
       </Routes>
