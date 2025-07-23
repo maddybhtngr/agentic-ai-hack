@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "silver-pact-466407-p8",
+  "private_key_id": "1aeb7a878043e581dabe6c3779d964257d86e083",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCiLyPyB6UorFPY\n73zK9dRrGfzKbDsjLH+8Q8wmwQtBsEuODSKJaUJh9uT14J4G1B2ap5fdrH/yiCo0\nK4S9ir5botpU8zhIv7OaPFPjqtca9QgqfaoUGnzzNsMT6orb2Gh8aKjDdVeJZwwD\nuKpMWlfWH9Iu0t8+Jd+VQitGZwcLwgL3aqG2BjeEhGej3sUbz96JqFxPJHV0XqtS\nZIHXPNEkMFq6+q8yAfPUhVVlPbbqwYTavc0YhKDVXgdFxx3/TcjnYO742IAu2nV3\nytPTu1AcAh4uF8SVMkwes2mxaPhLkWiWRnQvjEw17pCNsamMlL2SHvF/aSNbYEWc\ngmFDBABBAgMBAAECggEAAacz41Q4ZtxPcSvvIXBrMbOXyHBdI6ORBnA5aYrmyXzL\njxxJYgm2xSXkn2iKi1G+RtG86SfkbKpubdJcjLAcTsXHmnl5gTE0KnEZYr3+mfcZ\n1gkqiJiU1d/A0iIyL82kUmHwqBABLj64yj0briY2yGVR+597WlZNdbOBSnMXfOdJ\nYBFJVIKdzTXy0d8xgYrRzlXOT6KjRjeQhoBTbh2hp8mE8wiea/eYGRgWTPN2g56r\nL1jUqXvRSowOd243SujpNz3JsZ4LVuy24r7/L/7wGUsd2dO2eppXMFReFXPjbi0y\n29zsMrH0lZT6IqGR3Sm+b7FbwSe4DbZN8dmOG1cdgQKBgQDMih1zKuKPrYnd+CpC\njz4ulGopO0dq8+MZ2fGLZL+OcHP0kZlkXFUhcAPq/z8B5qmbtr5jRIXTfaR1K29b\nablkJfB4QEIwBaNmpyCirR8/wa1EpplzVuY+3fDOp7XVaSAPwOe5bbQLknSnEgt4\nNsB6Ca7TbVB9LF3DN09zf6KZwQKBgQDK/QVFR5MUE75gtejOmckLKPcgjj7VeAwy\nTcVBqlnBmsPuVfOhHG8OSHuvBFVXVvq/J08aSMpz1vpWIJJ2sAQXYbWpHxehyzJU\nCD9YgACqfPd2Fg1xOTFV+HJms2m7031Nn95CkjfbEdt3nKK9VqyOVXtdbFygoRwE\ne5sM/PoGgQKBgDotmtzUOOcnNEzHtrWB6uzy2BNsQg8g2drTjAnbGUVZpRHOjDPo\ns2o0Y1jnSzOuOVYKL7MqnWoflbSiKyV0OABNbk218V2ZbPXY2caLuZS38SHSxVjy\nQcFl/YW6XFUcdrskYoTyuECGYtnWnx6NbEgKEwkeUcOY5/6L7/RpPIXBAoGATy0w\nUByh/vPQj3KFM4kCxUqeUmGJmsRvpXN2XK2wwva2NBHsrMwleWHGdLbw/tdbiRIx\nJaR864BQNyYPWyI/BkvDiwsosaBLqkFpTADpwZZrA/GIHsDbQJhfLzYOKQhOWOfh\nzv+vr9CgVWCQjd/wALjRHNi2rKULA6ifCwrmD4ECgYAzg9gKZYIvQXLqC3MxCM7E\n0BaiYEqMAbH3oR8RU8XB9IBw+4hYbzw0dfgkplhA4ZnACQtrSa6BraZWhqE9c0fU\nl6uA5OmThMEiYHbfkYyDn0rTDcugIqFO2/OYmvVzivnTA8cGkSV8f8WnJkCID9cU\nuS9N1S4R1Uk0H5VK/Wf6fw==\n-----END PRIVATE KEY-----\n",
+  "client_email": "gcs-bucket-admin-agentic-ai@silver-pact-466407-p8.iam.gserviceaccount.com",
+  "client_id": "102308260183410767649",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/gcs-bucket-admin-agentic-ai%40silver-pact-466407-p8.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
