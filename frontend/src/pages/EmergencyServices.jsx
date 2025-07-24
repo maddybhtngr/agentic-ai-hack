@@ -20,6 +20,7 @@ import {
 import { useDisclosure, useMediaQuery } from '@mantine/hooks'
 import AppBar from '../components/AppBar'
 import Sidebar from '../components/Sidebar'
+import FloatingAssistant from '../components/FloatingAssistant'
 import { useState } from 'react'
 
 function EmergencyServices() {
@@ -827,6 +828,7 @@ function EmergencyServices() {
             </Modal>
           </Stack>
         </Container>
+        <FloatingAssistant />
       </AppShell.Main>
     </AppShell>
   );

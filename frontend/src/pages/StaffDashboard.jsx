@@ -12,6 +12,7 @@ import {
 import AppBar from '../components/AppBar'
 import StaffSidebar from '../components/StaffSidebar'
 import CrowdHeatMap from '../components/CrowdHeatMap'
+import FloatingAssistant from '../components/FloatingAssistant'
 import { useNavigate, useLocation } from 'react-router-dom'
 
 function StaffDashboard() {
@@ -319,6 +320,7 @@ function StaffDashboard() {
             </Paper>
           </Stack>
         </Container>
+        <FloatingAssistant />
       </AppShell.Main>
     </AppShell>
   )

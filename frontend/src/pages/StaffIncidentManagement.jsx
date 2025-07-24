@@ -3,6 +3,7 @@ import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import { IconAlertTriangle, IconClock, IconMapPin, IconUser, IconPhone, IconMail, IconPlus, IconEdit, IconTrash, IconCheck, IconX, IconEye, IconActivity, IconShieldLock, IconReportAnalytics, IconChevronRight } from '@tabler/icons-react';
 import AppBar from '../components/AppBar';
 import StaffSidebar from '../components/StaffSidebar';
+import FloatingAssistant from '../components/FloatingAssistant';
 import { useState, useEffect } from 'react';
 
 function StaffIncidentManagement() {
@@ -738,6 +739,7 @@ function StaffIncidentManagement() {
           </Stack>
         )}
       </Modal>
+      <FloatingAssistant />
     </AppShell>
   );
 }

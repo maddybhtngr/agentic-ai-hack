@@ -3,6 +3,7 @@ import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import { IconAlertTriangle, IconClock, IconMapPin, IconUser, IconPhone, IconMail, IconPlus, IconEdit, IconTrash, IconCheck, IconX, IconEye, IconActivity, IconShieldLock, IconReportAnalytics, IconChevronRight } from '@tabler/icons-react';
 import AppBar from '../components/AppBar';
 import Sidebar from '../components/Sidebar';
+import FloatingAssistant from '../components/FloatingAssistant';
 import { useState, useEffect } from 'react';
 
 function IncidentManagement() {
@@ -876,6 +877,7 @@ function IncidentManagement() {
             </Modal>
           </Stack>
         </Container>
+        <FloatingAssistant />
       </AppShell.Main>
     </AppShell>
   );

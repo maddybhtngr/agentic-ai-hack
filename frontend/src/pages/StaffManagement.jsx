@@ -50,6 +50,7 @@ import {
 } from '@tabler/icons-react'
 import AppBar from '../components/AppBar'
 import Sidebar from '../components/Sidebar'
+import FloatingAssistant from '../components/FloatingAssistant'
 
 function StaffManagement() {
   const [opened, { toggle }] = useDisclosure(true)
@@ -861,6 +862,7 @@ function StaffManagement() {
             </Stack>
           </Modal>
         </Container>
+        <FloatingAssistant />
       </AppShell.Main>
     </AppShell>
   )
