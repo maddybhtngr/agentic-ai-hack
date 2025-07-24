@@ -241,7 +241,7 @@ function EventDetails() {
       }}
     >
       <AppShell.Header>
-        <AppBar opened={opened} toggle={toggle} />
+        <AppBar userName="Admin User" opened={opened} toggle={toggle} />
       </AppShell.Header>
 
       <AppShell.Navbar>
