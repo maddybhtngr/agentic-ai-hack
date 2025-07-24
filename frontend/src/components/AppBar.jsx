@@ -1,5 +1,5 @@
-import { AppShell, Group, Text, ActionIcon, useMantineTheme, Burger } from '@mantine/core';
-import { IconUser } from '@tabler/icons-react';
+import { AppShell, Group, Text, ActionIcon, useMantineTheme, Burger, Menu, Avatar, rem } from '@mantine/core';
+import { IconUser, IconLogout, IconSettings, IconShieldLock, IconBell } from '@tabler/icons-react';
 
 const AppBar = ({ userName = "User", onMenuClick, opened = false }) => {
   const theme = useMantineTheme();
@@ -7,31 +7,152 @@ const AppBar = ({ userName = "User", onMenuClick, opened = false }) => {
   return (
     <AppShell.Header
       style={{
-        backgroundColor: theme.colors.blue[6],
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
         borderBottom: 'none',
-        boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+        boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+        backdropFilter: 'blur(10px)',
+        border: '1px solid rgba(255, 255, 255, 0.1)'
       }}
     >
-      <Group justify="space-between" align="center" h="100%" px="md">
-        {/* Left: Burger Menu */}
-        <Burger 
-          opened={opened} 
-          onClick={onMenuClick} 
-          aria-label="Toggle navigation"
-          color="white"
-          size="sm"
-        />
-
-        {/* Right: User Name */}
-        <Group gap="xs">
-          <IconUser size={20} style={{ color: 'white' }} />
-          <Text
+      <Group justify="space-between" align="center" h="100%" px="xl">
+        {/* Left: Brand and Menu */}
+        <Group gap="lg">
+          <Burger 
+            opened={opened} 
+            onClick={onMenuClick} 
+            aria-label="Toggle navigation"
+            color="white"
             size="sm"
-            fw={500}
-            style={{ color: 'white' }}
+            style={{
+              '&:hover': {
+                background: 'rgba(255, 255, 255, 0.1)',
+                borderRadius: rem(8)
+              }
+            }}
+          />
+          
+          <Group gap="xs">
+            <IconShieldLock size={24} style={{ color: 'white' }} />
+            <Text
+              size="lg"
+              fw={700}
+              style={{ 
+                color: 'white',
+                letterSpacing: '0.5px'
+              }}
+            >
+              Drishti
+            </Text>
+          </Group>
+        </Group>
+
+        {/* Right: User Actions */}
+        <Group gap="md">
+          {/* Notifications */}
+          <ActionIcon
+            variant="subtle"
+            size="lg"
+            style={{
+              color: 'white',
+              background: 'rgba(255, 255, 255, 0.1)',
+              borderRadius: rem(8),
+              '&:hover': {
+                background: 'rgba(255, 255, 255, 0.2)',
+                transform: 'translateY(-1px)'
+              },
+              transition: 'all 0.2s ease'
+            }}
           >
-            {userName}
-          </Text>
+            <IconBell size={18} />
+          </ActionIcon>
+
+          {/* User Menu */}
+          <Menu
+            shadow="xl"
+            width={200}
+            position="bottom-end"
+            offset={8}
+            withArrow
+          >
+            <Menu.Target>
+              <Group 
+                gap="xs" 
+                style={{ 
+                  cursor: 'pointer',
+                  padding: rem(8),
+                  borderRadius: rem(8),
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  '&:hover': {
+                    background: 'rgba(255, 255, 255, 0.2)'
+                  },
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                <Avatar 
+                  size="sm" 
+                  radius="xl"
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.2)',
+                    border: '2px solid rgba(255, 255, 255, 0.3)'
+                  }}
+                >
+                  <IconUser size={16} style={{ color: 'white' }} />
+                </Avatar>
+                <Text
+                  size="sm"
+                  fw={600}
+                  style={{ color: 'white' }}
+                >
+                  {userName}
+                </Text>
+              </Group>
+            </Menu.Target>
+
+            <Menu.Dropdown
+              style={{
+                background: 'rgba(255, 255, 255, 0.95)',
+                backdropFilter: 'blur(10px)',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                borderRadius: rem(12)
+              }}
+            >
+              <Menu.Item
+                leftSection={<IconUser size={16} />}
+                style={{
+                  '&:hover': {
+                    background: 'rgba(102, 126, 234, 0.1)'
+                  }
+                }}
+              >
+                Profile
+              </Menu.Item>
+              
+              <Menu.Item
+                leftSection={<IconSettings size={16} />}
+                style={{
+                  '&:hover': {
+                    background: 'rgba(102, 126, 234, 0.1)'
+                  }
+                }}
+              >
+                Settings
+              </Menu.Item>
+              
+              <Menu.Divider />
+              
+              <Menu.Item
+                leftSection={<IconLogout size={16} />}
+                color="red"
+                style={{
+                  '&:hover': {
+                    background: 'rgba(255, 0, 0, 0.1)'
+                  }
+                }}
+              >
+                Sign Out
+              </Menu.Item>
+            </Menu.Dropdown>
+          </Menu>
         </Group>
       </Group>
     </AppShell.Header>
