@@ -6,6 +6,10 @@ import CommandCenter from './pages/CommandCenter'
 import StaffDashboard from './pages/StaffDashboard'
 import AttendeeDashboard from './pages/AttendeeDashboard'
 import IncidentManagement from './pages/IncidentManagement'
+import EventDetails from './pages/EventDetails'
+import StaffManagement from './pages/StaffManagement'
+import EmergencyServices from './pages/EmergencyServices'
+import AIIntelligence from './pages/AIIntelligence'
 
 function App() {
   return (
@@ -17,6 +21,10 @@ function App() {
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
         <Route path="/admin/dashboard/command" element={<CommandCenter />} />
         <Route path="/admin/Incident-management" element={<IncidentManagement />} />
+        <Route path="/admin/event-details" element={<EventDetails />} />
+        <Route path="/admin/staff-management" element={<StaffManagement />} />
+        <Route path="/admin/emergency-services" element={<EmergencyServices />} />
+        <Route path="/admin/ai-intelligence" element={<AIIntelligence />} />
         <Route path="/staff/dashboard" element={<StaffDashboard />} />
         <Route path="/attendee/dashboard" element={<AttendeeDashboard />} />
       </Routes>
