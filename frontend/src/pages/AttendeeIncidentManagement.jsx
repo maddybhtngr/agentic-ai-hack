@@ -15,6 +15,7 @@ import { useDisclosure, useMediaQuery } from '@mantine/hooks'
 import { useNavigate, useLocation } from 'react-router-dom'
 import AppBar from '../components/AppBar'
 import AttendeeSidebar from '../components/AttendeeSidebar'
+import FloatingAssistant from '../components/FloatingAssistant'
 
 function AttendeeIncidentManagement() {
   const [opened, { toggle }] = useDisclosure(true);
@@ -592,6 +593,7 @@ function AttendeeIncidentManagement() {
           </Stack>
         )}
       </Modal>
+      <FloatingAssistant />
     </AppShell>
   );
 }

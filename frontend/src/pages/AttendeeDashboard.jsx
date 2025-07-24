@@ -14,6 +14,7 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import AppBar from '../components/AppBar'
 import AttendeeSidebar from '../components/AttendeeSidebar'
 import CrowdHeatMap from '../components/CrowdHeatMap'
+import FloatingAssistant from '../components/FloatingAssistant'
 
 function AttendeeDashboard() {
   const [opened, { toggle }] = useDisclosure(true);
@@ -321,6 +322,7 @@ function AttendeeDashboard() {
             </Paper>
           </Stack>
         </Container>
+        <FloatingAssistant />
       </AppShell.Main>
     </AppShell>
   );

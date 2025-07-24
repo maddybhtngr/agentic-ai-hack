@@ -47,6 +47,7 @@ import {
 } from '@tabler/icons-react'
 import AppBar from '../components/AppBar'
 import Sidebar from '../components/Sidebar'
+import FloatingAssistant from '../components/FloatingAssistant'
 
 function EventDetails() {
   const [opened, { toggle }] = useDisclosure(true)
@@ -980,6 +981,7 @@ function EventDetails() {
             </Stack>
           </Modal>
         </Container>
+        <FloatingAssistant />
       </AppShell.Main>
     </AppShell>
   )

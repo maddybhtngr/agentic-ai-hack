@@ -11,6 +11,7 @@ import { useDisclosure, useMediaQuery } from '@mantine/hooks'
 import AppBar from '../components/AppBar'
 import Sidebar from '../components/Sidebar'
 import CrowdHeatMap from '../components/CrowdHeatMap'
+import FloatingAssistant from '../components/FloatingAssistant'
 
 function AdminDashboard() {
   const [opened, { toggle }] = useDisclosure(true);
@@ -316,6 +317,7 @@ function AdminDashboard() {
             </Paper>
           </Stack>
         </Container>
+        <FloatingAssistant />
       </AppShell.Main>
     </AppShell>
   );

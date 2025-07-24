@@ -3,6 +3,7 @@ import { IconUser, IconCamera, IconLivePhoto, IconVolume, IconVolumeOff, IconMax
 import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import AppBar from '../components/AppBar';
 import Sidebar from '../components/Sidebar';
+import FloatingAssistant from '../components/FloatingAssistant';
 import { useMemo, useState } from 'react';
 import { Modal, TextInput, Button } from '@mantine/core';
 import { IconPencil, IconPlus } from '@tabler/icons-react';
@@ -689,6 +690,7 @@ function CommandCenter() {
             </Modal>
           </Stack>
         </Container>
+        <FloatingAssistant />
       </AppShell.Main>
 
       {/* Add CSS animations */}

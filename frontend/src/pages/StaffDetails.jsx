@@ -18,6 +18,7 @@ import {
 import { useDisclosure, useMediaQuery } from '@mantine/hooks'
 import AppBar from '../components/AppBar'
 import StaffSidebar from '../components/StaffSidebar'
+import FloatingAssistant from '../components/FloatingAssistant'
 
 function StaffDetails() {
   const [opened, { toggle }] = useDisclosure(true);
@@ -381,6 +382,7 @@ function StaffDetails() {
 
           </Stack>
         </Container>
+        <FloatingAssistant />
       </AppShell.Main>
     </AppShell>
   );

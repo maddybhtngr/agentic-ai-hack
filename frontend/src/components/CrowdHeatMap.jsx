@@ -157,16 +157,18 @@ const CrowdHeatMap = ({ venueData, crowdData, updateInterval = 30000, showZoneMa
             </Group>
           </Group>
 
-          {/* Info Alert */}
-          <Alert 
-            icon={<IconInfoCircle size={16} />} 
-            title="Dual Coordinate System" 
-            color="blue" 
-            variant="light"
-          >
-            Zones use percentage-based X/Y coordinates for visual display and GPS coordinates for backend processing. 
-            This allows for intuitive visual positioning while maintaining precise location data for real-time tracking.
-          </Alert>
+          {/* Info Alert - Only show for admin users */}
+          {showZoneManagement && (
+            <Alert 
+              icon={<IconInfoCircle size={16} />} 
+              title="Dual Coordinate System" 
+              color="blue" 
+              variant="light"
+            >
+              Zones use percentage-based X/Y coordinates for visual display and GPS coordinates for backend processing. 
+              This allows for intuitive visual positioning while maintaining precise location data for real-time tracking.
+            </Alert>
+          )}
 
           {/* Heat Map Visualization */}
           <Paper 

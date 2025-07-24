@@ -18,6 +18,7 @@ import {
 import { useDisclosure, useMediaQuery } from '@mantine/hooks'
 import AppBar from '../components/AppBar'
 import Sidebar from '../components/Sidebar'
+import FloatingAssistant from '../components/FloatingAssistant'
 import { useState } from 'react'
 
 function AIIntelligence() {
@@ -357,6 +358,7 @@ function AIIntelligence() {
 
           </Stack>
         </Container>
+        <FloatingAssistant />
       </AppShell.Main>
     </AppShell>
   );
