@@ -2,10 +2,10 @@ import { Container, Title, Text, Paper, Stack, AppShell, Group, Badge, Button, r
 import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import { IconAlertTriangle, IconClock, IconMapPin, IconUser, IconPhone, IconMail, IconPlus, IconEdit, IconTrash, IconCheck, IconX, IconEye, IconActivity, IconShieldLock, IconReportAnalytics, IconChevronRight } from '@tabler/icons-react';
 import AppBar from '../components/AppBar';
-import Sidebar from '../components/Sidebar';
+import StaffSidebar from '../components/StaffSidebar';
 import { useState, useEffect } from 'react';
 
-function IncidentManagement() {
+function StaffIncidentManagement() {
   const [opened, { toggle }] = useDisclosure(true);
   const isSmallScreen = useMediaQuery('(max-width: 768px)');
   const [selectedIncident, setSelectedIncident] = useState(null);
@@ -27,7 +27,7 @@ function IncidentManagement() {
     email: ''
   })
 
-  // Sample incident data
+  // Sample incident data for staff view
   const [incidents, setIncidents] = useState([
     {
       id: 1,
@@ -110,66 +110,67 @@ function IncidentManagement() {
     switch (priority) {
       case 'high': return 'red';
       case 'medium': return 'yellow';
-      case 'low': return 'blue';
+      case 'low': return 'green';
       default: return 'gray';
     }
   };
 
   const handleIncidentClick = (incident) => {
-    setSelectedIncident(incident)
-    setUpdateDetails({
-      description: incident.description,
-      location: incident.location,
-      assignedTo: incident.assignedTo,
-      contact: incident.contact,
-      email: incident.email
-    })
-  }
+    setSelectedIncident(incident);
+    setViewModalOpened(true);
+  };
 
   const handleAddIncident = () => {
-    if (newIncident.title && newIncident.description && newIncident.location) {
+    if (newIncident.title && newIncident.description) {
       const incident = {
         id: incidents.length + 1,
         ...newIncident,
         status: 'active',
-        assignedTo: 'Security Team',
-        contact: '+1 (555) 123-4567',
-        email: 'security@event.com',
-        reportedAt: new Date().toLocaleTimeString(),
+        reportedBy: 'Staff Member',
+        reportedAt: new Date().toLocaleString(),
+        assignedTo: 'Pending Assignment',
+        contact: '',
+        email: '',
         updates: [
           {
-            action: 'Incident reported',
             time: new Date().toLocaleTimeString(),
-            user: 'System'
+            action: 'Incident reported by staff',
+            user: 'Staff Member'
           }
         ]
-      }
-      setIncidents([incident, ...incidents])
-      setNewIncident({ title: '', description: '', priority: 'medium', location: '' })
-      setAddModalOpened(false)
+      };
+      setIncidents([incident, ...incidents]);
+      setNewIncident({
+        title: '',
+        description: '',
+        priority: 'medium',
+        location: ''
+      });
+      setAddModalOpened(false);
     }
-  }
+  };
 
   const handleUpdateIncident = () => {
-    if (updateDetails.description.trim() && updateDetails.location.trim() && updateDetails.assignedTo.trim()) {
+    if (selectedIncident && updateDescription) {
       const updatedIncident = {
         ...selectedIncident,
-        description: updateDetails.description,
-        location: updateDetails.location,
-        assignedTo: updateDetails.assignedTo,
-        contact: updateDetails.contact,
-        email: updateDetails.email,
+        description: updateDetails.description || selectedIncident.description,
+        location: updateDetails.location || selectedIncident.location,
+        assignedTo: updateDetails.assignedTo || selectedIncident.assignedTo,
+        contact: updateDetails.contact || selectedIncident.contact,
+        email: updateDetails.email || selectedIncident.email,
         updates: [
           ...selectedIncident.updates,
           {
-            action: 'Incident details updated',
+            action: updateDescription,
             time: new Date().toLocaleTimeString(),
-            user: 'Admin'
+            user: 'Staff Member'
           }
         ]
       }
       setIncidents(incidents.map(inc => inc.id === selectedIncident.id ? updatedIncident : inc))
       setSelectedIncident(updatedIncident)
+      setUpdateDescription('')
       setUpdateDetails({
         description: '',
         location: '',
@@ -198,9 +199,9 @@ function IncidentManagement() {
       }}
     >
       <AppShell.Header>
-        <AppBar userName="Admin User" onMenuClick={handleMenuClick} opened={opened} />
+        <AppBar userName="Staff User" onMenuClick={handleMenuClick} opened={opened} />
       </AppShell.Header>
-      <Sidebar opened={opened} />
+      <StaffSidebar opened={opened} />
       <AppShell.Main>
         <Container size="100%" py="xl" px="xl">
           <Stack spacing="xl">
@@ -221,7 +222,7 @@ function IncidentManagement() {
                 </Title>
               </Group>
               <Text c="dimmed" size="sm">
-                Monitor, track, and resolve security incidents in real-time
+                Report and track security incidents in real-time
               </Text>
             </Stack>
 
@@ -398,30 +399,7 @@ function IncidentManagement() {
                 borderRadius: `${rem(12)} ${rem(12)} 0 0`
               }} />
 
-              <Stack gap="lg">
-                <Group justify="space-between" align="center">
-                  <Group gap="md">
-                    <div style={{
-                      padding: rem(12),
-                      borderRadius: rem(12),
-                      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center'
-                    }}>
-                      <IconActivity size={24} style={{ color: 'white' }} />
-                    </div>
-                    <Stack gap="xs">
-                      <Title order={3} style={{ fontWeight: 600 }}>
-                        Incident Tracking
-                      </Title>
-                      <Text size="sm" c="dimmed">
-                        Monitor and manage active security incidents
-                      </Text>
-                    </Stack>
-                  </Group>
-                </Group>
-
+              <Stack spacing="lg">
                 {/* Header */}
                 <Group justify="space-between" align="center">
                   <Title order={3} style={{ fontWeight: 600 }}>
@@ -508,377 +486,260 @@ function IncidentManagement() {
                 </Stack>
               </Stack>
             </Paper>
-
-            {/* Add Incident Modal */}
-            <Modal 
-              opened={addModalOpened} 
-              onClose={() => setAddModalOpened(false)} 
-              title={
-                <Group gap="xs">
-                  <IconPlus size={20} style={{ color: '#667eea' }} />
-                  <Text fw={600}>Report New Incident</Text>
-                </Group>
-              }
-              centered
-              styles={{
-                header: {
-                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                  color: 'white'
-                },
-                title: {
-                  color: 'white'
-                }
-              }}
-            >
-              <Stack gap="md">
-                <TextInput
-                  label="Incident Title"
-                  placeholder="Enter incident title"
-                  size="md"
-                  radius="md"
-                  styles={{
-                    input: {
-                      borderColor: '#e9ecef',
-                      '&:focus': {
-                        borderColor: '#667eea',
-                        boxShadow: '0 0 0 1px #667eea'
-                      }
-                    }
-                  }}
-                />
-                <Textarea
-                  label="Description"
-                  placeholder="Describe the incident details"
-                  size="md"
-                  radius="md"
-                  minRows={3}
-                  styles={{
-                    input: {
-                      borderColor: '#e9ecef',
-                      '&:focus': {
-                        borderColor: '#667eea',
-                        boxShadow: '0 0 0 1px #667eea'
-                      }
-                    }
-                  }}
-                />
-                <Select
-                  label="Priority"
-                  placeholder="Select priority level"
-                  data={[
-                    { value: 'low', label: 'Low' },
-                    { value: 'medium', label: 'Medium' },
-                    { value: 'high', label: 'High' }
-                  ]}
-                  size="md"
-                  radius="md"
-                  styles={{
-                    input: {
-                      borderColor: '#e9ecef',
-                      '&:focus': {
-                        borderColor: '#667eea',
-                        boxShadow: '0 0 0 1px #667eea'
-                      }
-                    }
-                  }}
-                />
-                <TextInput
-                  label="Location"
-                  placeholder="Enter incident location"
-                  size="md"
-                  radius="md"
-                  styles={{
-                    input: {
-                      borderColor: '#e9ecef',
-                      '&:focus': {
-                        borderColor: '#667eea',
-                        boxShadow: '0 0 0 1px #667eea'
-                      }
-                    }
-                  }}
-                />
-                <Group justify="flex-end" gap="md">
-                  <Button 
-                    variant="outline" 
-                    onClick={() => setAddModalOpened(false)}
-                    size="md"
-                    radius="md"
-                  >
-                    Cancel
-                  </Button>
-                  <Button 
-                    size="md"
-                    radius="md"
-                    style={{
-                      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                      border: 'none',
-                      fontWeight: 600
-                    }}
-                  >
-                    Report Incident
-                  </Button>
-                </Group>
-              </Stack>
-            </Modal>
-
-            {/* View Incident Modal */}
-            <Modal
-              opened={viewModalOpened}
-              onClose={() => setViewModalOpened(false)}
-              title={selectedIncident?.title}
-              size="lg"
-              centered
-            >
-              {selectedIncident && (
-                <Stack gap="lg">
-                  <Group gap="md">
-                    <Badge color={getStatusColor(selectedIncident.status)} variant="filled">
-                      {selectedIncident.status.charAt(0).toUpperCase() + selectedIncident.status.slice(1)}
-                    </Badge>
-                    <Badge color={getPriorityColor(selectedIncident.priority)} variant="light">
-                      {selectedIncident.priority.toUpperCase()}
-                    </Badge>
-                  </Group>
-                  
-                  <Text>{selectedIncident.description}</Text>
-                  
-                  <Divider />
-                  
-                  <Stack gap="sm">
-                    <Group gap="md">
-                      <Group gap="xs">
-                        <IconMapPin size={16} />
-                        <Text size="sm" fw={500}>Location:</Text>
-                        <Text size="sm">{selectedIncident.location}</Text>
-                      </Group>
-                    </Group>
-                    
-                    <Group gap="md">
-                      <Group gap="xs">
-                        <IconUser size={16} />
-                        <Text size="sm" fw={500}>Reported By:</Text>
-                        <Text size="sm">{selectedIncident.reportedBy}</Text>
-                      </Group>
-                    </Group>
-                    
-                    <Group gap="md">
-                      <Group gap="xs">
-                        <IconClock size={16} />
-                        <Text size="sm" fw={500}>Reported At:</Text>
-                        <Text size="sm">{selectedIncident.reportedAt}</Text>
-                      </Group>
-                    </Group>
-                    
-                    {selectedIncident.assignedTo && (
-                      <Group gap="md">
-                        <Group gap="xs">
-                          <IconShieldLock size={16} />
-                          <Text size="sm" fw={500}>Assigned To:</Text>
-                          <Text size="sm">{selectedIncident.assignedTo}</Text>
-                        </Group>
-                      </Group>
-                    )}
-                    
-                    {selectedIncident.contact && (
-                      <Group gap="md">
-                        <Group gap="xs">
-                          <IconPhone size={16} />
-                          <Text size="sm" fw={500}>Contact:</Text>
-                          <Text size="sm">{selectedIncident.contact}</Text>
-                        </Group>
-                      </Group>
-                    )}
-                    
-                    {selectedIncident.email && (
-                      <Group gap="md">
-                        <Group gap="xs">
-                          <IconMail size={16} />
-                          <Text size="sm" fw={500}>Email:</Text>
-                          <Text size="sm">{selectedIncident.email}</Text>
-                        </Group>
-                      </Group>
-                    )}
-                  </Stack>
-                  
-                  <Divider />
-                  
-                  <Stack gap="sm">
-                    <Text fw={600}>Updates</Text>
-                    <Timeline>
-                      {selectedIncident.updates.map((update, index) => (
-                        <Timeline.Item key={index} title={update.action}>
-                          <Text size="xs" c="dimmed">
-                            {update.time} by {update.user}
-                          </Text>
-                        </Timeline.Item>
-                      ))}
-                    </Timeline>
-                  </Stack>
-                  
-                  <Group justify="flex-end">
-                    <Button 
-                      onClick={() => {
-                        setViewModalOpened(false);
-                        setUpdateModalOpened(true);
-                      }}
-                      style={{
-                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                        border: 'none'
-                      }}
-                    >
-                      Update Incident
-                    </Button>
-                  </Group>
-                </Stack>
-              )}
-            </Modal>
-
-            {/* Update Incident Modal */}
-            <Modal 
-              opened={updateModalOpened} 
-              onClose={() => setUpdateModalOpened(false)} 
-              title={
-                <Text fw={600}>Update Incident Details</Text>
-              }
-              centered
-              styles={{
-                header: {
-                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                  color: 'white'
-                },
-                title: {
-                  color: 'white'
-                }
-              }}
-            >
-              <Stack gap="md">
-                <Textarea
-                  label="Description"
-                  placeholder="Enter the incident description"
-                  size="md"
-                  radius="md"
-                  minRows={3}
-                  value={updateDetails.description}
-                  onChange={(event) => setUpdateDetails({...updateDetails, description: event.target.value})}
-                  styles={{
-                    input: {
-                      borderColor: '#e9ecef',
-                      '&:focus': {
-                        borderColor: '#667eea',
-                        boxShadow: '0 0 0 1px #667eea'
-                      }
-                    }
-                  }}
-                />
-                
-                <TextInput
-                  label="Location"
-                  placeholder="Enter incident location"
-                  size="md"
-                  radius="md"
-                  value={updateDetails.location}
-                  onChange={(event) => setUpdateDetails({...updateDetails, location: event.target.value})}
-                  styles={{
-                    input: {
-                      borderColor: '#e9ecef',
-                      '&:focus': {
-                        borderColor: '#667eea',
-                        boxShadow: '0 0 0 1px #667eea'
-                      }
-                    }
-                  }}
-                />
-
-                <Select
-                  label="Assigned To"
-                  placeholder="Select team member"
-                  size="md"
-                  radius="md"
-                  value={updateDetails.assignedTo}
-                  onChange={(value) => setUpdateDetails({...updateDetails, assignedTo: value})}
-                  data={[
-                    { value: 'Security Team', label: 'Security Team' },
-                    { value: 'Medical Team', label: 'Medical Team' },
-                    { value: 'Crowd Control', label: 'Crowd Control' },
-                    { value: 'Technical Support', label: 'Technical Support' },
-                    { value: 'Event Coordinator', label: 'Event Coordinator' }
-                  ]}
-                  styles={{
-                    input: {
-                      borderColor: '#e9ecef',
-                      '&:focus': {
-                        borderColor: '#667eea',
-                        boxShadow: '0 0 0 1px #667eea'
-                      }
-                    }
-                  }}
-                />
-
-                <TextInput
-                  label="Contact"
-                  placeholder="Enter contact number"
-                  size="md"
-                  radius="md"
-                  value={updateDetails.contact}
-                  onChange={(event) => setUpdateDetails({...updateDetails, contact: event.target.value})}
-                  styles={{
-                    input: {
-                      borderColor: '#e9ecef',
-                      '&:focus': {
-                        borderColor: '#667eea',
-                        boxShadow: '0 0 0 1px #667eea'
-                      }
-                    }
-                  }}
-                />
-
-                <TextInput
-                  label="Email"
-                  placeholder="Enter email address"
-                  size="md"
-                  radius="md"
-                  value={updateDetails.email}
-                  onChange={(event) => setUpdateDetails({...updateDetails, email: event.target.value})}
-                  styles={{
-                    input: {
-                      borderColor: '#e9ecef',
-                      '&:focus': {
-                        borderColor: '#667eea',
-                        boxShadow: '0 0 0 1px #667eea'
-                      }
-                    }
-                  }}
-                />
-
-                <Group justify="flex-end" gap="md">
-                  <Button 
-                    variant="outline" 
-                    onClick={() => setUpdateModalOpened(false)}
-                    size="md"
-                    radius="md"
-                  >
-                    Cancel
-                  </Button>
-                  <Button 
-                    size="md"
-                    radius="md"
-                    style={{
-                      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                      border: 'none',
-                      fontWeight: 600
-                    }}
-                    onClick={handleUpdateIncident}
-                  >
-                    Update Details
-                  </Button>
-                </Group>
-              </Stack>
-            </Modal>
           </Stack>
         </Container>
       </AppShell.Main>
+
+      {/* Add Incident Modal */}
+      <Modal
+        opened={addModalOpened}
+        onClose={() => setAddModalOpened(false)}
+        title="Report New Incident"
+        size="lg"
+        centered
+      >
+        <Stack gap="md">
+          <TextInput
+            label="Incident Title"
+            placeholder="Enter incident title"
+            value={newIncident.title}
+            onChange={(e) => setNewIncident({ ...newIncident, title: e.target.value })}
+            required
+          />
+          <Textarea
+            label="Description"
+            placeholder="Describe the incident in detail"
+            value={newIncident.description}
+            onChange={(e) => setNewIncident({ ...newIncident, description: e.target.value })}
+            rows={4}
+            required
+          />
+          <Group grow>
+            <Select
+              label="Priority"
+              placeholder="Select priority"
+              data={[
+                { value: 'low', label: 'Low' },
+                { value: 'medium', label: 'Medium' },
+                { value: 'high', label: 'High' }
+              ]}
+              value={newIncident.priority}
+              onChange={(value) => setNewIncident({ ...newIncident, priority: value })}
+            />
+            <TextInput
+              label="Location"
+              placeholder="Enter location"
+              value={newIncident.location}
+              onChange={(e) => setNewIncident({ ...newIncident, location: e.target.value })}
+            />
+          </Group>
+          <Group justify="flex-end" gap="sm">
+            <Button variant="light" onClick={() => setAddModalOpened(false)}>
+              Cancel
+            </Button>
+            <Button 
+              onClick={handleAddIncident}
+              style={{
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                border: 'none'
+              }}
+            >
+              Report Incident
+            </Button>
+          </Group>
+        </Stack>
+      </Modal>
+
+      {/* View Incident Modal */}
+      <Modal
+        opened={viewModalOpened}
+        onClose={() => setViewModalOpened(false)}
+        title={selectedIncident?.title}
+        size="lg"
+        centered
+      >
+        {selectedIncident && (
+          <Stack gap="lg">
+            <Group gap="md">
+              <Badge color={getStatusColor(selectedIncident.status)} variant="filled">
+                {selectedIncident.status.charAt(0).toUpperCase() + selectedIncident.status.slice(1)}
+              </Badge>
+              <Badge color={getPriorityColor(selectedIncident.priority)} variant="light">
+                {selectedIncident.priority.toUpperCase()}
+              </Badge>
+            </Group>
+            
+            <Text>{selectedIncident.description}</Text>
+            
+            <Divider />
+            
+            <Stack gap="sm">
+              <Group gap="md">
+                <Group gap="xs">
+                  <IconMapPin size={16} />
+                  <Text size="sm" fw={500}>Location:</Text>
+                  <Text size="sm">{selectedIncident.location}</Text>
+                </Group>
+              </Group>
+              
+              <Group gap="md">
+                <Group gap="xs">
+                  <IconUser size={16} />
+                  <Text size="sm" fw={500}>Reported By:</Text>
+                  <Text size="sm">{selectedIncident.reportedBy}</Text>
+                </Group>
+              </Group>
+              
+              <Group gap="md">
+                <Group gap="xs">
+                  <IconClock size={16} />
+                  <Text size="sm" fw={500}>Reported At:</Text>
+                  <Text size="sm">{selectedIncident.reportedAt}</Text>
+                </Group>
+              </Group>
+              
+              {selectedIncident.assignedTo && (
+                <Group gap="md">
+                  <Group gap="xs">
+                    <IconShieldLock size={16} />
+                    <Text size="sm" fw={500}>Assigned To:</Text>
+                    <Text size="sm">{selectedIncident.assignedTo}</Text>
+                  </Group>
+                </Group>
+              )}
+              
+              {selectedIncident.contact && (
+                <Group gap="md">
+                  <Group gap="xs">
+                    <IconPhone size={16} />
+                    <Text size="sm" fw={500}>Contact:</Text>
+                    <Text size="sm">{selectedIncident.contact}</Text>
+                  </Group>
+                </Group>
+              )}
+              
+              {selectedIncident.email && (
+                <Group gap="md">
+                  <Group gap="xs">
+                    <IconMail size={16} />
+                    <Text size="sm" fw={500}>Email:</Text>
+                    <Text size="sm">{selectedIncident.email}</Text>
+                  </Group>
+                </Group>
+              )}
+            </Stack>
+            
+            <Divider />
+            
+            <Stack gap="sm">
+              <Text fw={600}>Updates</Text>
+              <Timeline>
+                {selectedIncident.updates.map((update, index) => (
+                  <Timeline.Item key={index} title={update.action}>
+                    <Text size="xs" c="dimmed">
+                      {update.time} by {update.user}
+                    </Text>
+                  </Timeline.Item>
+                ))}
+              </Timeline>
+            </Stack>
+            
+            <Group justify="flex-end">
+              <Button 
+                onClick={() => {
+                  setViewModalOpened(false);
+                  setUpdateModalOpened(true);
+                }}
+                style={{
+                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  border: 'none'
+                }}
+              >
+                Update Incident
+              </Button>
+            </Group>
+          </Stack>
+        )}
+      </Modal>
+
+      {/* Update Incident Modal */}
+      <Modal
+        opened={updateModalOpened}
+        onClose={() => setUpdateModalOpened(false)}
+        title="Update Incident"
+        size="lg"
+        centered
+      >
+        {selectedIncident && (
+          <Stack gap="md">
+            <Textarea
+              label="Update Description"
+              placeholder="Describe the update or action taken"
+              value={updateDescription}
+              onChange={(e) => setUpdateDescription(e.target.value)}
+              rows={3}
+              required
+            />
+            
+            <Divider />
+            
+            <Text size="sm" fw={500} c="dimmed">Optional: Update incident details</Text>
+            
+            <TextInput
+              label="Description"
+              placeholder="Update incident description"
+              value={updateDetails.description}
+              onChange={(e) => setUpdateDetails({ ...updateDetails, description: e.target.value })}
+            />
+            
+            <TextInput
+              label="Location"
+              placeholder="Update location"
+              value={updateDetails.location}
+              onChange={(e) => setUpdateDetails({ ...updateDetails, location: e.target.value })}
+            />
+            
+            <TextInput
+              label="Assigned To"
+              placeholder="Update assignment"
+              value={updateDetails.assignedTo}
+              onChange={(e) => setUpdateDetails({ ...updateDetails, assignedTo: e.target.value })}
+            />
+            
+            <Group grow>
+              <TextInput
+                label="Contact"
+                placeholder="Update contact"
+                value={updateDetails.contact}
+                onChange={(e) => setUpdateDetails({ ...updateDetails, contact: e.target.value })}
+              />
+              <TextInput
+                label="Email"
+                placeholder="Update email"
+                value={updateDetails.email}
+                onChange={(e) => setUpdateDetails({ ...updateDetails, email: e.target.value })}
+              />
+            </Group>
+            
+            <Group justify="flex-end" gap="sm">
+              <Button variant="light" onClick={() => setUpdateModalOpened(false)}>
+                Cancel
+              </Button>
+              <Button 
+                onClick={handleUpdateIncident}
+                style={{
+                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  border: 'none'
+                }}
+              >
+                Update Incident
+              </Button>
+            </Group>
+          </Stack>
+        )}
+      </Modal>
     </AppShell>
   );
 }
 
-export default IncidentManagement;
+export default StaffIncidentManagement; 

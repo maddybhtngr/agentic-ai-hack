@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { IconSettings, IconInfoCircle } from '@tabler/icons-react';
 import ZoneManager from './ZoneManager';
 
-const CrowdHeatMap = ({ venueData, crowdData, updateInterval = 30000 }) => {
+const CrowdHeatMap = ({ venueData, crowdData, updateInterval = 30000, showZoneManagement = true }) => {
   const theme = useMantineTheme();
   const [zoneManagerOpened, setZoneManagerOpened] = useState(false);
 
@@ -144,14 +144,16 @@ const CrowdHeatMap = ({ venueData, crowdData, updateInterval = 30000 }) => {
               <Badge color="blue" variant="light">
                 Last Updated: {new Date(currentData.lastUpdated).toLocaleTimeString()}
               </Badge>
-              <Button 
-                size="sm" 
-                variant="light" 
-                leftSection={<IconSettings size={16} />}
-                onClick={() => setZoneManagerOpened(true)}
-              >
-                Manage Zones
-              </Button>
+              {showZoneManagement && (
+                <Button 
+                  size="sm" 
+                  variant="light" 
+                  leftSection={<IconSettings size={16} />}
+                  onClick={() => setZoneManagerOpened(true)}
+                >
+                  Manage Zones
+                </Button>
+              )}
             </Group>
           </Group>
 
@@ -238,12 +240,14 @@ const CrowdHeatMap = ({ venueData, crowdData, updateInterval = 30000 }) => {
       </Paper>
 
       {/* Zone Manager Modal */}
-      <ZoneManager
-        zones={zones}
-        onZonesChange={handleZonesChange}
-        opened={zoneManagerOpened}
-        onClose={() => setZoneManagerOpened(false)}
-      />
+      {showZoneManagement && (
+        <ZoneManager
+          zones={zones}
+          onZonesChange={handleZonesChange}
+          opened={zoneManagerOpened}
+          onClose={() => setZoneManagerOpened(false)}
+        />
+      )}
     </>
   );
 };
