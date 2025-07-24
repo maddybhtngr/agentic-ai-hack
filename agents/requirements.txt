@@ -1,2 +1,11 @@
 # Google ADK
 google-adk==1.7.0
+python-dotenv==1.0.0
+
+# FastAPI and API dependencies
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+pydantic==2.5.0
+
+# Additional dependencies for multi-agent workflows
+typing-extensions>=4.0.0
