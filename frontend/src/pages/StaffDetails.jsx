@@ -35,14 +35,7 @@ function StaffDetails() {
     department: 'Security Team',
     email: 'sarah.johnson@drishti.com',
     phone: '+1 (555) 123-4567',
-    employeeId: 'EMP-2024-001',
-    hireDate: '2024-01-15',
-    status: 'Active',
-    avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face',
-    experience: '3 years',
-    rating: 4.8,
-    totalShifts: 156,
-    completedTasks: 89,
+    address: '456 Security Lane, Suite 12, New York, NY 10002',
     currentZone: 'Zone A - Main Entrance',
     assignedZones: [
       {
@@ -69,50 +62,6 @@ function StaffDetails() {
         currentCount: 45,
         utilization: 30.0
       }
-    ],
-    recentActivities: [
-      {
-        id: 1,
-        action: 'Crowd control at Zone A',
-        time: '2 hours ago',
-        status: 'Completed',
-        type: 'Crowd Management'
-      },
-      {
-        id: 2,
-        action: 'Incident report filed',
-        time: '4 hours ago',
-        status: 'Completed',
-        type: 'Incident Management'
-      },
-      {
-        id: 3,
-        action: 'Zone B capacity check',
-        time: '6 hours ago',
-        status: 'Completed',
-        type: 'Monitoring'
-      },
-      {
-        id: 4,
-        action: 'Emergency response training',
-        time: '1 day ago',
-        status: 'Completed',
-        type: 'Training'
-      }
-    ],
-    skills: [
-      'Crowd Management',
-      'Emergency Response',
-      'First Aid',
-      'Communication',
-      'Conflict Resolution',
-      'Surveillance'
-    ],
-    certifications: [
-      'Security Guard License',
-      'First Aid & CPR',
-      'Emergency Response',
-      'Crowd Control'
     ]
   };
 
@@ -206,62 +155,120 @@ function StaffDetails() {
                 borderRadius: `${rem(12)} ${rem(12)} 0 0`
               }} />
 
-              <Stack spacing="lg">
-                {/* Profile Header */}
-                <Group gap="lg" align="flex-start">
-                  <Avatar 
-                    src={staffMember.avatar} 
-                    size={120} 
-                    radius="xl"
-                    style={{ border: '4px solid white', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}
-                  />
-                  
-                  <Stack gap="md" style={{ flex: 1 }}>
-                    <Group gap="md" align="center">
-                      <Title order={2}>{staffMember.name}</Title>
-                      <Badge 
-                        color={getStatusColor(staffMember.status)} 
-                        variant="filled"
-                        size="lg"
+                <Stack spacing="lg">
+                  <Group gap="md">
+                    <div style={{
+                      padding: rem(12),
+                      borderRadius: rem(12),
+                      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}>
+                      <IconUser size={24} style={{ color: 'white' }} />
+                    </div>
+                    <Stack gap="xs">
+                      <Title order={3} style={{ 
+                        fontWeight: 700,
+                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent'
+                      }}>
+                        Profile Overview
+                      </Title>
+                      <Text size="sm" c="dimmed">
+                        Personal information and work details
+                      </Text>
+                    </Stack>
+                  </Group>
+
+                  <Grid gutter="xl">
+                    {/* Profile Photo */}
+                    <Grid.Col span={{ base: 12, lg: 4 }}>
+                    <Stack gap="lg" align="center">
+                      <Avatar 
+                        size={120} 
+                        radius="xl"
+                        src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face"
+                        style={{
+                          border: '4px solid rgba(255, 255, 255, 0.3)',
+                          boxShadow: '0 8px 32px rgba(102, 126, 234, 0.3)'
+                        }}
                       >
-                        {staffMember.status}
-                      </Badge>
-                    </Group>
-                    
-
-                  </Stack>
-                </Group>
-
-                <Divider />
-
-                {/* Contact Information */}
-                <Grid gutter="lg">
-                  <Grid.Col span={{ base: 12, sm: 6 }}>
-                    <Stack gap="sm">
-                      <Group gap="xs">
-                        <IconMail size={16} style={{ color: '#667eea' }} />
-                        <Text size="sm" fw={500}>Email:</Text>
-                        <Text size="sm">{staffMember.email}</Text>
-                      </Group>
-                      <Group gap="xs">
-                        <IconPhone size={16} style={{ color: '#667eea' }} />
-                        <Text size="sm" fw={500}>Phone:</Text>
-                        <Text size="sm">{staffMember.phone}</Text>
-                      </Group>
+                        <IconUser size={60} style={{ color: 'white' }} />
+                      </Avatar>
+                      
+                      <Stack gap="xs" align="center">
+                        <Text size="xl" fw={700} ta="center">{staffMember.name}</Text>
+                        <Badge 
+                          color="green" 
+                          variant="light"
+                          size="md"
+                          leftSection={<IconCheck size={12} />}
+                        >
+                          Active Staff
+                        </Badge>
+                      </Stack>
                     </Stack>
                   </Grid.Col>
-                  
-                  <Grid.Col span={{ base: 12, sm: 6 }}>
-                    <Stack gap="sm">
-                      <Group gap="xs">
-                        <IconMapPin size={16} style={{ color: '#667eea' }} />
-                        <Text size="sm" fw={500}>Current Zone:</Text>
-                        <Text size="sm">{staffMember.currentZone}</Text>
-                      </Group>
+
+                  {/* Staff Details */}
+                  <Grid.Col span={{ base: 12, lg: 8 }}>
+                    <Stack gap="lg">
+                      {/* Personal Information */}
+                      <Paper 
+                        shadow="sm" 
+                        p="lg" 
+                        radius="md" 
+                        withBorder
+                        style={{
+                          background: 'rgba(255, 255, 255, 0.8)',
+                          backdropFilter: 'blur(5px)',
+                          border: '1px solid rgba(255, 255, 255, 0.3)'
+                        }}
+                      >
+                        <Stack gap="md">
+                          <Text fw={600} size="lg" style={{ color: '#667eea' }}>Personal Information</Text>
+                          
+                          <Grid gutter="md">
+                            <Grid.Col span={{ base: 12, sm: 6 }}>
+                              <Stack gap="sm">
+                                <Group gap="xs">
+                                  <IconMail size={16} style={{ color: '#667eea' }} />
+                                  <Text size="sm" fw={500}>Email:</Text>
+                                  <Text size="sm">{staffMember.email}</Text>
+                                </Group>
+                                <Group gap="xs">
+                                  <IconPhone size={16} style={{ color: '#667eea' }} />
+                                  <Text size="sm" fw={500}>Phone:</Text>
+                                  <Text size="sm">{staffMember.phone}</Text>
+                                </Group>
+                              </Stack>
+                            </Grid.Col>
+                            
+                            <Grid.Col span={{ base: 12, sm: 6 }}>
+                              <Stack gap="sm">
+                                <Group gap="xs">
+                                  <IconMapPin size={16} style={{ color: '#667eea' }} />
+                                  <Text size="sm" fw={500}>Current Zone:</Text>
+                                  <Text size="sm">{staffMember.currentZone}</Text>
+                                </Group>
+                                <Group gap="xs">
+                                  <IconMapPin size={16} style={{ color: '#667eea' }} />
+                                  <Text size="sm" fw={500}>Address:</Text>
+                                  <Text size="sm">{staffMember.address}</Text>
+                                </Group>
+                              </Stack>
+                            </Grid.Col>
+                          </Grid>
+                        </Stack>
+                      </Paper>
+
+
                     </Stack>
                   </Grid.Col>
                 </Grid>
-              </Stack>
+                </Stack>
             </Paper>
 
             {/* Zone Assignments */}

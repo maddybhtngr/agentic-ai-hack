@@ -37,16 +37,16 @@ const StaffSidebar = ({ opened = false }) => {
       badge: '2'
     },
     {
-      label: 'Staff Details',
-      icon: IconUser,
-      path: '/staff/staff-details',
-      active: location.pathname === '/staff/staff-details'
-    },
-    {
       label: 'AI Intelligence',
       icon: IconBrain,
       path: '/staff/ai-intelligence',
       active: location.pathname === '/staff/ai-intelligence'
+    },
+    {
+      label: 'Staff Details',
+      icon: IconUser,
+      path: '/staff/staff-details',
+      active: location.pathname === '/staff/staff-details'
     }
   ]
 

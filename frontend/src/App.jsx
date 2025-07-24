@@ -8,6 +8,10 @@ import StaffIncidentManagement from './pages/StaffIncidentManagement'
 import StaffAIIntelligence from './pages/StaffAIIntelligence'
 import StaffDetails from './pages/StaffDetails'
 import AttendeeDashboard from './pages/AttendeeDashboard'
+import AttendeeIncidentManagement from './pages/AttendeeIncidentManagement'
+import AttendeeDetails from './pages/AttendeeDetails'
+import AttendeeEmergencyServices from './pages/AttendeeEmergencyServices'
+import AttendeeAIInsights from './pages/AttendeeAIInsights'
 import IncidentManagement from './pages/IncidentManagement'
 import EventDetails from './pages/EventDetails'
 import StaffManagement from './pages/StaffManagement'
@@ -33,6 +37,10 @@ function App() {
         <Route path="/staff/ai-intelligence" element={<StaffAIIntelligence />} />
         <Route path="/staff/staff-details" element={<StaffDetails />} />
         <Route path="/attendee/dashboard" element={<AttendeeDashboard />} />
+        <Route path="/attendee/incident-management" element={<AttendeeIncidentManagement />} />
+        <Route path="/attendee/attendee-details" element={<AttendeeDetails />} />
+        <Route path="/attendee/emergency-services" element={<AttendeeEmergencyServices />} />
+        <Route path="/attendee/ai-insights" element={<AttendeeAIInsights />} />
       </Routes>
     </Router>
   )
