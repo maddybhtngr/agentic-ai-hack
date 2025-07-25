@@ -14,7 +14,8 @@ import {
   IconAlertTriangle,
   IconUsers,
   IconUser,
-  IconBrain
+  IconBrain,
+  IconMapPin
 } from '@tabler/icons-react'
 import { useNavigate, useLocation } from 'react-router-dom'
 
@@ -28,6 +29,12 @@ const StaffSidebar = ({ opened = false }) => {
       icon: IconDashboard,
       path: '/staff/dashboard',
       active: location.pathname === '/staff/dashboard'
+    },
+    {
+      label: 'Zone Management',
+      icon: IconMapPin,
+      path: '/staff/zone-management',
+      active: location.pathname === '/staff/zone-management'
     },
     {
       label: 'Incident Management',

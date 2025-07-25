@@ -7,6 +7,7 @@ import StaffDashboard from './pages/StaffDashboard'
 import StaffIncidentManagement from './pages/StaffIncidentManagement'
 import StaffAIIntelligence from './pages/StaffAIIntelligence'
 import StaffDetails from './pages/StaffDetails'
+import ZoneManagement from './pages/ZoneManagement'
 import AttendeeDashboard from './pages/AttendeeDashboard'
 import AttendeeIncidentManagement from './pages/AttendeeIncidentManagement'
 import AttendeeDetails from './pages/AttendeeDetails'
@@ -33,6 +34,7 @@ function App() {
         <Route path="/admin/emergency-services" element={<EmergencyServices />} />
         <Route path="/admin/ai-intelligence" element={<AIIntelligence />} />
         <Route path="/staff/dashboard" element={<StaffDashboard />} />
+        <Route path="/staff/zone-management" element={<ZoneManagement />} />
         <Route path="/staff/incident-management" element={<StaffIncidentManagement />} />
         <Route path="/staff/ai-intelligence" element={<StaffAIIntelligence />} />
         <Route path="/staff/staff-details" element={<StaffDetails />} />

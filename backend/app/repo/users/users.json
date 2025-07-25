@@ -1,0 +1,66 @@
+{
+  "admins": [
+    {
+      "username": "admin",
+      "password": "1234",
+      "user_type": "admin",
+      "role": "Administrator"
+    }
+  ],
+  "staff": [
+    {
+      "username": "staff",
+      "password": "1234",
+      "user_type": "staff",
+      "role": "Staff Member"
+    }
+  ],
+  "attendees": [
+    {
+      "username": "maddybhtngr",
+      "password": "123456",
+      "user_type": "attendee",
+      "role": "Event Attendee",
+      "first_name": "Madhur",
+      "last_name": "Bhatnagar",
+      "profile_photo": "data/attendees/maddybhtngr.jpg",
+      "personal_info": {
+        "contact_number": "7904536327",
+        "address": "8th Floor Embassy Tech Village Outer Ring Road, Hobli, Devarabisanahalli, Bengaluru East, Varthur, Bengaluru, Karnataka 560103",
+        "personal_email": "maddybhtngr@gmail.com"
+      },
+      "emergency_contact": {
+        "first_name": "Mr",
+        "last_name": "Lonely",
+        "contact_number": "1234567890",
+        "relationship": "Friend",
+        "contact_email": "lonelyman@gmail.com"
+      },
+      "created_at": "2025-07-25T10:12:10.434274Z",
+      "updated_at": "2025-07-25T10:12:10.434274Z"
+    },
+    {
+      "username": "Amitrajit",
+      "password": "123456",
+      "user_type": "attendee",
+      "role": "Event Attendee",
+      "first_name": "amitraji",
+      "last_name": "c",
+      "profile_photo": "data/attendees/Amitrajit.jpg",
+      "personal_info": {
+        "contact_number": "1234567890",
+        "address": "asdfghjk",
+        "personal_email": "asdgs@gmail.com"
+      },
+      "emergency_contact": {
+        "first_name": "asdfgh",
+        "last_name": "defghjk",
+        "contact_number": "1234567890",
+        "relationship": "Spouse",
+        "contact_email": "asdf@gmail.com"
+      },
+      "created_at": "2025-07-25T10:39:59.029615Z",
+      "updated_at": "2025-07-25T10:39:59.029615Z"
+    }
+  ]
+}

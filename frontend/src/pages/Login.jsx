@@ -16,6 +16,7 @@ import {
   Box
 } from '@mantine/core'
 import { IconEye, IconEyeOff, IconAlertCircle, IconShieldLock } from '@tabler/icons-react'
+import { apiService, authUtils } from '../services/api'
 
 function Login() {
   const [username, setUsername] = useState('')
@@ -30,19 +31,34 @@ function Login() {
     setError('')
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 800))
+      // Make API call to backend using the service
+      const data = await apiService.login(username, password)
 
-      if (username === 'admin' && password === '1234') {
-        navigate('/admin/dashboard')
-      } else if (username === 'staff' && password === '1234') {
-        navigate('/staff/dashboard')
-      } else if (username === 'attendee' && password === '1234') {
-        navigate('/attendee/dashboard')
+      if (data.success) {
+        // Store user session using auth utilities
+        authUtils.setUserSession(data.data)
+        
+        // Navigate based on user type
+        const userType = data.data.user_type
+        if (userType === 'admin') {
+          navigate('/admin/dashboard')
+        } else if (userType === 'staff') {
+          navigate('/staff/dashboard')
+        } else if (userType === 'attendee') {
+          navigate('/attendee/dashboard')
+        } else {
+          navigate('/dashboard') // fallback
+        }
       } else {
-        setError('Invalid username or password. Please try again.')
+        setError(data.message || 'Invalid username or password. Please try again.')
       }
     } catch (err) {
-      setError('An unexpected error occurred. Please try again.')
+      console.error('Login error:', err)
+      if (err.message.includes('HTTP error')) {
+        setError('Server error. Please try again later.')
+      } else {
+        setError('Network error. Please check your connection and try again.')
+      }
     } finally {
       setLoading(false)
     }

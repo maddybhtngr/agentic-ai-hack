@@ -1,19 +1,10 @@
-import { Container, Title, Text, Paper, Stack, AppShell, Grid, Group, rem, Card, Badge, Avatar, Divider, Button, Progress } from '@mantine/core'
+import { Container, Title, Text, Paper, Stack, AppShell, Grid, Group, rem, Badge, Avatar } from '@mantine/core'
 import { 
   IconUser,
   IconMapPin,
-  IconClock,
-  IconShield,
   IconPhone,
   IconMail,
-  IconId,
-  IconCalendar,
-  IconTarget,
-  IconCheck,
-  IconAlertTriangle,
-  IconActivity,
-  IconUsers,
-  IconStar
+  IconCheck
 } from '@tabler/icons-react'
 import { useDisclosure, useMediaQuery } from '@mantine/hooks'
 import AppBar from '../components/AppBar'
@@ -30,56 +21,13 @@ function StaffDetails() {
 
   // Sample staff data
   const staffMember = {
-    id: 'STF001',
     name: 'Sarah Johnson',
     role: 'Security Officer',
     department: 'Security Team',
     email: 'sarah.johnson@drishti.com',
     phone: '+1 (555) 123-4567',
     address: '456 Security Lane, Suite 12, New York, NY 10002',
-    currentZone: 'Zone A - Main Entrance',
-    assignedZones: [
-      {
-        id: 1,
-        name: 'Zone A - Main Entrance',
-        status: 'Active',
-        capacity: 200,
-        currentCount: 145,
-        utilization: 72.5
-      },
-      {
-        id: 2,
-        name: 'Zone B - Food Court',
-        status: 'Active',
-        capacity: 300,
-        currentCount: 267,
-        utilization: 89.0
-      },
-      {
-        id: 3,
-        name: 'Zone C - Parking Area',
-        status: 'Inactive',
-        capacity: 150,
-        currentCount: 45,
-        utilization: 30.0
-      }
-    ]
-  };
-
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'Active': return 'green';
-      case 'Inactive': return 'gray';
-      case 'Completed': return 'blue';
-      case 'Pending': return 'yellow';
-      default: return 'gray';
-    }
-  };
-
-  const getUtilizationColor = (utilization) => {
-    if (utilization >= 80) return 'red';
-    if (utilization >= 60) return 'yellow';
-    return 'green';
+    currentZone: 'Zone A - Main Entrance'
   };
 
   return (
@@ -272,112 +220,7 @@ function StaffDetails() {
                 </Stack>
             </Paper>
 
-            {/* Zone Assignments */}
-            <Paper 
-              shadow="xl" 
-              p="xl" 
-              radius="lg" 
-              style={{
-                background: 'rgba(255, 255, 255, 0.95)',
-                backdropFilter: 'blur(10px)',
-                border: '1px solid rgba(255, 255, 255, 0.2)',
-                position: 'relative',
-                overflow: 'hidden'
-              }}
-            >
-              {/* Background gradient accent */}
-              <div style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                height: '4px',
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                borderRadius: `${rem(12)} ${rem(12)} 0 0`
-              }} />
 
-              <Stack spacing="lg">
-                <Group gap="md">
-                  <div style={{
-                    padding: rem(12),
-                    borderRadius: rem(12),
-                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                  }}>
-                    <IconMapPin size={24} style={{ color: 'white' }} />
-                  </div>
-                  <Stack gap="xs">
-                    <Title order={3} style={{ 
-                      fontWeight: 700,
-                      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                      WebkitBackgroundClip: 'text',
-                      WebkitTextFillColor: 'transparent'
-                    }}>
-                      Zone Assignments
-                    </Title>
-                    <Text size="sm" c="dimmed">
-                      Current zone assignments and capacity monitoring
-                    </Text>
-                  </Stack>
-                </Group>
-
-                <Grid gutter="lg">
-                  {staffMember.assignedZones.map((zone) => (
-                    <Grid.Col key={zone.id} span={{ base: 12, sm: 6, lg: 4 }}>
-                      <Card 
-                        shadow="md" 
-                        padding="lg" 
-                        radius="lg" 
-                        withBorder
-                        style={{
-                          background: 'rgba(255, 255, 255, 0.8)',
-                          backdropFilter: 'blur(5px)',
-                          border: '1px solid rgba(255, 255, 255, 0.3)',
-                          transition: 'all 0.3s ease',
-                          '&:hover': {
-                            transform: 'translateY(-2px)',
-                            boxShadow: '0 10px 30px rgba(0,0,0,0.1)'
-                          }
-                        }}
-                      >
-                        <Stack gap="md">
-                          <Group justify="space-between" align="flex-start">
-                            <Stack gap="xs" style={{ flex: 1 }}>
-                              <Text fw={600} size="lg">{zone.name}</Text>
-                              <Badge 
-                                color={getStatusColor(zone.status)} 
-                                variant="light"
-                                size="sm"
-                              >
-                                {zone.status}
-                              </Badge>
-                            </Stack>
-                          </Group>
-
-                          <Stack gap="sm">
-                            <Group justify="space-between">
-                              <Text size="sm" fw={500}>Capacity</Text>
-                              <Text size="sm" fw={600}>{zone.currentCount}/{zone.capacity}</Text>
-                            </Group>
-                            <Progress 
-                              value={zone.utilization} 
-                              color={getUtilizationColor(zone.utilization)}
-                              size="sm"
-                              radius="xl"
-                            />
-                            <Text size="xs" c="dimmed" ta="center">
-                              {zone.utilization}% utilization
-                            </Text>
-                          </Stack>
-                        </Stack>
-                      </Card>
-                    </Grid.Col>
-                  ))}
-                </Grid>
-              </Stack>
-            </Paper>
 
 
           </Stack>

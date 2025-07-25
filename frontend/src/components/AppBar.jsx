@@ -1,8 +1,16 @@
 import { AppShell, Group, Text, ActionIcon, useMantineTheme, Burger, Menu, Avatar, rem } from '@mantine/core';
 import { IconUser, IconLogout, IconSettings, IconShieldLock, IconBell } from '@tabler/icons-react';
+import { useNavigate } from 'react-router-dom';
+import { authUtils } from '../services/api';
 
 const AppBar = ({ userName = "User", onMenuClick, opened = false }) => {
   const theme = useMantineTheme();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    authUtils.clearSession();
+    navigate('/login');
+  };
 
   return (
     <AppShell.Header
@@ -143,6 +151,7 @@ const AppBar = ({ userName = "User", onMenuClick, opened = false }) => {
               <Menu.Item
                 leftSection={<IconLogout size={16} />}
                 color="red"
+                onClick={handleLogout}
                 style={{
                   '&:hover': {
                     background: 'rgba(255, 0, 0, 0.1)'
