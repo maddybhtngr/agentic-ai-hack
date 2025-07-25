@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { 
   AppShell,
   Container,
@@ -19,7 +19,9 @@ import {
   Textarea,
   Select,
   NumberInput,
-  ActionIcon
+  ActionIcon,
+  LoadingOverlay,
+  Alert
 } from '@mantine/core'
 import { useDisclosure, useMediaQuery } from '@mantine/hooks'
 import { 
@@ -48,28 +50,31 @@ import {
 import AppBar from '../components/AppBar'
 import Sidebar from '../components/Sidebar'
 import FloatingAssistant from '../components/FloatingAssistant'
+import { apiService } from '../services/api'
 
 function EventDetails() {
   const [opened, { toggle }] = useDisclosure(true)
   const isSmallScreen = useMediaQuery('(max-width: 768px)')
   const [editModalOpened, setEditModalOpened] = useState(false)
   const [scheduleModalOpened, setScheduleModalOpened] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
   const [eventData, setEventData] = useState({
-    name: 'Tech Conference 2024',
-    date: 'December 15, 2024',
-    time: '9:00 AM - 6:00 PM',
-    location: 'Convention Center, Downtown',
-    address: '123 Main Street, City, State 12345',
-    capacity: 500,
-    registered: 342,
-    description: 'Annual technology conference featuring keynote speakers, workshops, and networking opportunities. Join industry leaders and innovators for a day of learning and collaboration.',
-    organizer: 'Tech Events Inc.',
-    contact: '+1 (555) 123-4567',
-    email: 'info@techconference.com',
-    website: 'www.techconference.com',
+    name: '',
+    date: '',
+    time: '',
+    location: '',
+    address: '',
+    capacity: 0,
+    registered: 0,
+    description: '',
+    organizer: '',
+    contact: '',
+    email: '',
+    website: '',
     status: 'active',
-    type: 'Conference',
-    category: 'Technology'
+    type: '',
+    category: ''
   })
 
   const [editForm, setEditForm] = useState({
@@ -88,72 +93,38 @@ function EventDetails() {
     category: ''
   })
 
-  const [schedule, setSchedule] = useState([
-    {
-      id: 1,
-      time: '9:00 AM - 9:30 AM',
-      title: 'Registration & Welcome',
-      speaker: 'Event Team',
-      location: 'Main Hall',
-      type: 'Registration'
-    },
-    {
-      id: 2,
-      time: '9:30 AM - 10:30 AM',
-      title: 'Keynote: Future of AI',
-      speaker: 'Dr. Sarah Johnson',
-      location: 'Main Stage',
-      type: 'Keynote'
-    },
-    {
-      id: 3,
-      time: '10:45 AM - 11:45 AM',
-      title: 'Workshop: Machine Learning Basics',
-      speaker: 'Prof. Michael Chen',
-      location: 'Workshop Room A',
-      type: 'Workshop'
-    },
-    {
-      id: 4,
-      time: '12:00 PM - 1:00 PM',
-      title: 'Lunch & Networking',
-      speaker: 'All Attendees',
-      location: 'Dining Hall',
-      type: 'Break'
-    },
-    {
-      id: 5,
-      time: '1:00 PM - 2:00 PM',
-      title: 'Panel: Cybersecurity Trends',
-      speaker: 'Expert Panel',
-      location: 'Main Stage',
-      type: 'Panel'
-    },
-    {
-      id: 6,
-      time: '2:15 PM - 3:15 PM',
-      title: 'Workshop: Cloud Computing',
-      speaker: 'Alex Rodriguez',
-      location: 'Workshop Room B',
-      type: 'Workshop'
-    },
-    {
-      id: 7,
-      time: '3:30 PM - 4:30 PM',
-      title: 'Closing Remarks',
-      speaker: 'Event Director',
-      location: 'Main Stage',
-      type: 'Closing'
-    }
-  ])
+  const [schedule, setSchedule] = useState([])
 
   const [newScheduleItem, setNewScheduleItem] = useState({
-    time: '',
-    title: '',
-    speaker: '',
+    start_time: '',
+    end_time: '',
     location: '',
-    type: ''
+    details: ''
   })
+
+  // Fetch event data from API
+  useEffect(() => {
+    const fetchEventData = async () => {
+      setLoading(true)
+      setError(null)
+      try {
+        const [detailsData, scheduleData] = await Promise.all([
+          apiService.getEventDetails(),
+          apiService.getEventSchedule()
+        ])
+        
+        setEventData(detailsData.data || detailsData)
+        setSchedule(scheduleData.data || scheduleData)
+      } catch (err) {
+        console.error('Error fetching event data:', err)
+        setError('Failed to load event data from server')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchEventData()
+  }, [])
 
   const handleEditEvent = () => {
     setEditForm({
@@ -174,31 +145,44 @@ function EventDetails() {
     setEditModalOpened(true)
   }
 
-  const handleSaveEvent = () => {
-    setEventData(editForm)
-    setEditModalOpened(false)
-  }
-
-  const handleAddScheduleItem = () => {
-    if (newScheduleItem.time && newScheduleItem.title && newScheduleItem.speaker) {
-      const item = {
-        id: schedule.length + 1,
-        ...newScheduleItem
-      }
-      setSchedule([...schedule, item])
-      setNewScheduleItem({
-        time: '',
-        title: '',
-        speaker: '',
-        location: '',
-        type: ''
-      })
-      setScheduleModalOpened(false)
+  const handleSaveEvent = async () => {
+    try {
+      const updatedDetails = await apiService.updateEventDetails(editForm)
+      setEventData(updatedDetails.data || updatedDetails)
+      setEditModalOpened(false)
+    } catch (err) {
+      console.error('Error updating event details:', err)
+      setError('Failed to update event details')
     }
   }
 
-  const handleDeleteScheduleItem = (id) => {
-    setSchedule(schedule.filter(item => item.id !== id))
+  const handleAddScheduleItem = async () => {
+    if (newScheduleItem.start_time && newScheduleItem.end_time && newScheduleItem.details) {
+      try {
+        const newItem = await apiService.addScheduleItem(newScheduleItem)
+        setSchedule([...schedule, newItem.data || newItem])
+        setNewScheduleItem({
+          start_time: '',
+          end_time: '',
+          location: '',
+          details: ''
+        })
+        setScheduleModalOpened(false)
+      } catch (err) {
+        console.error('Error adding schedule item:', err)
+        setError('Failed to add schedule item')
+      }
+    }
+  }
+
+  const handleDeleteScheduleItem = async (id) => {
+    try {
+      await apiService.deleteScheduleItem(id)
+      setSchedule(schedule.filter(item => item.id !== id))
+    } catch (err) {
+      console.error('Error deleting schedule item:', err)
+      setError('Failed to delete schedule item')
+    }
   }
 
   const getTypeColor = (type) => {
@@ -250,7 +234,13 @@ function EventDetails() {
       </AppShell.Navbar>
 
       <AppShell.Main>
-        <Container size="100%" py="xl" px="xl">
+        <Container size="100%" py="xl" px="xl" style={{ position: 'relative' }}>
+          <LoadingOverlay visible={loading} />
+          {error && (
+            <Alert color="red" title="Error" mb="md">
+              {error}
+            </Alert>
+          )}
           <Stack spacing="xl">
             {/* Header */}
             <Stack spacing="xs">
@@ -490,9 +480,10 @@ function EventDetails() {
                             <Group justify="space-between" align="center">
                               <Stack gap="xs" style={{ flex: 1 }}>
                                 <Text size="sm" fw={600} lineClamp={1}>
-                                  {item.title}
+                                  {item.details}
                                 </Text>
-                                <Text size="xs" c="dimmed">{item.time}</Text>
+                                <Text size="xs" c="dimmed">{item.start_time} - {item.end_time}</Text>
+                                <Text size="xs" c="dimmed">{item.location}</Text>
                               </Stack>
                               <ActionIcon
                                 size="sm"
@@ -858,59 +849,46 @@ function EventDetails() {
             }}
           >
             <Stack gap="md">
-              <TextInput
-                label="Time"
-                placeholder="e.g., 9:00 AM - 10:00 AM"
-                size="md"
-                radius="md"
-                value={newScheduleItem.time}
-                onChange={(event) => setNewScheduleItem({...newScheduleItem, time: event.target.value})}
-                styles={{
-                  input: {
-                    borderColor: '#e9ecef',
-                    '&:focus': {
-                      borderColor: '#667eea',
-                      boxShadow: '0 0 0 1px #667eea'
-                    }
-                  }
-                }}
-              />
-
-              <TextInput
-                label="Title"
-                placeholder="Enter session title"
-                size="md"
-                radius="md"
-                value={newScheduleItem.title}
-                onChange={(event) => setNewScheduleItem({...newScheduleItem, title: event.target.value})}
-                styles={{
-                  input: {
-                    borderColor: '#e9ecef',
-                    '&:focus': {
-                      borderColor: '#667eea',
-                      boxShadow: '0 0 0 1px #667eea'
-                    }
-                  }
-                }}
-              />
-
-              <TextInput
-                label="Speaker"
-                placeholder="Enter speaker name"
-                size="md"
-                radius="md"
-                value={newScheduleItem.speaker}
-                onChange={(event) => setNewScheduleItem({...newScheduleItem, speaker: event.target.value})}
-                styles={{
-                  input: {
-                    borderColor: '#e9ecef',
-                    '&:focus': {
-                      borderColor: '#667eea',
-                      boxShadow: '0 0 0 1px #667eea'
-                    }
-                  }
-                }}
-              />
+              <Grid gutter="md">
+                <Grid.Col span={6}>
+                  <TextInput
+                    label="Start Time"
+                    placeholder="e.g., 09:00"
+                    size="md"
+                    radius="md"
+                    value={newScheduleItem.start_time}
+                    onChange={(event) => setNewScheduleItem({...newScheduleItem, start_time: event.target.value})}
+                    styles={{
+                      input: {
+                        borderColor: '#e9ecef',
+                        '&:focus': {
+                          borderColor: '#667eea',
+                          boxShadow: '0 0 0 1px #667eea'
+                        }
+                      }
+                    }}
+                  />
+                </Grid.Col>
+                <Grid.Col span={6}>
+                  <TextInput
+                    label="End Time"
+                    placeholder="e.g., 10:00"
+                    size="md"
+                    radius="md"
+                    value={newScheduleItem.end_time}
+                    onChange={(event) => setNewScheduleItem({...newScheduleItem, end_time: event.target.value})}
+                    styles={{
+                      input: {
+                        borderColor: '#e9ecef',
+                        '&:focus': {
+                          borderColor: '#667eea',
+                          boxShadow: '0 0 0 1px #667eea'
+                        }
+                      }
+                    }}
+                  />
+                </Grid.Col>
+              </Grid>
 
               <TextInput
                 label="Location"
@@ -930,21 +908,14 @@ function EventDetails() {
                 }}
               />
 
-              <Select
-                label="Type"
-                placeholder="Select session type"
+              <Textarea
+                label="Details"
+                placeholder="Enter session details (e.g., Keynote: Future of AI - Dr. Sarah Johnson)"
                 size="md"
                 radius="md"
-                value={newScheduleItem.type}
-                onChange={(value) => setNewScheduleItem({...newScheduleItem, type: value})}
-                data={[
-                  { value: 'Keynote', label: 'Keynote' },
-                  { value: 'Workshop', label: 'Workshop' },
-                  { value: 'Panel', label: 'Panel' },
-                  { value: 'Break', label: 'Break' },
-                  { value: 'Registration', label: 'Registration' },
-                  { value: 'Closing', label: 'Closing' }
-                ]}
+                minRows={3}
+                value={newScheduleItem.details}
+                onChange={(event) => setNewScheduleItem({...newScheduleItem, details: event.target.value})}
                 styles={{
                   input: {
                     borderColor: '#e9ecef',

@@ -1,11 +1,11 @@
-import { Container, Title, Text, Paper, Stack, AppShell, Group, Badge, Button, rem, Card, Grid, ActionIcon, Modal, TextInput, Select, Textarea, Timeline, Divider } from '@mantine/core';
+import { Container, Title, Text, Paper, Stack, AppShell, Group, Badge, Button, rem, Card, Grid, ActionIcon, Modal, TextInput, Select, Textarea, Timeline, Divider, Alert, FileInput, Switch } from '@mantine/core';
 import { useDisclosure, useMediaQuery } from '@mantine/hooks';
-import { IconAlertTriangle, IconClock, IconMapPin, IconUser, IconPhone, IconMail, IconPlus, IconEdit, IconTrash, IconCheck, IconX, IconEye, IconActivity, IconShieldLock, IconReportAnalytics, IconChevronRight } from '@tabler/icons-react';
+import { IconAlertTriangle, IconClock, IconMapPin, IconUser, IconPhone, IconMail, IconPlus, IconEdit, IconTrash, IconCheck, IconX, IconEye, IconActivity, IconShieldLock, IconReportAnalytics, IconChevronRight, IconPhoto } from '@tabler/icons-react';
 import AppBar from '../components/AppBar';
 import StaffSidebar from '../components/StaffSidebar';
 import FloatingAssistant from '../components/FloatingAssistant';
 import { useState, useEffect } from 'react';
-import { authUtils } from '../services/api';
+import { authUtils, apiService } from '../services/api';
 
 function StaffIncidentManagement() {
   const [opened, { toggle }] = useDisclosure(true);
@@ -18,11 +18,15 @@ function StaffIncidentManagement() {
   // Get current user data
   const currentUser = authUtils.getCurrentUser();
   const userName = currentUser ? `${currentUser.first_name} ${currentUser.last_name}` : 'Staff User';
+  const [staffZone, setStaffZone] = useState(null);
   const [newIncident, setNewIncident] = useState({
-    title: '',
-    description: '',
-    priority: 'medium',
-    location: ''
+    incident_summary: '',
+    incident_details: '',
+    incident_priority: 'MODERATE',
+    incident_type: 'SECURITY REQUIRED',
+    zone_id: null,
+    is_broadcast: false,
+    additional_image: null
   });
   const [updateDescription, setUpdateDescription] = useState('')
   const [updateDetails, setUpdateDetails] = useState({
@@ -32,65 +36,62 @@ function StaffIncidentManagement() {
     contact: '',
     email: ''
   })
+  const [zones, setZones] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [actionLoading, setActionLoading] = useState({});
 
-  // Sample incident data for staff view
-  const [incidents, setIncidents] = useState([
-    {
-      id: 1,
-      title: 'Crowd Overflow in Zone A',
-      description: 'Large crowd detected exceeding capacity limits in the main entrance area.',
-      status: 'active',
-      priority: 'high',
-      location: 'Zone A - Main Entrance',
-      reportedBy: 'John Smith',
-      reportedAt: '2024-01-15 14:30',
-      assignedTo: 'Security Team Alpha',
-      contact: '+1 (555) 123-4567',
-      email: 'security@drishti.com',
-      updates: [
-        { time: '14:30', action: 'Incident reported', user: 'John Smith' },
-        { time: '14:32', action: 'Security team dispatched', user: 'System' },
-        { time: '14:35', action: 'Crowd control measures initiated', user: 'Team Alpha' }
-      ]
-    },
-    {
-      id: 2,
-      title: 'Suspicious Activity Detected',
-      description: 'Unusual behavior patterns detected in Zone C parking area.',
-      status: 'investigating',
-      priority: 'medium',
-      location: 'Zone C - Parking Area',
-      reportedBy: 'AI System',
-      reportedAt: '2024-01-15 13:45',
-      assignedTo: 'Investigation Team',
-      contact: '+1 (555) 987-6543',
-      email: 'investigation@drishti.com',
-      updates: [
-        { time: '13:45', action: 'AI alert triggered', user: 'System' },
-        { time: '13:47', action: 'Investigation team notified', user: 'System' },
-        { time: '13:50', action: 'On-site investigation started', user: 'Team Beta' }
-      ]
-    },
-    {
-      id: 3,
-      title: 'Medical Emergency',
-      description: 'Medical assistance required for attendee in Zone B.',
-      status: 'resolved',
-      priority: 'high',
-      location: 'Zone B - Food Court',
-      reportedBy: 'Sarah Johnson',
-      reportedAt: '2024-01-15 12:15',
-      assignedTo: 'Medical Team',
-      contact: '+1 (555) 456-7890',
-      email: 'medical@drishti.com',
-      updates: [
-        { time: '12:15', action: 'Medical emergency reported', user: 'Sarah Johnson' },
-        { time: '12:17', action: 'Medical team dispatched', user: 'System' },
-        { time: '12:20', action: 'First aid provided', user: 'Medical Team' },
-        { time: '12:25', action: 'Incident resolved', user: 'Medical Team' }
-      ]
-    }
-  ]);
+  // Fetch incidents from API
+  const [incidents, setIncidents] = useState([]);
+  const [stats, setStats] = useState({
+    total_incidents: 0,
+    reported_count: 0,
+    assigned_count: 0,
+    resolved_count: 0
+  });
+
+  // Fetch incidents and stats from API
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const incidentsData = await apiService.getAllIncidents();
+        const allIncidents = incidentsData.data || incidentsData;
+        
+        setIncidents(allIncidents);
+        
+        // Calculate stats based on filtered incidents (staff zone + broadcast)
+        const filteredIncidents = allIncidents.filter(incident => {
+          // Show broadcast incidents (relevant to all staff)
+          if (incident.is_broadcast) return true;
+          
+          // Show incidents assigned to this staff member's zone
+          if (staffZone && incident.zone_id === staffZone) return true;
+          
+          return false;
+        });
+        
+        console.log('Staff Zone:', staffZone);
+        console.log('Total incidents:', allIncidents.length);
+        console.log('Filtered incidents:', filteredIncidents.length);
+        console.log('Filtered incidents:', filteredIncidents.map(i => ({ id: i.id, zone_id: i.zone_id, is_broadcast: i.is_broadcast, status: i.status })));
+        
+        const filteredStats = {
+          total_incidents: filteredIncidents.length,
+          reported_count: filteredIncidents.filter(i => i.status === 'REPORTED').length,
+          assigned_count: filteredIncidents.filter(i => i.status === 'ASSIGNED').length,
+          resolved_count: filteredIncidents.filter(i => i.status === 'RESOLVED').length
+        };
+        
+        setStats(filteredStats);
+      } catch (err) {
+        console.error('Error fetching data:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [staffZone]); // Re-run when staffZone changes
 
   // Set the latest incident as selected by default
   useEffect(() => {
@@ -99,26 +100,98 @@ function StaffIncidentManagement() {
     }
   }, [incidents, selectedIncident]);
 
+  // Fetch zones data and staff zone
+  useEffect(() => {
+    const fetchZones = async () => {
+      try {
+        const response = await apiService.getAvailableZones();
+        if (response.success) {
+          setZones(response.data);
+          
+          // Get staff member's zone - for now, we'll use the first zone as default
+          // In a real app, you'd get this from the staff member's profile
+          if (response.data && response.data.length > 0) {
+            setStaffZone(response.data[0].id); // Default to first zone
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching zones:', err);
+      }
+    };
+
+    fetchZones();
+  }, []);
+
+  // Debug: Monitor newIncident state changes
+  useEffect(() => {
+    console.log('newIncident state updated:', newIncident);
+  }, [newIncident]);
+
+  // Debug: Monitor modal state
+  useEffect(() => {
+    console.log('Modal opened state:', addModalOpened);
+    if (addModalOpened) {
+      console.log('Modal opened - current newIncident state:', newIncident);
+      // Ensure state is properly initialized when modal opens
+      if (!newIncident.incident_priority || !newIncident.incident_type) {
+        console.log('Resetting newIncident state to defaults');
+        setNewIncident({
+          incident_summary: '',
+          incident_details: '',
+          incident_priority: 'MODERATE',
+          incident_type: 'SECURITY REQUIRED',
+          zone_id: null,
+          is_broadcast: false,
+          additional_image: null
+        });
+      }
+    }
+  }, [addModalOpened, newIncident]);
+
   const handleMenuClick = () => {
     toggle();
   };
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'active': return 'red';
-      case 'investigating': return 'yellow';
-      case 'resolved': return 'green';
+      case 'REPORTED': return 'red';
+      case 'ASSIGNED': return 'yellow';
+      case 'RESOLVED': return 'green';
       default: return 'gray';
     }
   };
 
   const getPriorityColor = (priority) => {
     switch (priority) {
-      case 'high': return 'red';
-      case 'medium': return 'yellow';
-      case 'low': return 'green';
+      case 'CRITICAL': return 'red';
+      case 'MODERATE': return 'yellow';
+      case 'GENERAL': return 'blue';
       default: return 'gray';
     }
+  };
+
+  const getIncidentsByStatus = (status) => {
+    return incidents.filter(incident => {
+      // Only show incidents that match the status AND are relevant to this staff member
+      if (incident.status !== status) return false;
+      
+      // Show broadcast incidents (relevant to all staff)
+      if (incident.is_broadcast) return true;
+      
+      // Show incidents assigned to this staff member's zone
+      if (staffZone && incident.zone_id === staffZone) return true;
+      
+      return false;
+    });
+  };
+
+  const getZoneName = (zoneId) => {
+    const zone = zones.find(z => z.id === zoneId);
+    return zone ? zone.name : 'Unknown Zone';
+  };
+
+  const getStaffZoneName = () => {
+    return staffZone ? getZoneName(staffZone) : 'No Zone Assigned';
   };
 
   const handleIncidentClick = (incident) => {
@@ -126,33 +199,95 @@ function StaffIncidentManagement() {
     setViewModalOpened(true);
   };
 
-  const handleAddIncident = () => {
-    if (newIncident.title && newIncident.description) {
-      const incident = {
-        id: incidents.length + 1,
-        ...newIncident,
-        status: 'active',
-        reportedBy: 'Staff Member',
-        reportedAt: new Date().toLocaleString(),
-        assignedTo: 'Pending Assignment',
-        contact: '',
-        email: '',
-        updates: [
-          {
-            time: new Date().toLocaleTimeString(),
-            action: 'Incident reported by staff',
-            user: 'Staff Member'
-          }
-        ]
+  const handleAddIncident = async () => {
+    if (!newIncident.incident_summary || !newIncident.incident_details) {
+      console.log('Validation error: Please fill in all required fields');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      
+      // Debug: Log the current state
+      console.log('=== FORM SUBMISSION DEBUG ===');
+      console.log('Current newIncident state:', newIncident);
+      console.log('is_broadcast value:', newIncident.is_broadcast, 'type:', typeof newIncident.is_broadcast);
+      console.log('incident_summary:', newIncident.incident_summary);
+      console.log('incident_details:', newIncident.incident_details);
+      console.log('incident_priority:', newIncident.incident_priority);
+      console.log('incident_type:', newIncident.incident_type);
+      console.log('zone_id:', newIncident.zone_id);
+      console.log('================================');
+      
+      // Create incident data object
+      const incidentData = {
+        incident_summary: newIncident.incident_summary,
+        incident_details: newIncident.incident_details,
+        incident_priority: newIncident.incident_priority,
+        incident_type: newIncident.incident_type,
+        reporter: 'Staff',
+        reporter_name: userName,
+        is_broadcast: newIncident.is_broadcast === true || newIncident.is_broadcast === 'true',
+        zone_id: newIncident.zone_id,
+        additional_image: newIncident.additional_image
       };
-      setIncidents([incident, ...incidents]);
-      setNewIncident({
-        title: '',
-        description: '',
-        priority: 'medium',
-        location: ''
-      });
-      setAddModalOpened(false);
+      
+      console.log('Sending incident data to API:', incidentData);
+
+      const response = await apiService.createIncident(incidentData);
+      
+      if (response.success) {
+        console.log('Incident created successfully:', response.data);
+        
+        // Reset form
+        setNewIncident({
+          incident_summary: '',
+          incident_details: '',
+          incident_priority: 'MODERATE',
+          incident_type: 'SECURITY REQUIRED',
+          zone_id: null,
+          is_broadcast: false,
+          additional_image: null
+        });
+        setAddModalOpened(false);
+        
+        // Refresh incidents list with filtering
+        const fetchData = async () => {
+          try {
+            const incidentsData = await apiService.getAllIncidents();
+            const allIncidents = incidentsData.data || incidentsData;
+            
+            setIncidents(allIncidents);
+            
+            // Calculate stats based on filtered incidents (staff zone + broadcast)
+            const filteredIncidents = allIncidents.filter(incident => {
+              // Show broadcast incidents (relevant to all staff)
+              if (incident.is_broadcast) return true;
+              
+              // Show incidents assigned to this staff member's zone
+              if (staffZone && incident.zone_id === staffZone) return true;
+              
+              return false;
+            });
+            
+            const filteredStats = {
+              total_incidents: filteredIncidents.length,
+              reported_count: filteredIncidents.filter(i => i.status === 'REPORTED').length,
+              assigned_count: filteredIncidents.filter(i => i.status === 'ASSIGNED').length,
+              resolved_count: filteredIncidents.filter(i => i.status === 'RESOLVED').length
+            };
+            
+            setStats(filteredStats);
+          } catch (err) {
+            console.error('Error refreshing data:', err);
+          }
+        };
+        fetchData();
+      }
+    } catch (err) {
+      console.error('Error creating incident:', err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -188,8 +323,121 @@ function StaffIncidentManagement() {
     }
   }
 
+  const handleSelfAssign = async (incident) => {
+    try {
+      setActionLoading(prev => ({ ...prev, [incident.id]: true }));
+      
+      // Assign the incident to the current staff member
+      const response = await apiService.assignIncident(incident.id, userName);
+      
+      if (response.success) {
+        console.log('Incident self-assigned successfully:', response.data);
+        // You could add a toast notification here
+        
+        // Refresh the incidents list
+        const fetchData = async () => {
+          try {
+            const incidentsData = await apiService.getAllIncidents();
+            const allIncidents = incidentsData.data || incidentsData;
+            
+            setIncidents(allIncidents);
+            
+            // Calculate stats based on filtered incidents (staff zone + broadcast)
+            const filteredIncidents = allIncidents.filter(incident => {
+              if (incident.is_broadcast) return true;
+              if (staffZone && incident.zone_id === staffZone) return true;
+              return false;
+            });
+            
+            const filteredStats = {
+              total_incidents: filteredIncidents.length,
+              reported_count: filteredIncidents.filter(i => i.status === 'REPORTED').length,
+              assigned_count: filteredIncidents.filter(i => i.status === 'ASSIGNED').length,
+              resolved_count: filteredIncidents.filter(i => i.status === 'RESOLVED').length
+            };
+            
+            setStats(filteredStats);
+          } catch (err) {
+            console.error('Error refreshing data:', err);
+          }
+        };
+        fetchData();
+      }
+    } catch (err) {
+      console.error('Error self-assigning incident:', err);
+    } finally {
+      setActionLoading(prev => ({ ...prev, [incident.id]: false }));
+    }
+  };
+
+  const handleResolveIncident = async (incident) => {
+    try {
+      setActionLoading(prev => ({ ...prev, [incident.id]: true }));
+      
+      // Resolve the incident
+      const response = await apiService.resolveIncident(incident.id);
+      
+      if (response.success) {
+        console.log('Incident resolved successfully:', response.data);
+        // You could add a toast notification here
+        
+        // Refresh the incidents list
+        const fetchData = async () => {
+          try {
+            const incidentsData = await apiService.getAllIncidents();
+            const allIncidents = incidentsData.data || incidentsData;
+            
+            setIncidents(allIncidents);
+            
+            // Calculate stats based on filtered incidents (staff zone + broadcast)
+            const filteredIncidents = allIncidents.filter(incident => {
+              if (incident.is_broadcast) return true;
+              if (staffZone && incident.zone_id === staffZone) return true;
+              return false;
+            });
+            
+            const filteredStats = {
+              total_incidents: filteredIncidents.length,
+              reported_count: filteredIncidents.filter(i => i.status === 'REPORTED').length,
+              assigned_count: filteredIncidents.filter(i => i.status === 'ASSIGNED').length,
+              resolved_count: filteredIncidents.filter(i => i.status === 'RESOLVED').length
+            };
+            
+            setStats(filteredStats);
+          } catch (err) {
+            console.error('Error refreshing data:', err);
+          }
+        };
+        fetchData();
+      }
+    } catch (err) {
+      console.error('Error resolving incident:', err);
+    } finally {
+      setActionLoading(prev => ({ ...prev, [incident.id]: false }));
+    }
+  };
+
   return (
-    <AppShell
+    <>
+      <style>
+        {`
+          .incident-scroll::-webkit-scrollbar {
+            width: 6px;
+          }
+          .incident-scroll::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+          }
+          .incident-scroll::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 3px;
+          }
+          .incident-scroll::-webkit-scrollbar-thumb:hover {
+            background: #5a67d8;
+          }
+        `}
+      </style>
+      <AppShell
       header={{ height: 60 }}
       navbar={{
         width: 300,
@@ -230,6 +478,11 @@ function StaffIncidentManagement() {
               <Text c="dimmed" size="sm">
                 Report and track security incidents in real-time
               </Text>
+              {staffZone && (
+                <Text c="dimmed" size="xs">
+                  Viewing incidents for Zone: {getStaffZoneName()} | Broadcast incidents included
+                </Text>
+              )}
             </Stack>
 
             {/* Report Incident Section */}
@@ -307,26 +560,26 @@ function StaffIncidentManagement() {
             <Grid gutter="lg">
               {[
                 {
-                  title: 'Active Incidents',
-                  value: incidents.filter(i => i.status === 'active').length.toString(),
+                  title: 'Reported Incidents',
+                  value: stats.reported_count.toString(),
                   icon: IconAlertTriangle,
                   color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
                 },
                 {
-                  title: 'Investigating',
-                  value: incidents.filter(i => i.status === 'investigating').length.toString(),
+                  title: 'Assigned Incidents',
+                  value: stats.assigned_count.toString(),
                   icon: IconClock,
                   color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
                 },
                 {
-                  title: 'Resolved',
-                  value: incidents.filter(i => i.status === 'resolved').length.toString(),
+                  title: 'Resolved Incidents',
+                  value: stats.resolved_count.toString(),
                   icon: IconCheck,
                   color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
                 },
                 {
                   title: 'Total Incidents',
-                  value: incidents.length.toString(),
+                  value: stats.total_incidents.toString(),
                   icon: IconReportAnalytics,
                   color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
                 }
@@ -380,118 +633,411 @@ function StaffIncidentManagement() {
               ))}
             </Grid>
 
-            {/* Gmail-like Incident Tracking Layout */}
-            <Paper 
-              shadow="xl" 
-              p="xl" 
-              radius="lg" 
-              style={{
-                background: 'rgba(255, 255, 255, 0.95)',
-                backdropFilter: 'blur(10px)',
-                border: '1px solid rgba(255, 255, 255, 0.2)',
-                position: 'relative',
-                overflow: 'hidden',
-                minHeight: '600px'
-              }}
-            >
-              {/* Background gradient accent */}
-              <div style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                height: '4px',
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                borderRadius: `${rem(12)} ${rem(12)} 0 0`
-              }} />
+            {/* Status-based Incident Organization */}
+            <Grid gutter="xl">
+              {/* Reported Incidents */}
+              <Grid.Col span={{ base: 12, lg: 4 }}>
+                <Paper 
+                  shadow="xl" 
+                  p="xl" 
+                  radius="lg" 
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.95)',
+                    backdropFilter: 'blur(10px)',
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    position: 'relative',
+                    overflow: 'hidden',
+                    height: '600px'
+                  }}
+                >
+                  {/* Background gradient accent */}
+                  <div style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    height: '4px',
+                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    borderRadius: `${rem(12)} ${rem(12)} 0 0`
+                  }} />
 
-              <Stack spacing="lg">
-                {/* Header */}
-                <Group justify="space-between" align="center">
-                  <Title order={3} style={{ fontWeight: 600 }}>
-                    Incident Tracking
-                  </Title>
-                  <Badge color="blue" variant="light">
-                    {incidents.length} Incidents
-                  </Badge>
-                </Group>
+                  <Stack gap="lg">
+                    <Group justify="space-between" align="center">
+                      <Group gap="md">
+                        <div style={{
+                          padding: rem(12),
+                          borderRadius: rem(12),
+                          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center'
+                        }}>
+                          <IconAlertTriangle size={24} style={{ color: 'white' }} />
+                        </div>
+                        <Stack gap="xs">
+                          <Title order={3} style={{ fontWeight: 600 }}>
+                            Reported
+                          </Title>
+                          <Text size="sm" c="dimmed">
+                            New incidents requiring attention
+                          </Text>
+                        </Stack>
+                      </Group>
+                      <Badge color="violet" variant="filled" size="lg">
+                        {getIncidentsByStatus('REPORTED').length}
+                      </Badge>
+                    </Group>
 
-                {/* Incident List */}
-                <Stack gap="sm">
-                  {incidents.map((incident) => (
-                    <Paper
-                      key={incident.id}
-                      shadow="sm"
-                      p="md"
-                      radius="md"
-                      withBorder
-                      style={{
-                        cursor: 'pointer',
-                        transition: 'all 0.2s ease',
-                        background: selectedIncident?.id === incident.id ? 'rgba(102, 126, 234, 0.1)' : 'rgba(255, 255, 255, 0.8)',
-                        border: selectedIncident?.id === incident.id ? '2px solid #667eea' : '1px solid rgba(255, 255, 255, 0.3)'
-                      }}
-                      onClick={() => handleIncidentClick(incident)}
-                    >
-                      <Group justify="space-between" align="flex-start">
-                        <Group gap="md" align="flex-start" style={{ flex: 1 }}>
-                          <div style={{ minWidth: 40 }}>
-                            <Badge color={getStatusColor(incident.status)} variant="filled" size="sm">
-                              {incident.status.charAt(0).toUpperCase() + incident.status.slice(1)}
-                            </Badge>
-                          </div>
-                          
-                          <Stack gap="xs" style={{ flex: 1 }}>
-                            <Group gap="sm" align="center">
-                              <Text fw={600} size="sm" style={{ flex: 1 }}>
-                                {incident.title}
-                              </Text>
-                              <Badge color={getPriorityColor(incident.priority)} variant="light" size="xs">
-                                {incident.priority.toUpperCase()}
+                    <Stack gap="sm" className="incident-scroll" style={{ 
+                      maxHeight: '400px', 
+                      overflowY: 'auto',
+                      paddingRight: '8px',
+                      scrollbarWidth: 'thin',
+                      scrollbarColor: '#667eea #f1f1f1'
+                    }}>
+                      {getIncidentsByStatus('REPORTED').map((incident) => (
+                        <Paper
+                          key={incident.id}
+                          shadow="sm"
+                          p="md"
+                          radius="md"
+                          withBorder
+                          style={{
+                            cursor: 'pointer',
+                            transition: 'all 0.2s ease',
+                            background: selectedIncident?.id === incident.id ? 'rgba(102, 126, 234, 0.1)' : 'rgba(255, 255, 255, 0.8)',
+                            border: selectedIncident?.id === incident.id ? '2px solid #667eea' : '1px solid rgba(255, 255, 255, 0.3)'
+                          }}
+                          onClick={() => handleIncidentClick(incident)}
+                        >
+                          <Stack gap="xs">
+                            <Group justify="space-between" align="center">
+                              <Badge color={getPriorityColor(incident.incident_priority)} variant="light" size="xs">
+                                {incident.incident_priority}
                               </Badge>
                             </Group>
                             
-                            <Text size="sm" c="dimmed" lineClamp={2}>
-                              {incident.description}
+                            <Text fw={600} size="sm" lineClamp={2}>
+                              {incident.incident_summary}
                             </Text>
                             
-                            <Group gap="md" wrap="wrap">
+                            <Text size="xs" c="dimmed" lineClamp={2}>
+                              {incident.incident_details}
+                            </Text>
+                            
+                            <Group gap="xs" wrap="wrap">
                               <Group gap="xs">
-                                <IconMapPin size={14} />
-                                <Text size="xs" c="dimmed">{incident.location}</Text>
+                                <IconUser size={12} />
+                                <Text size="xs" c="dimmed">{incident.reporter_name}</Text>
                               </Group>
                               <Group gap="xs">
-                                <IconUser size={14} />
-                                <Text size="xs" c="dimmed">{incident.reportedBy}</Text>
+                                <IconClock size={12} />
+                                <Text size="xs" c="dimmed">
+                                  {new Date(incident.creation_time).toLocaleTimeString()}
+                                </Text>
+                              </Group>
+                              {incident.is_broadcast ? (
+                                <Group gap="xs">
+                                  <IconMapPin size={12} style={{ color: '#667eea' }} />
+                                  <Text size="xs" c="dimmed">Broadcast to All Zones</Text>
+                                </Group>
+                              ) : incident.zone_id && (
+                                <Group gap="xs">
+                                  <IconMapPin size={12} />
+                                  <Text size="xs" c="dimmed">{getZoneName(incident.zone_id)}</Text>
+                                </Group>
+                              )}
+                            </Group>
+                            
+                            {/* Action Button for Reported Incidents */}
+                            <Button
+                              size="xs"
+                              variant="light"
+                              color="blue"
+                              leftSection={<IconUser size={12} />}
+                              loading={actionLoading[incident.id]}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleSelfAssign(incident);
+                              }}
+                              style={{
+                                background: 'rgba(102, 126, 234, 0.1)',
+                                border: '1px solid rgba(102, 126, 234, 0.3)',
+                                color: '#667eea'
+                              }}
+                            >
+                              Self Assign
+                            </Button>
+                          </Stack>
+                        </Paper>
+                      ))}
+                    </Stack>
+                  </Stack>
+                </Paper>
+              </Grid.Col>
+
+              {/* Assigned Incidents */}
+              <Grid.Col span={{ base: 12, lg: 4 }}>
+                <Paper 
+                  shadow="xl" 
+                  p="xl" 
+                  radius="lg" 
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.95)',
+                    backdropFilter: 'blur(10px)',
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    position: 'relative',
+                    overflow: 'hidden',
+                    height: '600px'
+                  }}
+                >
+                  {/* Background gradient accent */}
+                  <div style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    height: '4px',
+                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    borderRadius: `${rem(12)} ${rem(12)} 0 0`
+                  }} />
+
+                  <Stack gap="lg">
+                    <Group justify="space-between" align="center">
+                      <Group gap="md">
+                        <div style={{
+                          padding: rem(12),
+                          borderRadius: rem(12),
+                          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center'
+                        }}>
+                          <IconClock size={24} style={{ color: 'white' }} />
+                        </div>
+                        <Stack gap="xs">
+                          <Title order={3} style={{ fontWeight: 600 }}>
+                            Assigned
+                          </Title>
+                          <Text size="sm" c="dimmed">
+                            Incidents currently being handled
+                          </Text>
+                        </Stack>
+                      </Group>
+                      <Badge color="violet" variant="filled" size="lg">
+                        {getIncidentsByStatus('ASSIGNED').length}
+                      </Badge>
+                    </Group>
+
+                    <Stack gap="sm" className="incident-scroll" style={{ 
+                      maxHeight: '400px', 
+                      overflowY: 'auto',
+                      paddingRight: '8px',
+                      scrollbarWidth: 'thin',
+                      scrollbarColor: '#667eea #f1f1f1'
+                    }}>
+                      {getIncidentsByStatus('ASSIGNED').map((incident) => (
+                        <Paper
+                          key={incident.id}
+                          shadow="sm"
+                          p="md"
+                          radius="md"
+                          withBorder
+                          style={{
+                            cursor: 'pointer',
+                            transition: 'all 0.2s ease',
+                            background: selectedIncident?.id === incident.id ? 'rgba(102, 126, 234, 0.1)' : 'rgba(255, 255, 255, 0.8)',
+                            border: selectedIncident?.id === incident.id ? '2px solid #667eea' : '1px solid rgba(255, 255, 255, 0.3)'
+                          }}
+                          onClick={() => handleIncidentClick(incident)}
+                        >
+                          <Stack gap="xs">
+                            <Group justify="space-between" align="center">
+                              <Badge color={getPriorityColor(incident.incident_priority)} variant="light" size="xs">
+                                {incident.incident_priority}
+                              </Badge>
+                            </Group>
+                            
+                            <Text fw={600} size="sm" lineClamp={2}>
+                              {incident.incident_summary}
+                            </Text>
+                            
+                            <Text size="xs" c="dimmed" lineClamp={2}>
+                              {incident.incident_details}
+                            </Text>
+                            
+                            <Group gap="xs" wrap="wrap">
+                              <Group gap="xs">
+                                <IconUser size={12} />
+                                <Text size="xs" c="dimmed">{incident.reporter_name}</Text>
                               </Group>
                               <Group gap="xs">
-                                <IconClock size={14} />
-                                <Text size="xs" c="dimmed">{incident.reportedAt}</Text>
+                                <IconClock size={12} />
+                                <Text size="xs" c="dimmed">
+                                  {new Date(incident.creation_time).toLocaleTimeString()}
+                                </Text>
                               </Group>
+                              {incident.is_broadcast ? (
+                                <Group gap="xs">
+                                  <IconMapPin size={12} style={{ color: '#667eea' }} />
+                                  <Text size="xs" c="dimmed">Broadcast to All Zones</Text>
+                                </Group>
+                              ) : incident.zone_id && (
+                                <Group gap="xs">
+                                  <IconMapPin size={12} />
+                                  <Text size="xs" c="dimmed">{getZoneName(incident.zone_id)}</Text>
+                                </Group>
+                              )}
+                            </Group>
+                            
+                            {/* Action Button for Assigned Incidents */}
+                            <Button
+                              size="xs"
+                              variant="light"
+                              color="green"
+                              leftSection={<IconCheck size={12} />}
+                              loading={actionLoading[incident.id]}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleResolveIncident(incident);
+                              }}
+                              style={{
+                                background: 'rgba(34, 197, 94, 0.1)',
+                                border: '1px solid rgba(34, 197, 94, 0.3)',
+                                color: '#22c55e'
+                              }}
+                            >
+                              Resolve
+                            </Button>
+                          </Stack>
+                        </Paper>
+                      ))}
+                    </Stack>
+                  </Stack>
+                </Paper>
+              </Grid.Col>
+
+              {/* Resolved Incidents */}
+              <Grid.Col span={{ base: 12, lg: 4 }}>
+                <Paper 
+                  shadow="xl" 
+                  p="xl" 
+                  radius="lg" 
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.95)',
+                    backdropFilter: 'blur(10px)',
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    position: 'relative',
+                    overflow: 'hidden',
+                    height: '600px'
+                  }}
+                >
+                  {/* Background gradient accent */}
+                  <div style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    height: '4px',
+                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    borderRadius: `${rem(12)} ${rem(12)} 0 0`
+                  }} />
+
+                  <Stack gap="lg">
+                    <Group justify="space-between" align="center">
+                      <Group gap="md">
+                        <div style={{
+                          padding: rem(12),
+                          borderRadius: rem(12),
+                          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center'
+                        }}>
+                          <IconCheck size={24} style={{ color: 'white' }} />
+                        </div>
+                        <Stack gap="xs">
+                          <Title order={3} style={{ fontWeight: 600 }}>
+                            Resolved
+                          </Title>
+                          <Text size="sm" c="dimmed">
+                            Successfully resolved incidents
+                          </Text>
+                        </Stack>
+                      </Group>
+                      <Badge color="violet" variant="filled" size="lg">
+                        {getIncidentsByStatus('RESOLVED').length}
+                      </Badge>
+                    </Group>
+
+                    <Stack gap="sm" className="incident-scroll" style={{ 
+                      maxHeight: '400px', 
+                      overflowY: 'auto',
+                      paddingRight: '8px',
+                      scrollbarWidth: 'thin',
+                      scrollbarColor: '#667eea #f1f1f1'
+                    }}>
+                      {getIncidentsByStatus('RESOLVED').map((incident) => (
+                        <Paper
+                          key={incident.id}
+                          shadow="sm"
+                          p="md"
+                          radius="md"
+                          withBorder
+                          style={{
+                            cursor: 'pointer',
+                            transition: 'all 0.2s ease',
+                            background: selectedIncident?.id === incident.id ? 'rgba(102, 126, 234, 0.1)' : 'rgba(255, 255, 255, 0.8)',
+                            border: selectedIncident?.id === incident.id ? '2px solid #667eea' : '1px solid rgba(255, 255, 255, 0.3)'
+                          }}
+                          onClick={() => handleIncidentClick(incident)}
+                        >
+                          <Stack gap="xs">
+                            <Group justify="space-between" align="center">
+                              <Badge color={getPriorityColor(incident.incident_priority)} variant="light" size="xs">
+                                {incident.incident_priority}
+                              </Badge>
+                            </Group>
+                            
+                            <Text fw={600} size="sm" lineClamp={2}>
+                              {incident.incident_summary}
+                            </Text>
+                            
+                            <Text size="xs" c="dimmed" lineClamp={2}>
+                              {incident.incident_details}
+                            </Text>
+                            
+                            <Group gap="xs" wrap="wrap">
+                              <Group gap="xs">
+                                <IconUser size={12} />
+                                <Text size="xs" c="dimmed">{incident.reporter_name}</Text>
+                              </Group>
+                              <Group gap="xs">
+                                <IconClock size={12} />
+                                <Text size="xs" c="dimmed">
+                                  {new Date(incident.creation_time).toLocaleTimeString()}
+                                </Text>
+                              </Group>
+                              {incident.is_broadcast ? (
+                                <Group gap="xs">
+                                  <IconMapPin size={12} style={{ color: '#667eea' }} />
+                                  <Text size="xs" c="dimmed">Broadcast to All Zones</Text>
+                                </Group>
+                              ) : incident.zone_id && (
+                                <Group gap="xs">
+                                  <IconMapPin size={12} />
+                                  <Text size="xs" c="dimmed">{getZoneName(incident.zone_id)}</Text>
+                                </Group>
+                              )}
                             </Group>
                           </Stack>
-                        </Group>
-                        
-                        <Group gap="xs">
-                          <ActionIcon
-                            variant="light"
-                            size="sm"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setSelectedIncident(incident);
-                              setUpdateModalOpened(true);
-                            }}
-                          >
-                            <IconEdit size={16} />
-                          </ActionIcon>
-                          <IconChevronRight size={16} style={{ color: '#667eea' }} />
-                        </Group>
-                      </Group>
-                    </Paper>
-                  ))}
-                </Stack>
-              </Stack>
-            </Paper>
+                        </Paper>
+                      ))}
+                    </Stack>
+                  </Stack>
+                </Paper>
+              </Grid.Col>
+            </Grid>
           </Stack>
         </Container>
       </AppShell.Main>
@@ -500,51 +1046,132 @@ function StaffIncidentManagement() {
       <Modal
         opened={addModalOpened}
         onClose={() => setAddModalOpened(false)}
-        title="Report New Incident"
         size="lg"
-        centered
+        title={
+          <Group gap="sm">
+            <div style={{
+              padding: rem(8),
+              borderRadius: rem(8),
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}>
+              <IconPlus size={20} style={{ color: 'white' }} />
+            </div>
+            <Text fw={600} size="lg">Report New Incident</Text>
+          </Group>
+        }
+        styles={{
+          title: {
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            fontWeight: 700
+          }
+        }}
       >
-        <Stack gap="md">
+        <Stack gap="lg">
+          <Alert
+            icon={<IconUser size={16} />}
+            title="Reporter Information"
+            color="blue"
+            variant="light"
+          >
+            <Text size="sm">
+              <strong>Reporter:</strong> {userName} (Staff)
+            </Text>
+          </Alert>
+
           <TextInput
-            label="Incident Title"
-            placeholder="Enter incident title"
-            value={newIncident.title}
-            onChange={(e) => setNewIncident({ ...newIncident, title: e.target.value })}
+            label="Incident Summary"
+            placeholder="Brief description of the incident"
+            value={newIncident.incident_summary}
+            onChange={(e) => {
+              console.log('incident_summary changed:', e.target.value);
+              setNewIncident(prev => ({ ...prev, incident_summary: e.target.value }));
+            }}
             required
           />
+
           <Textarea
-            label="Description"
-            placeholder="Describe the incident in detail"
-            value={newIncident.description}
-            onChange={(e) => setNewIncident({ ...newIncident, description: e.target.value })}
+            label="Incident Details"
+            placeholder="Detailed description of what happened"
+            value={newIncident.incident_details}
+            onChange={(e) => {
+              console.log('incident_details changed:', e.target.value);
+              setNewIncident(prev => ({ ...prev, incident_details: e.target.value }));
+            }}
             rows={4}
             required
           />
+
           <Group grow>
             <Select
-              label="Priority"
+              label="Priority Level"
               placeholder="Select priority"
               data={[
-                { value: 'low', label: 'Low' },
-                { value: 'medium', label: 'Medium' },
-                { value: 'high', label: 'High' }
+                { value: 'CRITICAL', label: 'Critical' },
+                { value: 'MODERATE', label: 'Moderate' },
+                { value: 'GENERAL', label: 'General' }
               ]}
-              value={newIncident.priority}
-              onChange={(value) => setNewIncident({ ...newIncident, priority: value })}
+              value={newIncident.incident_priority}
+              onChange={(value) => setNewIncident(prev => ({ ...prev, incident_priority: value }))}
             />
-            <TextInput
-              label="Location"
-              placeholder="Enter location"
-              value={newIncident.location}
-              onChange={(e) => setNewIncident({ ...newIncident, location: e.target.value })}
+
+            <Select
+              label="Incident Type"
+              placeholder="Select type"
+              data={[
+                { value: 'CROWD OVERFLOW', label: 'Crowd Overflow' },
+                { value: 'MEDICAL ATTENTION REQUIRED', label: 'Medical Attention Required' },
+                { value: 'SECURITY REQUIRED', label: 'Security Required' }
+              ]}
+              value={newIncident.incident_type}
+              onChange={(value) => setNewIncident(prev => ({ ...prev, incident_type: value }))}
             />
           </Group>
-          <Group justify="flex-end" gap="sm">
-            <Button variant="light" onClick={() => setAddModalOpened(false)}>
+
+          <Switch
+            label="Broadcast to all zones"
+            description="Make this incident visible to all zones"
+            checked={newIncident.is_broadcast}
+            onChange={(event) => {
+              console.log('is_broadcast changed:', event.currentTarget.checked);
+              setNewIncident(prev => ({ ...prev, is_broadcast: event.currentTarget.checked }));
+            }}
+          />
+
+          {!newIncident.is_broadcast && (
+            <Select
+              label="Zone (Optional)"
+              placeholder="Select specific zone"
+              data={zones.map(zone => ({ value: zone.id.toString(), label: zone.name }))}
+              value={newIncident.zone_id?.toString()}
+              onChange={(value) => setNewIncident(prev => ({ ...prev, zone_id: value ? parseInt(value) : null }))}
+              clearable
+            />
+          )}
+
+          <FileInput
+            label="Additional Image (Optional)"
+            placeholder="Upload an image"
+            accept="image/*"
+            value={newIncident.additional_image}
+            onChange={(file) => setNewIncident(prev => ({ ...prev, additional_image: file }))}
+            leftSection={<IconPhoto size={16} />}
+          />
+
+          <Group justify="flex-end" gap="md">
+            <Button
+              variant="light"
+              onClick={() => setAddModalOpened(false)}
+            >
               Cancel
             </Button>
-            <Button 
+            <Button
               onClick={handleAddIncident}
+              loading={loading}
               style={{
                 background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                 border: 'none'
@@ -560,110 +1187,110 @@ function StaffIncidentManagement() {
       <Modal
         opened={viewModalOpened}
         onClose={() => setViewModalOpened(false)}
-        title={selectedIncident?.title}
         size="lg"
-        centered
+        title={
+          <Group gap="sm">
+            <div style={{
+              padding: rem(8),
+              borderRadius: rem(8),
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}>
+              <IconEye size={20} style={{ color: 'white' }} />
+            </div>
+            <Text fw={600} size="lg">Incident Details</Text>
+          </Group>
+        }
+        styles={{
+          title: {
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            fontWeight: 700
+          }
+        }}
       >
         {selectedIncident && (
           <Stack gap="lg">
             <Group gap="md">
-              <Badge color={getStatusColor(selectedIncident.status)} variant="filled">
-                {selectedIncident.status.charAt(0).toUpperCase() + selectedIncident.status.slice(1)}
+              <Badge color={getPriorityColor(selectedIncident.incident_priority)} variant="filled" size="lg">
+                {selectedIncident.incident_priority}
               </Badge>
-              <Badge color={getPriorityColor(selectedIncident.priority)} variant="light">
-                {selectedIncident.priority.toUpperCase()}
+              <Badge color={getStatusColor(selectedIncident.status)} variant="light" size="lg">
+                {selectedIncident.status}
               </Badge>
             </Group>
-            
-            <Text>{selectedIncident.description}</Text>
-            
+
+            <Stack gap="xs">
+              <Text fw={600} size="lg">
+                {selectedIncident.incident_summary}
+              </Text>
+              <Text c="dimmed">
+                {selectedIncident.incident_details}
+              </Text>
+            </Stack>
+
             <Divider />
-            
+
             <Stack gap="sm">
               <Group gap="md">
                 <Group gap="xs">
-                  <IconMapPin size={16} />
-                  <Text size="sm" fw={500}>Location:</Text>
-                  <Text size="sm">{selectedIncident.location}</Text>
-                </Group>
-              </Group>
-              
-              <Group gap="md">
-                <Group gap="xs">
                   <IconUser size={16} />
-                  <Text size="sm" fw={500}>Reported By:</Text>
-                  <Text size="sm">{selectedIncident.reportedBy}</Text>
+                  <Text size="sm" fw={500}>Reporter:</Text>
+                  <Text size="sm">{selectedIncident.reporter_name}</Text>
                 </Group>
-              </Group>
-              
-              <Group gap="md">
                 <Group gap="xs">
                   <IconClock size={16} />
-                  <Text size="sm" fw={500}>Reported At:</Text>
-                  <Text size="sm">{selectedIncident.reportedAt}</Text>
+                  <Text size="sm" fw={500}>Reported:</Text>
+                  <Text size="sm">{new Date(selectedIncident.creation_time).toLocaleString()}</Text>
                 </Group>
               </Group>
-              
-              {selectedIncident.assignedTo && (
+
+              <Group gap="md">
+                <Group gap="xs">
+                  <IconMapPin size={16} />
+                  <Text size="sm" fw={500}>Broadcast:</Text>
+                  <Text size="sm">{selectedIncident.is_broadcast ? 'Yes' : 'No'}</Text>
+                </Group>
+                {selectedIncident.zone_id && (
+                  <Group gap="xs">
+                    <IconMapPin size={16} />
+                    <Text size="sm" fw={500}>Zone:</Text>
+                    <Text size="sm">{getZoneName(selectedIncident.zone_id)}</Text>
+                  </Group>
+                )}
+              </Group>
+
+              {selectedIncident.resolver && (
                 <Group gap="md">
                   <Group gap="xs">
                     <IconShieldLock size={16} />
                     <Text size="sm" fw={500}>Assigned To:</Text>
-                    <Text size="sm">{selectedIncident.assignedTo}</Text>
-                  </Group>
-                </Group>
-              )}
-              
-              {selectedIncident.contact && (
-                <Group gap="md">
-                  <Group gap="xs">
-                    <IconPhone size={16} />
-                    <Text size="sm" fw={500}>Contact:</Text>
-                    <Text size="sm">{selectedIncident.contact}</Text>
-                  </Group>
-                </Group>
-              )}
-              
-              {selectedIncident.email && (
-                <Group gap="md">
-                  <Group gap="xs">
-                    <IconMail size={16} />
-                    <Text size="sm" fw={500}>Email:</Text>
-                    <Text size="sm">{selectedIncident.email}</Text>
+                    <Text size="sm">{selectedIncident.resolver}</Text>
                   </Group>
                 </Group>
               )}
             </Stack>
-            
-            <Divider />
-            
-            <Stack gap="sm">
-              <Text fw={600}>Updates</Text>
-              <Timeline>
-                {selectedIncident.updates.map((update, index) => (
-                  <Timeline.Item key={index} title={update.action}>
-                    <Text size="xs" c="dimmed">
-                      {update.time} by {update.user}
-                    </Text>
-                  </Timeline.Item>
-                ))}
-              </Timeline>
-            </Stack>
-            
-            <Group justify="flex-end">
-              <Button 
-                onClick={() => {
-                  setViewModalOpened(false);
-                  setUpdateModalOpened(true);
-                }}
-                style={{
-                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                  border: 'none'
-                }}
-              >
-                Update Incident
-              </Button>
-            </Group>
+
+            {selectedIncident.additional_image && (
+              <>
+                <Divider />
+                <Stack gap="xs">
+                  <Text fw={500} size="sm">Additional Image:</Text>
+                  <img 
+                    src={URL.createObjectURL(selectedIncident.additional_image)} 
+                    alt="Incident" 
+                    style={{ 
+                      maxWidth: '100%', 
+                      borderRadius: rem(8),
+                      border: '1px solid #e0e0e0'
+                    }} 
+                  />
+                </Stack>
+              </>
+            )}
           </Stack>
         )}
       </Modal>
@@ -672,12 +1299,44 @@ function StaffIncidentManagement() {
       <Modal
         opened={updateModalOpened}
         onClose={() => setUpdateModalOpened(false)}
-        title="Update Incident"
         size="lg"
-        centered
+        title={
+          <Group gap="sm">
+            <div style={{
+              padding: rem(8),
+              borderRadius: rem(8),
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}>
+              <IconEdit size={20} style={{ color: 'white' }} />
+            </div>
+            <Text fw={600} size="lg">Update Incident</Text>
+          </Group>
+        }
+        styles={{
+          title: {
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            fontWeight: 700
+          }
+        }}
       >
         {selectedIncident && (
-          <Stack gap="md">
+          <Stack gap="lg">
+            <Alert
+              icon={<IconAlertTriangle size={16} />}
+              title="Update Information"
+              color="blue"
+              variant="light"
+            >
+              <Text size="sm">
+                Update the incident details or add notes about actions taken
+              </Text>
+            </Alert>
+
             <Textarea
               label="Update Description"
               placeholder="Describe the update or action taken"
@@ -746,6 +1405,7 @@ function StaffIncidentManagement() {
       </Modal>
       <FloatingAssistant />
     </AppShell>
+    </>
   );
 }
 

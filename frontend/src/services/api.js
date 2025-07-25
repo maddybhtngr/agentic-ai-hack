@@ -188,6 +188,470 @@ export const apiService = {
       throw new Error(`HTTP error! status: ${response.status}`)
     }
     return await response.json()
+  },
+
+  // Zone Management API calls
+  async getAllZones() {
+    const response = await fetch(`${API_BASE_URL}/zones`)
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    return await response.json()
+  },
+
+  async getZoneCrowdDetails(zoneId) {
+    const response = await fetch(`${API_BASE_URL}/zones/${zoneId}/details`)
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    return await response.json()
+  },
+
+  async getAllZonesCrowdDetails() {
+    const response = await fetch(`${API_BASE_URL}/zones/crowd/details`)
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    return await response.json()
+  },
+
+  async getZoneTypes() {
+    const response = await fetch(`${API_BASE_URL}/zones/types`)
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    return await response.json()
+  },
+
+  async getZone(zoneId) {
+    const response = await fetch(`${API_BASE_URL}/zones/${zoneId}`)
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    return await response.json()
+  },
+
+  async createZone(zoneData) {
+    const response = await fetch(`${API_BASE_URL}/zones`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(zoneData)
+    })
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    return await response.json()
+  },
+
+  async updateZone(zoneId, zoneData) {
+    const response = await fetch(`${API_BASE_URL}/zones/${zoneId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(zoneData)
+    })
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    return await response.json()
+  },
+
+  async deleteZone(zoneId) {
+    const response = await fetch(`${API_BASE_URL}/zones/${zoneId}`, {
+      method: 'DELETE'
+    })
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    return await response.json()
+  },
+
+  // Events API calls
+  async getEvents() {
+    const response = await fetch(`${API_BASE_URL}/events/`)
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    return await response.json()
+  },
+
+  async getEventDetails() {
+    const response = await fetch(`${API_BASE_URL}/events/details`)
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    return await response.json()
+  },
+
+  async updateEventDetails(details) {
+    const response = await fetch(`${API_BASE_URL}/events/details`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(details)
+    })
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+
+    return await response.json()
+  },
+
+  async getEventSchedule() {
+    const response = await fetch(`${API_BASE_URL}/events/schedule`)
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    return await response.json()
+  },
+
+  async addScheduleItem(item) {
+    const response = await fetch(`${API_BASE_URL}/events/schedule`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(item)
+    })
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+
+    return await response.json()
+  },
+
+  async updateScheduleItem(itemId, item) {
+    const response = await fetch(`${API_BASE_URL}/events/schedule/${itemId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(item)
+    })
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+
+    return await response.json()
+  },
+
+  async deleteScheduleItem(itemId) {
+    const response = await fetch(`${API_BASE_URL}/events/schedule/${itemId}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    })
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+
+    return await response.json()
+  },
+
+  // Emergency API calls
+  async getAllEmergencyData() {
+    const response = await fetch(`${API_BASE_URL}/emergency/`)
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    return await response.json()
+  },
+
+  async getEmergencyContacts() {
+    const response = await fetch(`${API_BASE_URL}/emergency/contacts`)
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    return await response.json()
+  },
+
+  async getEmergencyContact(contactId) {
+    const response = await fetch(`${API_BASE_URL}/emergency/contacts/${contactId}`)
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    return await response.json()
+  },
+
+  async createEmergencyContact(contactData) {
+    const response = await fetch(`${API_BASE_URL}/emergency/contacts`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(contactData)
+    })
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+
+    return await response.json()
+  },
+
+  async updateEmergencyContact(contactId, contactData) {
+    const response = await fetch(`${API_BASE_URL}/emergency/contacts/${contactId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(contactData)
+    })
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+
+    return await response.json()
+  },
+
+  async deleteEmergencyContact(contactId) {
+    const response = await fetch(`${API_BASE_URL}/emergency/contacts/${contactId}`, {
+      method: 'DELETE'
+    })
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+
+    return await response.json()
+  },
+
+  async getNearbyServices() {
+    const response = await fetch(`${API_BASE_URL}/emergency/services`)
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    return await response.json()
+  },
+
+  async getNearbyService(serviceId) {
+    const response = await fetch(`${API_BASE_URL}/emergency/services/${serviceId}`)
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    return await response.json()
+  },
+
+  async createNearbyService(serviceData) {
+    const response = await fetch(`${API_BASE_URL}/emergency/services`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(serviceData)
+    })
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+
+    return await response.json()
+  },
+
+  async updateNearbyService(serviceId, serviceData) {
+    const response = await fetch(`${API_BASE_URL}/emergency/services/${serviceId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(serviceData)
+    })
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+
+    return await response.json()
+  },
+
+  async deleteNearbyService(serviceId) {
+    const response = await fetch(`${API_BASE_URL}/emergency/services/${serviceId}`, {
+      method: 'DELETE'
+    })
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+
+    return await response.json()
+  },
+
+  // Incidents API calls
+  async getAllIncidents() {
+    const response = await fetch(`${API_BASE_URL}/incidents/`)
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    return await response.json()
+  },
+
+  async getReportedIncidents() {
+    const response = await fetch(`${API_BASE_URL}/incidents/reported`)
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    return await response.json()
+  },
+
+  async getAssignedIncidents() {
+    const response = await fetch(`${API_BASE_URL}/incidents/assigned`)
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    return await response.json()
+  },
+
+  async getResolvedIncidents() {
+    const response = await fetch(`${API_BASE_URL}/incidents/resolved`)
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    return await response.json()
+  },
+
+  async getIncident(incidentId) {
+    const response = await fetch(`${API_BASE_URL}/incidents/${incidentId}`)
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    return await response.json()
+  },
+
+  async createIncident(incidentData) {
+    const formData = new FormData()
+    
+    // Add all incident data to form
+    formData.append('reporter', incidentData.reporter)
+    formData.append('reporter_name', incidentData.reporter_name)
+    formData.append('incident_priority', incidentData.incident_priority)
+    formData.append('incident_type', incidentData.incident_type)
+    formData.append('incident_summary', incidentData.incident_summary)
+    formData.append('incident_details', incidentData.incident_details)
+    formData.append('is_broadcast', incidentData.is_broadcast ? 'true' : 'false')
+    
+    // Add zone_id if not broadcasting
+    if (!incidentData.is_broadcast && incidentData.zone_id) {
+      formData.append('zone_id', incidentData.zone_id.toString())
+    }
+    
+    // Add image file if provided
+    if (incidentData.additional_image) {
+      formData.append('additional_image', incidentData.additional_image)
+    }
+
+    const response = await fetch(`${API_BASE_URL}/incidents/`, {
+      method: 'POST',
+      body: formData
+    })
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+
+    return await response.json()
+  },
+
+  async updateIncident(incidentId, incidentData) {
+    const response = await fetch(`${API_BASE_URL}/incidents/${incidentId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(incidentData)
+    })
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+
+    return await response.json()
+  },
+
+  async deleteIncident(incidentId) {
+    const response = await fetch(`${API_BASE_URL}/incidents/${incidentId}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    })
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+
+    return await response.json()
+  },
+
+  async assignIncident(incidentId, resolver) {
+    const response = await fetch(`${API_BASE_URL}/incidents/${incidentId}/assign`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ resolver })
+    })
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+
+    return await response.json()
+  },
+
+  async resolveIncident(incidentId) {
+    const response = await fetch(`${API_BASE_URL}/incidents/${incidentId}/resolve`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    })
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+
+    return await response.json()
+  },
+
+  async getIncidentStats() {
+    const response = await fetch(`${API_BASE_URL}/incidents/stats/summary`)
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    return await response.json()
+  },
+
+  async getAvailableZones() {
+    const response = await fetch(`${API_BASE_URL}/incidents/zones/available`)
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    return await response.json()
+  },
+
+  async getAvailableStaff(zoneId = null) {
+    const url = zoneId 
+      ? `${API_BASE_URL}/users/staff/available?zone_id=${zoneId}`
+      : `${API_BASE_URL}/users/staff/available`
+    
+    const response = await fetch(url)
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    return await response.json()
   }
 }
 

@@ -8,6 +8,8 @@ router = APIRouter(prefix="/users", tags=["users"])
 
 # Path to the users.json file
 USERS_FILE = "app/repo/users/users.json"
+# Path to the zones.json file
+ZONES_FILE = "app/repo/zones/zones.json"
 # Path to attendees data directory
 ATTENDEES_DATA_DIR = "app/data/attendees"
 
@@ -533,6 +535,86 @@ async def delete_staff(username: str):
         
     except HTTPException:
         raise
+    except json.JSONDecodeError:
+        raise HTTPException(status_code=500, detail="Invalid users data format")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
+
+@router.get("/staff/available")
+async def get_available_staff(zone_id: Optional[int] = None):
+    """
+    Get available staff members with optional zone filtering
+    - If zone_id is provided: returns staff assigned to that specific zone
+    - If zone_id is not provided: returns all staff members (for broadcast incidents)
+    """
+    try:
+        # Check if users.json file exists
+        if not os.path.exists(USERS_FILE):
+            raise HTTPException(status_code=404, detail="Users data not found")
+        
+        # Read users data from JSON file
+        with open(USERS_FILE, 'r') as file:
+            users_data = json.load(file)
+        
+        # Get all staff members
+        all_staff = users_data.get("staff", [])
+        
+        if zone_id is not None:
+            # Load zones from zones.json to get zone names
+            try:
+                if os.path.exists(ZONES_FILE):
+                    with open(ZONES_FILE, 'r') as file:
+                        zones_data = json.load(file)
+                        zones = zones_data.get("zones", [])
+                        
+                        # Find the zone with the given zone_id
+                        target_zone = None
+                        for zone in zones:
+                            if zone.get("id") == zone_id:
+                                target_zone = zone
+                                break
+                        
+                        if target_zone:
+                            zone_name = target_zone.get("name", "")
+                            # Create possible zone name variations for matching
+                            possible_zone_names = [
+                                zone_name,
+                                f"Zone {zone_id}",
+                                zone_name.lower(),
+                                zone_name.upper()
+                            ]
+                            
+                            filtered_staff = []
+                            for staff in all_staff:
+                                assigned_zone = staff.get("assigned_zone", "")
+                                # Check if the assigned_zone matches any of the possible zone names
+                                if any(zone_name.lower() in assigned_zone.lower() or assigned_zone.lower() in zone_name.lower() for zone_name in possible_zone_names):
+                                    filtered_staff.append(staff)
+                        else:
+                            # Zone not found, return empty list
+                            filtered_staff = []
+                else:
+                    # Zones file not found, return empty list
+                    filtered_staff = []
+            except Exception as e:
+                # Error loading zones, return empty list
+                filtered_staff = []
+            
+            return {
+                "success": True,
+                "message": f"Staff members for zone {zone_id} retrieved successfully",
+                "data": filtered_staff,
+                "zone_id": zone_id
+            }
+        else:
+            # Return all staff members for broadcast incidents
+            return {
+                "success": True,
+                "message": "All available staff members retrieved successfully",
+                "data": all_staff,
+                "zone_id": None
+            }
+        
     except json.JSONDecodeError:
         raise HTTPException(status_code=500, detail="Invalid users data format")
     except Exception as e:

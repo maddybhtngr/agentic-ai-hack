@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   Modal, 
   TextInput, 
@@ -16,7 +16,8 @@ import {
   Title,
   rem,
   Box,
-  Alert
+  Alert,
+  LoadingOverlay
 } from '@mantine/core';
 import { 
   IconEdit, 
@@ -27,17 +28,23 @@ import {
   IconInfoCircle, 
   IconShieldLock
 } from '@tabler/icons-react';
+import { apiService } from '../services/api';
 
 const ZoneManager = ({ zones, onZonesChange, opened, onClose }) => {
   const [editingZone, setEditingZone] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [apiZones, setApiZones] = useState([]);
+  const [zoneTypes, setZoneTypes] = useState([]);
+  
   const [newZone, setNewZone] = useState({
     name: '',
     zoneType: 'general',
     // Visual coordinates (for heat map display)
     x: 10,
     y: 10,
-    width: 20,
-    height: 20,
+    width: 15,
+    height: 15,
     // GPS coordinates (for backend processing)
     centerLat: 0,
     centerLng: 0,
@@ -45,39 +52,75 @@ const ZoneManager = ({ zones, onZonesChange, opened, onClose }) => {
     maxCapacity: 100
   });
 
-  const zoneTypes = [
-    { value: 'entrance', label: 'Entrance' },
-    { value: 'exit', label: 'Exit' },
-    { value: 'seating', label: 'Seating Area' },
-    { value: 'food_court', label: 'Food Court' },
-    { value: 'rest_area', label: 'Rest Area' },
-    { value: 'vip_area', label: 'VIP Area' },
-    { value: 'stage_area', label: 'Stage Area' },
-    { value: 'parking', label: 'Parking' },
-    { value: 'emergency', label: 'Emergency Exit' },
-    { value: 'general', label: 'General Area' }
-  ];
+  // Fetch zones and zone types from API
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const [zonesData, typesData] = await Promise.all([
+          apiService.getAllZones(),
+          apiService.getZoneTypes()
+        ]);
+        
+        setApiZones(zonesData);
+        setZoneTypes(typesData.map(type => ({ value: type, label: type.charAt(0).toUpperCase() + type.slice(1).replace('_', ' ') })));
+        
+        // Update parent component with API zones only when modal opens
+        if (opened) {
+          onZonesChange(zonesData);
+        }
+      } catch (err) {
+        console.error('Error fetching zones:', err);
+        setError('Failed to load zones from server');
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const handleAddZone = () => {
+    if (opened) {
+      fetchData();
+    }
+  }, [opened]); // Removed onZonesChange from dependencies
+
+  const handleAddZone = async () => {
     if (newZone.name.trim()) {
-      const zone = {
-        id: Date.now(),
-        ...newZone,
-        createdAt: new Date().toISOString()
-      };
-      onZonesChange([...zones, zone]);
-      setNewZone({ 
-        name: '', 
-        zoneType: 'general',
-        x: 10,
-        y: 10,
-        width: 20,
-        height: 20,
-        centerLat: 0, 
-        centerLng: 0, 
-        radius: 50,
-        maxCapacity: 100 
-      });
+      setLoading(true);
+      try {
+        const createdZone = await apiService.createZone({
+          name: newZone.name,
+          zoneType: newZone.zoneType,
+          x: newZone.x,
+          y: newZone.y,
+          width: newZone.width,
+          height: newZone.height,
+          centerLat: newZone.centerLat,
+          centerLng: newZone.centerLng,
+          radius: newZone.radius,
+          maxCapacity: newZone.maxCapacity
+        });
+        
+        setApiZones([...apiZones, createdZone]);
+        onZonesChange([...apiZones, createdZone]);
+        
+        setNewZone({ 
+          name: '', 
+          zoneType: 'general',
+          x: 10,
+          y: 10,
+          width: 15,
+          height: 15,
+          centerLat: 0, 
+          centerLng: 0, 
+          radius: 50,
+          maxCapacity: 100 
+        });
+      } catch (err) {
+        console.error('Error creating zone:', err);
+        setError('Failed to create zone');
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -85,19 +128,51 @@ const ZoneManager = ({ zones, onZonesChange, opened, onClose }) => {
     setEditingZone(zone);
   };
 
-  const handleSaveEdit = () => {
+  const handleSaveEdit = async () => {
     if (editingZone && editingZone.name.trim()) {
-      const updatedZones = zones.map(zone => 
-        zone.id === editingZone.id ? editingZone : zone
-      );
-      onZonesChange(updatedZones);
-      setEditingZone(null);
+      setLoading(true);
+      try {
+        const updatedZone = await apiService.updateZone(editingZone.id, {
+          name: editingZone.name,
+          zoneType: editingZone.zoneType,
+          x: editingZone.x,
+          y: editingZone.y,
+          width: editingZone.width,
+          height: editingZone.height,
+          centerLat: editingZone.centerLat,
+          centerLng: editingZone.centerLng,
+          radius: editingZone.radius,
+          maxCapacity: editingZone.maxCapacity
+        });
+        
+        const updatedZones = apiZones.map(zone => 
+          zone.id === editingZone.id ? updatedZone : zone
+        );
+        setApiZones(updatedZones);
+        onZonesChange(updatedZones);
+        setEditingZone(null);
+      } catch (err) {
+        console.error('Error updating zone:', err);
+        setError('Failed to update zone');
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
-  const handleDeleteZone = (zoneId) => {
-    const updatedZones = zones.filter(zone => zone.id !== zoneId);
-    onZonesChange(updatedZones);
+  const handleDeleteZone = async (zoneId) => {
+    setLoading(true);
+    try {
+      await apiService.deleteZone(zoneId);
+      const updatedZones = apiZones.filter(zone => zone.id !== zoneId);
+      setApiZones(updatedZones);
+      onZonesChange(updatedZones);
+    } catch (err) {
+      console.error('Error deleting zone:', err);
+      setError('Failed to delete zone');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const formatCoordinate = (coord) => {
@@ -263,11 +338,11 @@ const ZoneManager = ({ zones, onZonesChange, opened, onClose }) => {
               <Group grow>
                 <NumberInput
                   label="Width (%)"
-                  placeholder="0-100"
+                  placeholder="1-100"
                   min={1}
                   max={100}
                   value={newZone.width}
-                  onChange={(value) => setNewZone({ ...newZone, width: value || 20 })}
+                  onChange={(value) => setNewZone({ ...newZone, width: value || 15 })}
                   size="md"
                   radius="md"
                   styles={{
@@ -282,11 +357,11 @@ const ZoneManager = ({ zones, onZonesChange, opened, onClose }) => {
                 />
                 <NumberInput
                   label="Height (%)"
-                  placeholder="0-100"
+                  placeholder="1-100"
                   min={1}
                   max={100}
                   value={newZone.height}
-                  onChange={(value) => setNewZone({ ...newZone, height: value || 20 })}
+                  onChange={(value) => setNewZone({ ...newZone, height: value || 15 })}
                   size="md"
                   radius="md"
                   styles={{
@@ -300,6 +375,7 @@ const ZoneManager = ({ zones, onZonesChange, opened, onClose }) => {
                   }}
                 />
               </Group>
+
 
               <Divider 
                 label={
@@ -685,6 +761,8 @@ const ZoneManager = ({ zones, onZonesChange, opened, onClose }) => {
             overflow: 'hidden'
           }}
         >
+          <LoadingOverlay visible={loading} />
+          
           {/* Background gradient accent */}
           <div style={{
             position: 'absolute',
@@ -700,9 +778,20 @@ const ZoneManager = ({ zones, onZonesChange, opened, onClose }) => {
             <Group gap="xs">
               <IconSettings size={20} style={{ color: '#667eea' }} />
               <Title order={4} style={{ fontWeight: 600 }}>
-                Existing Zones ({zones.length})
+                Existing Zones ({apiZones.length})
               </Title>
             </Group>
+
+            {error && (
+              <Alert 
+                icon={<IconInfoCircle size={16} />} 
+                title="Error" 
+                color="red"
+                variant="light"
+              >
+                {error}
+              </Alert>
+            )}
 
             <Box style={{ overflowX: 'auto' }}>
               <Table striped highlightOnHover>
@@ -711,13 +800,14 @@ const ZoneManager = ({ zones, onZonesChange, opened, onClose }) => {
                     <Table.Th>Zone Name</Table.Th>
                     <Table.Th>Type</Table.Th>
                     <Table.Th>Visual Position</Table.Th>
+                    <Table.Th>Dimensions</Table.Th>
                     <Table.Th>GPS Coordinates</Table.Th>
                     <Table.Th>Capacity</Table.Th>
                     <Table.Th>Actions</Table.Th>
                   </Table.Tr>
                 </Table.Thead>
                 <Table.Tbody>
-                  {zones.map((zone) => (
+                  {apiZones.map((zone) => (
                     <Table.Tr key={zone.id}>
                       <Table.Td>
                         <Text fw={600}>{zone.name}</Text>
@@ -737,8 +827,12 @@ const ZoneManager = ({ zones, onZonesChange, opened, onClose }) => {
                       </Table.Td>
                       <Table.Td>
                         <Text size="sm" c="dimmed">
-                          X: {zone.x}%, Y: {zone.y}%<br />
-                          W: {zone.width}%, H: {zone.height}%
+                          X: {zone.x}%, Y: {zone.y}%
+                        </Text>
+                      </Table.Td>
+                      <Table.Td>
+                        <Text size="sm" c="dimmed">
+                          W: {zone.width || 15}%, H: {zone.height || 15}%
                         </Text>
                       </Table.Td>
                       <Table.Td>

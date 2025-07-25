@@ -1,116 +1,92 @@
-import { Paper, Text, Stack, Group, Badge, useMantineTheme, Button, Alert } from '@mantine/core';
+import { Paper, Text, Stack, Group, Badge, useMantineTheme, Button, Alert, LoadingOverlay } from '@mantine/core';
 import { useEffect, useState } from 'react';
 import { IconSettings, IconInfoCircle } from '@tabler/icons-react';
 import ZoneManager from './ZoneManager';
+import { apiService } from '../services/api';
 
-const CrowdHeatMap = ({ venueData, crowdData, updateInterval = 30000, showZoneManagement = true }) => {
+const CrowdHeatMap = ({ venueData, crowdData, updateInterval = 10000, showZoneManagement = true }) => {
   const theme = useMantineTheme();
   const [zoneManagerOpened, setZoneManagerOpened] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   // Default venue data if none provided
   const defaultVenueData = {
     name: "Generic Venue",
-    zones: [
-      { 
-        id: 1, 
-        name: "Main Entrance", 
-        zoneType: "entrance",
-        x: 10, y: 10, width: 80, height: 20,
-        centerLat: 40.7128, 
-        centerLng: -74.0060, 
-        radius: 50,
-        maxCapacity: 200,
-        createdAt: new Date().toISOString()
-      },
-      { 
-        id: 2, 
-        name: "Central Area", 
-        zoneType: "seating",
-        x: 20, y: 40, width: 60, height: 30,
-        centerLat: 40.7130, 
-        centerLng: -74.0058, 
-        radius: 100,
-        maxCapacity: 1000,
-        createdAt: new Date().toISOString()
-      },
-      { 
-        id: 3, 
-        name: "Food Court", 
-        zoneType: "food_court",
-        x: 5, y: 80, width: 40, height: 15,
-        centerLat: 40.7126, 
-        centerLng: -74.0062, 
-        radius: 75,
-        maxCapacity: 300,
-        createdAt: new Date().toISOString()
-      },
-      { 
-        id: 4, 
-        name: "Rest Area", 
-        zoneType: "rest_area",
-        x: 60, y: 80, width: 35, height: 15,
-        centerLat: 40.7132, 
-        centerLng: -74.0064, 
-        radius: 40,
-        maxCapacity: 150,
-        createdAt: new Date().toISOString()
-      },
-      { 
-        id: 5, 
-        name: "Exit Zone", 
-        zoneType: "exit",
-        x: 85, y: 10, width: 10, height: 20,
-        centerLat: 40.7124, 
-        centerLng: -74.0056, 
-        radius: 30,
-        maxCapacity: 100,
-        createdAt: new Date().toISOString()
-      }
-    ]
+    zones: [] // Start with empty zones array
   };
 
   const venue = venueData || defaultVenueData;
   const [zones, setZones] = useState(venue.zones);
+  const [crowdDataState, setCrowdDataState] = useState(null);
+  const [crowdLoading, setCrowdLoading] = useState(false);
 
-  // Generate default crowd data
-  function getDefaultData() {
-    return {
-      zones: zones.map(zone => ({
-        ...zone,
-        density: Math.random() * 0.9 + 0.1, // Random density between 0.1 and 1.0
-        count: Math.floor(Math.random() * zone.maxCapacity) + 10 // Random count based on max capacity
-      })),
-      lastUpdated: new Date().toISOString()
-    };
-  }
-
-  const [currentData, setCurrentData] = useState(crowdData || getDefaultData());
-
-  // Update current data when zones change
+  // Fetch zones from API on component mount
   useEffect(() => {
-    setCurrentData(getDefaultData());
+    const fetchZones = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const zonesData = await apiService.getAllZones();
+        setZones(zonesData);
+      } catch (err) {
+        console.error('Error fetching zones:', err);
+        setError('Failed to load zones from server');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchZones();
+  }, []);
+
+  // Fetch crowd data from API
+  const fetchCrowdData = async () => {
+    setCrowdLoading(true);
+    try {
+      const crowdDataResponse = await apiService.getAllZonesCrowdDetails();
+      
+      // Merge zone data with crowd data
+      const mergedData = {
+        zones: zones.map(zone => {
+          const crowdInfo = crowdDataResponse.zones.find(crowd => crowd.zoneId === zone.id);
+          return {
+            ...zone,
+            count: crowdInfo ? crowdInfo.count : 0,
+            density: crowdInfo ? (crowdInfo.count / zone.maxCapacity) : 0
+          };
+        }),
+        lastUpdated: crowdDataResponse.lastUpdated
+      };
+      
+      setCrowdDataState(mergedData);
+    } catch (err) {
+      console.error('Error fetching crowd data:', err);
+      setError('Failed to load crowd data from server');
+    } finally {
+      setCrowdLoading(false);
+    }
+  };
+
+  // Fetch crowd data on component mount and when zones change
+  useEffect(() => {
+    if (zones.length > 0) {
+      fetchCrowdData();
+    }
   }, [zones]);
 
   // Simulate periodic data updates
   useEffect(() => {
-    const interval = setInterval(() => {
-      if (crowdData) {
-        setCurrentData(crowdData);
-      } else {
-        // Simulate real-time updates with random variations
-        setCurrentData(prevData => ({
-          zones: prevData.zones.map(zone => ({
-            ...zone,
-            density: Math.max(0.1, Math.min(1.0, zone.density + (Math.random() - 0.5) * 0.1)),
-            count: Math.max(0, Math.min(zone.maxCapacity, zone.count + Math.floor((Math.random() - 0.5) * 20)))
-          })),
-          lastUpdated: new Date().toISOString()
-        }));
-      }
-    }, updateInterval);
+    if (crowdData) {
+      setCrowdDataState(crowdData);
+    } else if (zones.length > 0) {
+      const interval = setInterval(() => {
+        fetchCrowdData();
+      }, updateInterval);
 
-    return () => clearInterval(interval);
-  }, [crowdData, updateInterval]);
+      return () => clearInterval(interval);
+    }
+  }, [crowdData, updateInterval, zones]);
 
   // Get color based on density
   const getDensityColor = (density) => {
@@ -134,9 +110,18 @@ const CrowdHeatMap = ({ venueData, crowdData, updateInterval = 30000, showZoneMa
     setZones(newZones);
   };
 
+  // Use crowdDataState if available, otherwise use the passed crowdData prop
+  const currentData = crowdDataState || crowdData || { zones: [], lastUpdated: new Date().toISOString() };
+
   return (
     <>
-      <Paper shadow="sm" p="xl" radius="md" withBorder>
+      <Paper shadow="sm" p="xl" radius="md" withBorder style={{ position: 'relative' }}>
+        <LoadingOverlay visible={loading} />
+        {error && (
+          <Alert color="red" title="Error" mb="md">
+            {error}
+          </Alert>
+        )}
         <Stack gap="lg">
           <Group justify="space-between" align="center">
             <Text size="lg" fw={600}>Crowd Heat Map</Text>
@@ -144,6 +129,11 @@ const CrowdHeatMap = ({ venueData, crowdData, updateInterval = 30000, showZoneMa
               <Badge color="blue" variant="light">
                 Last Updated: {new Date(currentData.lastUpdated).toLocaleTimeString()}
               </Badge>
+              {crowdLoading && (
+                <Badge color="yellow" variant="light">
+                  Updating...
+                </Badge>
+              )}
               {showZoneManagement && (
                 <Button 
                   size="sm" 
@@ -187,8 +177,8 @@ const CrowdHeatMap = ({ venueData, crowdData, updateInterval = 30000, showZoneMa
                   position: 'absolute',
                   left: `${zone.x}%`,
                   top: `${zone.y}%`,
-                  width: `${zone.width}%`,
-                  height: `${zone.height}%`,
+                  width: `${zone.width || 15}%`,
+                  height: `${zone.height || 15}%`,
                   backgroundColor: getDensityColor(zone.density),
                   border: `2px solid ${theme.colors.gray[6]}`,
                   borderRadius: theme.radius.sm,

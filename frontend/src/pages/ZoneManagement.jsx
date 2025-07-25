@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { Container, Title, Text, Paper, Stack, AppShell, Group, rem, Card, Grid, Badge, Button, Modal, ActionIcon, Select } from '@mantine/core'
+import { useState, useEffect } from 'react'
+import { Container, Title, Text, Paper, Stack, AppShell, Group, rem, Card, Grid, Badge, Button, Modal, ActionIcon, Select, LoadingOverlay, Alert } from '@mantine/core'
 import { useDisclosure, useMediaQuery } from '@mantine/hooks'
 import { 
   IconMapPin, 
@@ -20,12 +20,16 @@ import StaffSidebar from '../components/StaffSidebar'
 import ZoneManager from '../components/ZoneManager'
 import FloatingAssistant from '../components/FloatingAssistant'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { authUtils } from '../services/api'
+import { authUtils, apiService } from '../services/api'
 
 function ZoneManagement() {
   const [opened, { toggle }] = useDisclosure(true);
   const [zoneManagerOpened, { open: openZoneManager, close: closeZoneManager }] = useDisclosure(false);
   const [selectedZone, setSelectedZone] = useState('All');
+  const [staff, setStaff] = useState([]);
+  const [apiZones, setApiZones] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const isSmallScreen = useMediaQuery('(max-width: 768px)');
   const navigate = useNavigate();
   const location = useLocation();
@@ -33,6 +37,38 @@ function ZoneManagement() {
   // Get current user data
   const currentUser = authUtils.getCurrentUser();
   const userName = currentUser ? `${currentUser.first_name} ${currentUser.last_name}` : 'Staff User';
+
+  // Fetch staff and zones data from API
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const [staffResponse, zonesResponse] = await Promise.all([
+          apiService.getAvailableStaff(),
+          apiService.getAvailableZones()
+        ]);
+        
+        if (staffResponse.success) {
+          setStaff(staffResponse.data);
+        } else {
+          setError('Failed to fetch staff data');
+        }
+        
+        if (zonesResponse.success) {
+          setApiZones(zonesResponse.data);
+        } else {
+          setError('Failed to fetch zones data');
+        }
+      } catch (err) {
+        console.error('Error fetching data:', err);
+        setError('Failed to load data');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   // Sample zones data
   const [zones, setZones] = useState([
@@ -98,45 +134,21 @@ function ZoneManagement() {
     }
   ]);
 
-  // Sample zone staff data for the component
-  const zoneStaffData = [
-    {
-      id: 1,
-      name: 'Officer Sarah Johnson',
-      role: 'Security Officer',
-      zone: 'Zone A - Main Entrance',
-      status: 'Active',
-      distance: '50m'
-    },
-    {
-      id: 2,
-      name: 'Officer Mike Chen',
-      role: 'Security Officer',
-      zone: 'Zone B - Food Court',
-      status: 'Active',
-      distance: '120m'
-    },
-    {
-      id: 3,
-      name: 'Officer Lisa Rodriguez',
-      role: 'Security Officer',
-      zone: 'Zone C - Parking Area',
-      status: 'Active',
-      distance: '200m'
-    },
-    {
-      id: 4,
-      name: 'Dr. James Wilson',
-      role: 'Medical Staff',
-      zone: 'Zone A - Medical Station',
-      status: 'Active',
-      distance: '75m'
-    }
-  ];
+
 
   const handleMenuClick = () => {
     toggle();
   }
+
+  // Helper function to filter staff based on selected zone
+  const getFilteredStaff = () => {
+    if (selectedZone === 'All') {
+      return staff;
+    }
+    return staff.filter(staffMember => 
+      staffMember.assigned_zone && staffMember.assigned_zone.includes(selectedZone)
+    );
+  };
 
   const getZoneStatusColor = (status) => {
     switch (status) {
@@ -228,7 +240,13 @@ function ZoneManagement() {
       <StaffSidebar opened={opened} />
 
       <AppShell.Main>
-        <Container size="100%" py="xl" px="xl">
+        <Container size="100%" py="xl" px="xl" style={{ position: 'relative' }}>
+          <LoadingOverlay visible={loading} />
+          {error && (
+            <Alert color="red" title="Error" mb="md">
+              {error}
+            </Alert>
+          )}
           <Stack spacing="xl">
             {/* Header Section */}
             <Stack spacing="xs">
@@ -365,9 +383,7 @@ function ZoneManagement() {
                       onChange={setSelectedZone}
                       data={[
                         { value: 'All', label: 'All' },
-                        { value: 'Zone A', label: 'Zone A' },
-                        { value: 'Zone B', label: 'Zone B' },
-                        { value: 'Zone C', label: 'Zone C' }
+                        ...apiZones.map(zone => ({ value: zone.name, label: zone.name }))
                       ]}
                       placeholder="Choose a zone"
                       size="sm"
@@ -386,7 +402,7 @@ function ZoneManagement() {
 
                 {/* Zone Staff Grid */}
                 <Grid gutter="md">
-                  {zoneStaffData.map((staff) => (
+                  {getFilteredStaff().map((staff) => (
                     <Grid.Col key={staff.id} span={{ base: 12, sm: 6, lg: 3 }}>
                       <Card 
                         shadow="sm" 
@@ -401,23 +417,23 @@ function ZoneManagement() {
                       >
                         <Stack gap="xs">
                           <Group gap="xs" align="center">
-                            <Text size="sm" fw={600}>{staff.name}</Text>
+                            <Text size="sm" fw={600}>{`${staff.first_name} ${staff.last_name}`}</Text>
                             <Badge 
                               color="green" 
                               variant="light"
                               size="xs"
                             >
-                              {staff.status}
+                              Active
                             </Badge>
                           </Group>
                           <Text size="xs" c="dimmed">{staff.role}</Text>
-                          <Text size="xs" c="dimmed">{staff.zone}</Text>
+                          <Text size="xs" c="dimmed">{staff.assigned_zone}</Text>
                           <Badge 
                             color="blue" 
                             variant="light"
                             size="xs"
                           >
-                            Distance: {staff.distance}
+                            Available
                           </Badge>
                           <Button
                             size="xs"
@@ -435,6 +451,31 @@ function ZoneManagement() {
                     </Grid.Col>
                   ))}
                 </Grid>
+
+                {/* No Staff Message */}
+                {getFilteredStaff().length === 0 && (
+                  <Card 
+                    shadow="sm" 
+                    p="xl" 
+                    radius="md" 
+                    withBorder
+                    style={{
+                      background: 'rgba(255, 255, 255, 0.8)',
+                      backdropFilter: 'blur(5px)',
+                      border: '1px solid rgba(255, 255, 255, 0.3)'
+                    }}
+                  >
+                    <Stack gap="md" align="center">
+                      <IconUsers size={48} style={{ color: '#667eea', opacity: 0.5 }} />
+                      <Text size="lg" fw={600} c="dimmed">
+                        No staff available in {selectedZone}
+                      </Text>
+                      <Text size="sm" c="dimmed" ta="center">
+                        Please select a different zone or contact emergency services directly.
+                      </Text>
+                    </Stack>
+                  </Card>
+                )}
               </Stack>
             </Paper>
 

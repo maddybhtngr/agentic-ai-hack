@@ -1,4 +1,4 @@
-import { Container, Title, Text, Paper, Stack, AppShell, Grid, Group, rem, Card, Badge, Button, ActionIcon, Modal, TextInput, Select, Textarea } from '@mantine/core'
+import { Container, Title, Text, Paper, Stack, AppShell, Grid, Group, rem, Card, Badge, Button, ActionIcon, Modal, TextInput, Select, Textarea, LoadingOverlay, Alert } from '@mantine/core'
 import { 
   IconPhoneCall,
   IconPhone,
@@ -6,6 +6,7 @@ import {
   IconMapPin,
   IconClock,
   IconUsers,
+  IconUser,
   IconShieldLock,
   IconActivity,
   IconPlus,
@@ -21,12 +22,31 @@ import { useDisclosure, useMediaQuery } from '@mantine/hooks'
 import AppBar from '../components/AppBar'
 import Sidebar from '../components/Sidebar'
 import FloatingAssistant from '../components/FloatingAssistant'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { apiService } from '../services/api'
 
 function EmergencyServices() {
   const [opened, { toggle }] = useDisclosure(true);
   const isSmallScreen = useMediaQuery('(max-width: 768px)');
   const [addServiceModalOpened, setAddServiceModalOpened] = useState(false);
+  const [addContactModalOpened, setAddContactModalOpened] = useState(false);
+  const [editContactModalOpened, setEditContactModalOpened] = useState(false);
+  const [editServiceModalOpened, setEditServiceModalOpened] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [emergencyContacts, setEmergencyContacts] = useState([]);
+  const [nearbyServices, setNearbyServices] = useState([]);
+  const [incidents, setIncidents] = useState([]);
+  const [editingContact, setEditingContact] = useState(null);
+  const [editingService, setEditingService] = useState(null);
+  const [newContact, setNewContact] = useState({
+    name: '',
+    number: '',
+    type: '',
+    status: 'active',
+    responseTime: '',
+    description: ''
+  });
   const [newService, setNewService] = useState({
     name: '',
     type: '',
@@ -36,27 +56,164 @@ function EmergencyServices() {
     description: ''
   });
 
+  // Fetch emergency data from API
+  useEffect(() => {
+    const fetchEmergencyData = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const [contactsData, servicesData, incidentsData] = await Promise.all([
+          apiService.getEmergencyContacts(),
+          apiService.getNearbyServices(),
+          apiService.getAllIncidents()
+        ]);
+        
+        setEmergencyContacts(contactsData.data || contactsData);
+        setNearbyServices(servicesData.data || servicesData);
+        setIncidents(incidentsData.data || incidentsData);
+      } catch (err) {
+        console.error('Error fetching emergency data:', err);
+        setError('Failed to load emergency data from server');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEmergencyData();
+  }, []);
+
   const handleMenuClick = () => {
     toggle();
   }
 
-  const handleAddService = () => {
+  // Helper functions for incidents
+  const getActiveIncidents = () => {
+    return incidents.filter(incident => 
+      incident.status === 'REPORTED' || incident.status === 'ASSIGNED'
+    );
+  };
+
+  const getCriticalIncidents = () => {
+    return incidents.filter(incident => 
+      incident.incident_priority === 'CRITICAL' && 
+      (incident.status === 'REPORTED' || incident.status === 'ASSIGNED')
+    );
+  };
+
+  const handleAddContact = async () => {
+    if (newContact.name && newContact.number && newContact.type) {
+      try {
+        const newContactResponse = await apiService.createEmergencyContact(newContact);
+        const createdContact = newContactResponse.data || newContactResponse;
+        
+        setEmergencyContacts([...emergencyContacts, createdContact]);
+        setNewContact({
+          name: '',
+          number: '',
+          type: '',
+          status: 'active',
+          responseTime: '',
+          description: ''
+        });
+        setAddContactModalOpened(false);
+      } catch (err) {
+        console.error('Error adding contact:', err);
+        setError('Failed to add contact');
+      }
+    }
+  };
+
+  const handleAddService = async () => {
     if (newService.name && newService.type && newService.address && newService.phone) {
-      const service = {
-        id: nearbyServices.length + 1,
-        ...newService,
-        distance: 'Calculating...'
-      };
-      nearbyServices.push(service);
-      setNewService({
-        name: '',
-        type: '',
-        address: '',
-        phone: '',
-        mapsLink: '',
-        description: ''
-      });
-      setAddServiceModalOpened(false);
+      try {
+        const serviceData = {
+          ...newService,
+          distance: 'Calculating...'
+        };
+        
+        const newServiceResponse = await apiService.createNearbyService(serviceData);
+        const createdService = newServiceResponse.data || newServiceResponse;
+        
+        setNearbyServices([...nearbyServices, createdService]);
+        setNewService({
+          name: '',
+          type: '',
+          address: '',
+          phone: '',
+          mapsLink: '',
+          description: ''
+        });
+        setAddServiceModalOpened(false);
+      } catch (err) {
+        console.error('Error adding service:', err);
+        setError('Failed to add service');
+      }
+    }
+  };
+
+  const handleEditContact = (contact) => {
+    setEditingContact(contact);
+    setEditContactModalOpened(true);
+  };
+
+  const handleSaveContact = async () => {
+    if (editingContact) {
+      try {
+        const updatedContact = await apiService.updateEmergencyContact(editingContact.id, editingContact);
+        const updatedData = updatedContact.data || updatedContact;
+        
+        setEmergencyContacts(emergencyContacts.map(contact => 
+          contact.id === editingContact.id ? updatedData : contact
+        ));
+        setEditContactModalOpened(false);
+        setEditingContact(null);
+      } catch (err) {
+        console.error('Error updating contact:', err);
+        setError('Failed to update contact');
+      }
+    }
+  };
+
+  const handleDeleteContact = async (contactId) => {
+    try {
+      await apiService.deleteEmergencyContact(contactId);
+      setEmergencyContacts(emergencyContacts.filter(contact => contact.id !== contactId));
+    } catch (err) {
+      console.error('Error deleting contact:', err);
+      setError('Failed to delete contact');
+    }
+  };
+
+  const handleEditService = (service) => {
+    setEditingService(service);
+    setEditServiceModalOpened(true);
+  };
+
+  const handleSaveService = async () => {
+    if (editingService) {
+      try {
+        const updatedService = await apiService.updateNearbyService(editingService.id, editingService);
+        const updatedData = updatedService.data || updatedService;
+        
+        setNearbyServices(nearbyServices.map(service => 
+          service.id === editingService.id ? updatedData : service
+        ));
+        setEditServiceModalOpened(false);
+        setEditingService(null);
+      } catch (err) {
+        console.error('Error updating service:', err);
+        setError('Failed to update service');
+      }
+    }
+  };
+
+  const handleDeleteService = async (serviceId) => {
+    try {
+      await apiService.deleteNearbyService(serviceId);
+      setNearbyServices(nearbyServices.filter(service => service.id !== serviceId));
+    } catch (err) {
+      console.error('Error deleting service:', err);
+      setError('Failed to delete service');
     }
   };
 
@@ -94,87 +251,7 @@ function EmergencyServices() {
     }
   };
 
-  const emergencyContacts = [
-    {
-      id: 1,
-      name: 'Emergency Hotline',
-      number: '911',
-      type: 'Primary',
-      status: 'active',
-      responseTime: '< 2 min',
-      description: 'Main emergency response line'
-    },
-    {
-      id: 2,
-      name: 'Medical Emergency',
-      number: '+1 (555) 123-4567',
-      type: 'Medical',
-      status: 'active',
-      responseTime: '< 5 min',
-      description: 'On-site medical team'
-    },
-    {
-      id: 3,
-      name: 'Security Emergency',
-      number: '+1 (555) 234-5678',
-      type: 'Security',
-      status: 'active',
-      responseTime: '< 3 min',
-      description: 'Security response team'
-    },
-    {
-      id: 4,
-      name: 'Fire Department',
-      number: '+1 (555) 345-6789',
-      type: 'Fire',
-      status: 'active',
-      responseTime: '< 8 min',
-      description: 'Local fire department'
-    }
-  ];
 
-  const nearbyServices = [
-    {
-      id: 1,
-      name: 'City General Hospital',
-      type: 'Hospital',
-      address: '123 Medical Center Dr, Downtown',
-      phone: '+1 (555) 123-4567',
-      mapsLink: 'https://maps.google.com/?q=123+Medical+Center+Dr',
-      description: '24/7 Emergency Department with trauma center',
-      distance: '2.3 km'
-    },
-    {
-      id: 2,
-      name: 'Downtown Police Station',
-      type: 'Police',
-      address: '456 Law Enforcement Ave',
-      phone: '+1 (555) 234-5678',
-      mapsLink: 'https://maps.google.com/?q=456+Law+Enforcement+Ave',
-      description: 'Main police station with emergency response unit',
-      distance: '1.8 km'
-    },
-    {
-      id: 3,
-      name: 'Central Fire Station',
-      type: 'Fire',
-      address: '789 Firefighter Blvd',
-      phone: '+1 (555) 345-6789',
-      mapsLink: 'https://maps.google.com/?q=789+Firefighter+Blvd',
-      description: 'Fire department with emergency medical services',
-      distance: '3.1 km'
-    },
-    {
-      id: 4,
-      name: 'Emergency Medical Services',
-      type: 'Ambulance',
-      address: '321 Emergency Way',
-      phone: '+1 (555) 456-7890',
-      mapsLink: 'https://maps.google.com/?q=321+Emergency+Way',
-      description: 'Ambulance service and emergency transport',
-      distance: '2.7 km'
-    }
-  ];
 
   const statCards = [
     {
@@ -191,13 +268,13 @@ function EmergencyServices() {
     },
     {
       title: 'Active Alerts',
-      value: '0',
+      value: getCriticalIncidents().length.toString(),
       icon: IconActivity,
       color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
     },
     {
       title: 'Active Incidents',
-      value: '2',
+      value: getActiveIncidents().length.toString(),
       icon: IconAlertTriangle,
       color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
     }
@@ -230,7 +307,13 @@ function EmergencyServices() {
       <Sidebar opened={opened} />
 
       <AppShell.Main>
-        <Container size="100%" py="xl" px="xl">
+        <Container size="100%" py="xl" px="xl" style={{ position: 'relative' }}>
+          <LoadingOverlay visible={loading} />
+          {error && (
+            <Alert color="red" title="Error" mb="md">
+              {error}
+            </Alert>
+          )}
           <Stack spacing="xl">
             {/* Header Section */}
             <Stack spacing="xs">
@@ -362,6 +445,7 @@ function EmergencyServices() {
                     size="md"
                     radius="md"
                     leftSection={<IconPlus size={16} />} 
+                    onClick={() => setAddContactModalOpened(true)}
                     style={{
                       background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                       border: 'none',
@@ -381,29 +465,41 @@ function EmergencyServices() {
                   </Button>
                 </Group>
 
-                {/* Emergency Contacts Grid */}
-                <Grid gutter="lg">
+                {/* Emergency Contacts List */}
+                <Stack gap="md">
                   {emergencyContacts.map((contact) => (
-                    <Grid.Col key={contact.id} span={{ base: 12, sm: 6, lg: 3 }}>
-                      <Card 
-                        shadow="md" 
-                        padding="lg" 
-                        radius="lg" 
-                        withBorder
-                        style={{
-                          background: 'rgba(255, 255, 255, 0.8)',
-                          backdropFilter: 'blur(5px)',
-                          border: '1px solid rgba(255, 255, 255, 0.3)',
-                          transition: 'all 0.3s ease',
-                          '&:hover': {
-                            transform: 'translateY(-2px)',
-                            boxShadow: '0 10px 30px rgba(0,0,0,0.1)'
-                          }
-                        }}
-                      >
-                        <Stack gap="md">
-                          <Group justify="space-between" align="flex-start">
-                            <Stack gap="xs">
+                    <Card 
+                      key={contact.id}
+                      shadow="md" 
+                      padding="lg" 
+                      radius="lg" 
+                      withBorder
+                      style={{
+                        background: 'rgba(255, 255, 255, 0.8)',
+                        backdropFilter: 'blur(5px)',
+                        border: '1px solid rgba(255, 255, 255, 0.3)',
+                        transition: 'all 0.3s ease',
+                        '&:hover': {
+                          transform: 'translateY(-2px)',
+                          boxShadow: '0 10px 30px rgba(0,0,0,0.1)'
+                        }
+                      }}
+                    >
+                      <Group justify="space-between" align="flex-start">
+                        <Group gap="lg" align="flex-start" style={{ flex: 1 }}>
+                          <div style={{
+                            padding: rem(12),
+                            borderRadius: rem(12),
+                            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                          }}>
+                            <IconPhone size={20} style={{ color: 'white' }} />
+                          </div>
+                          
+                          <Stack gap="xs" style={{ flex: 1 }}>
+                            <Group gap="md" align="center">
                               <Text fw={600} size="lg">{contact.name}</Text>
                               <Badge 
                                 color={contact.type === 'Primary' ? 'red' : 'blue'} 
@@ -412,53 +508,57 @@ function EmergencyServices() {
                               >
                                 {contact.type}
                               </Badge>
-                            </Stack>
-                            <Group gap="xs">
-                              <ActionIcon
-                                size="sm"
-                                variant="light"
-                                color="blue"
-                                style={{
-                                  background: 'rgba(102, 126, 234, 0.1)',
-                                  color: '#667eea',
-                                  border: '1px solid rgba(102, 126, 234, 0.2)'
-                                }}
-                              >
-                                <IconEdit size={14} />
-                              </ActionIcon>
-                              <ActionIcon
-                                size="sm"
-                                variant="light"
-                                color="red"
-                                style={{
-                                  background: 'rgba(239, 68, 68, 0.1)',
-                                  color: '#ef4444',
-                                  border: '1px solid rgba(239, 68, 68, 0.2)'
-                                }}
-                              >
-                                <IconTrash size={14} />
-                              </ActionIcon>
                             </Group>
-                          </Group>
-
-                          <Stack gap="xs">
-                            <Group gap="xs">
-                              <IconPhone size={16} style={{ color: '#667eea' }} />
-                              <Text size="lg" fw={700} style={{ color: '#667eea' }}>
-                                {contact.number}
-                              </Text>
+                            
+                            <Group gap="lg">
+                              <Group gap="xs">
+                                <IconPhone size={16} style={{ color: '#667eea' }} />
+                                <Text size="lg" fw={700} style={{ color: '#667eea' }}>
+                                  {contact.number}
+                                </Text>
+                              </Group>
+                              <Group gap="xs">
+                                <IconClock size={14} style={{ color: '#667eea' }} />
+                                <Text size="sm" c="dimmed">Response: {contact.responseTime}</Text>
+                              </Group>
                             </Group>
+                            
                             <Text size="sm" c="dimmed">{contact.description}</Text>
-                            <Group gap="xs">
-                              <IconClock size={14} style={{ color: '#667eea' }} />
-                              <Text size="xs" c="dimmed">Response: {contact.responseTime}</Text>
-                            </Group>
                           </Stack>
-                        </Stack>
-                      </Card>
-                    </Grid.Col>
+                        </Group>
+                        
+                        <Group gap="xs">
+                          <ActionIcon
+                            size="sm"
+                            variant="light"
+                            color="blue"
+                            onClick={() => handleEditContact(contact)}
+                            style={{
+                              background: 'rgba(102, 126, 234, 0.1)',
+                              color: '#667eea',
+                              border: '1px solid rgba(102, 126, 234, 0.2)'
+                            }}
+                          >
+                            <IconEdit size={14} />
+                          </ActionIcon>
+                          <ActionIcon
+                            size="sm"
+                            variant="light"
+                            color="red"
+                            onClick={() => handleDeleteContact(contact.id)}
+                            style={{
+                              background: 'rgba(239, 68, 68, 0.1)',
+                              color: '#ef4444',
+                              border: '1px solid rgba(239, 68, 68, 0.2)'
+                            }}
+                          >
+                            <IconTrash size={14} />
+                          </ActionIcon>
+                        </Group>
+                      </Group>
+                    </Card>
                   ))}
-                </Grid>
+                </Stack>
               </Stack>
             </Paper>
 
@@ -539,35 +639,44 @@ function EmergencyServices() {
                   </Button>
                 </Group>
 
-                {/* Nearby Services Grid */}
-                <Grid gutter="lg">
+                {/* Nearby Services List */}
+                <Stack gap="md">
                   {nearbyServices.map((service) => {
                     const ServiceIcon = getServiceIcon(service.type);
                     return (
-                      <Grid.Col key={service.id} span={{ base: 12, sm: 6, lg: 4 }}>
-                        <Card 
-                          shadow="md" 
-                          padding="lg" 
-                          radius="lg" 
-                          withBorder
-                          style={{
-                            background: 'rgba(255, 255, 255, 0.8)',
-                            backdropFilter: 'blur(5px)',
-                            border: '1px solid rgba(255, 255, 255, 0.3)',
-                            transition: 'all 0.3s ease',
-                            '&:hover': {
-                              transform: 'translateY(-2px)',
-                              boxShadow: '0 10px 30px rgba(0,0,0,0.1)'
-                            }
-                          }}
-                        >
-                          <Stack gap="md">
-                            <Group justify="space-between" align="flex-start">
-                              <Stack gap="xs">
-                                <Group gap="xs" align="center">
-                                  <ServiceIcon size={20} style={{ color: '#667eea' }} />
-                                  <Text fw={600} size="lg">{service.name}</Text>
-                                </Group>
+                      <Card 
+                        key={service.id}
+                        shadow="md" 
+                        padding="lg" 
+                        radius="lg" 
+                        withBorder
+                        style={{
+                          background: 'rgba(255, 255, 255, 0.8)',
+                          backdropFilter: 'blur(5px)',
+                          border: '1px solid rgba(255, 255, 255, 0.3)',
+                          transition: 'all 0.3s ease',
+                          '&:hover': {
+                            transform: 'translateY(-2px)',
+                            boxShadow: '0 10px 30px rgba(0,0,0,0.1)'
+                          }
+                        }}
+                      >
+                        <Group justify="space-between" align="flex-start">
+                          <Group gap="lg" align="flex-start" style={{ flex: 1 }}>
+                            <div style={{
+                              padding: rem(12),
+                              borderRadius: rem(12),
+                              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center'
+                            }}>
+                              <ServiceIcon size={20} style={{ color: 'white' }} />
+                            </div>
+                            
+                            <Stack gap="xs" style={{ flex: 1 }}>
+                              <Group gap="md" align="center">
+                                <Text fw={600} size="lg">{service.name}</Text>
                                 <Badge 
                                   color={getServiceColor(service.type)} 
                                   variant="light"
@@ -575,80 +684,73 @@ function EmergencyServices() {
                                 >
                                   {service.type}
                                 </Badge>
-                              </Stack>
-                              <Group gap="xs">
-                                <ActionIcon
-                                  size="sm"
-                                  variant="light"
-                                  color="blue"
-                                  style={{
-                                    background: 'rgba(102, 126, 234, 0.1)',
-                                    color: '#667eea',
-                                    border: '1px solid rgba(102, 126, 234, 0.2)'
-                                  }}
-                                >
-                                  <IconEdit size={14} />
-                                </ActionIcon>
-                                <ActionIcon
-                                  size="sm"
-                                  variant="light"
-                                  color="red"
-                                  style={{
-                                    background: 'rgba(239, 68, 68, 0.1)',
-                                    color: '#ef4444',
-                                    border: '1px solid rgba(239, 68, 68, 0.2)'
-                                  }}
-                                >
-                                  <IconTrash size={14} />
-                                </ActionIcon>
                               </Group>
-                            </Group>
-
-                            <Stack gap="xs">
-                              <Group gap="xs">
-                                <IconMapPin size={16} style={{ color: '#667eea' }} />
-                                <Text size="sm">{service.address}</Text>
+                              
+                              <Group gap="lg">
+                                <Group gap="xs">
+                                  <IconMapPin size={16} style={{ color: '#667eea' }} />
+                                  <Text size="sm">{service.address}</Text>
+                                </Group>
+                                <Group gap="xs">
+                                  <IconPhone size={16} style={{ color: '#667eea' }} />
+                                  <Text size="sm">{service.phone}</Text>
+                                </Group>
+                                <Group gap="xs">
+                                  <IconActivity size={14} style={{ color: '#667eea' }} />
+                                  <Text size="sm" c="dimmed">Distance: {service.distance}</Text>
+                                </Group>
                               </Group>
-                              <Group gap="xs">
-                                <IconPhone size={16} style={{ color: '#667eea' }} />
-                                <Text size="sm">{service.phone}</Text>
-                              </Group>
+                              
                               <Text size="sm" c="dimmed">{service.description}</Text>
-                              <Group gap="xs">
-                                <IconActivity size={14} style={{ color: '#667eea' }} />
-                                <Text size="xs" c="dimmed">Distance: {service.distance}</Text>
-                              </Group>
                             </Stack>
-
-                            <Button
-                              fullWidth
+                          </Group>
+                          
+                          <Group gap="xs" align="flex-start">
+                            <ActionIcon
                               size="sm"
-                              radius="md"
-                              leftSection={<IconNavigation size={16} />}
+                              variant="light"
+                              color="green"
                               onClick={() => handleNavigate(service.mapsLink)}
                               style={{
-                                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                                border: 'none',
-                                fontWeight: 600
-                              }}
-                              styles={{
-                                root: {
-                                  '&:hover': {
-                                    transform: 'translateY(-1px)',
-                                    boxShadow: '0 8px 25px rgba(102, 126, 234, 0.3)'
-                                  },
-                                  transition: 'all 0.2s ease'
-                                }
+                                background: 'rgba(34, 197, 94, 0.1)',
+                                color: '#22c55e',
+                                border: '1px solid rgba(34, 197, 94, 0.2)'
                               }}
                             >
-                              Navigate
-                            </Button>
-                          </Stack>
-                        </Card>
-                      </Grid.Col>
+                              <IconNavigation size={14} />
+                            </ActionIcon>
+                            <ActionIcon
+                              size="sm"
+                              variant="light"
+                              color="blue"
+                              onClick={() => handleEditService(service)}
+                              style={{
+                                background: 'rgba(102, 126, 234, 0.1)',
+                                color: '#667eea',
+                                border: '1px solid rgba(102, 126, 234, 0.2)'
+                              }}
+                            >
+                              <IconEdit size={14} />
+                            </ActionIcon>
+                            <ActionIcon
+                              size="sm"
+                              variant="light"
+                              color="red"
+                              onClick={() => handleDeleteService(service.id)}
+                              style={{
+                                background: 'rgba(239, 68, 68, 0.1)',
+                                color: '#ef4444',
+                                border: '1px solid rgba(239, 68, 68, 0.2)'
+                              }}
+                            >
+                              <IconTrash size={14} />
+                            </ActionIcon>
+                          </Group>
+                        </Group>
+                      </Card>
                     );
                   })}
-                </Grid>
+                </Stack>
               </Stack>
             </Paper>
 
@@ -825,6 +927,550 @@ function EmergencyServices() {
                   </Button>
                 </Group>
               </Stack>
+            </Modal>
+
+            {/* Add Contact Modal */}
+            <Modal 
+              opened={addContactModalOpened} 
+              onClose={() => setAddContactModalOpened(false)} 
+              title={
+                <Text fw={600}>Add Emergency Contact</Text>
+              }
+              centered
+              size="lg"
+              styles={{
+                header: {
+                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  color: 'white'
+                },
+                title: {
+                  color: 'white'
+                }
+              }}
+            >
+              <Stack gap="md">
+                <TextInput
+                  label="Contact Name"
+                  placeholder="Enter contact name"
+                  size="md"
+                  radius="md"
+                  value={newContact.name}
+                  onChange={(event) => setNewContact({...newContact, name: event.target.value})}
+                  styles={{
+                    input: {
+                      borderColor: '#e9ecef',
+                      '&:focus': {
+                        borderColor: '#667eea',
+                        boxShadow: '0 0 0 1px #667eea'
+                      }
+                    }
+                  }}
+                />
+
+                <Grid gutter="md">
+                  <Grid.Col span={6}>
+                    <TextInput
+                      label="Phone Number"
+                      placeholder="Enter phone number"
+                      size="md"
+                      radius="md"
+                      value={newContact.number}
+                      onChange={(event) => setNewContact({...newContact, number: event.target.value})}
+                      styles={{
+                        input: {
+                          borderColor: '#e9ecef',
+                          '&:focus': {
+                            borderColor: '#667eea',
+                            boxShadow: '0 0 0 1px #667eea'
+                          }
+                        }
+                      }}
+                    />
+                  </Grid.Col>
+                  <Grid.Col span={6}>
+                    <Select
+                      label="Contact Type"
+                      placeholder="Select contact type"
+                      size="md"
+                      radius="md"
+                      value={newContact.type}
+                      onChange={(value) => setNewContact({...newContact, type: value})}
+                      data={[
+                        { value: 'Primary', label: 'Primary' },
+                        { value: 'Medical', label: 'Medical' },
+                        { value: 'Security', label: 'Security' },
+                        { value: 'Fire', label: 'Fire' },
+                        { value: 'Police', label: 'Police' }
+                      ]}
+                      styles={{
+                        input: {
+                          borderColor: '#e9ecef',
+                          '&:focus': {
+                            borderColor: '#667eea',
+                            boxShadow: '0 0 0 1px #667eea'
+                          }
+                        }
+                      }}
+                    />
+                  </Grid.Col>
+                </Grid>
+
+                <Grid gutter="md">
+                  <Grid.Col span={6}>
+                    <TextInput
+                      label="Response Time"
+                      placeholder="e.g., < 2 min"
+                      size="md"
+                      radius="md"
+                      value={newContact.responseTime}
+                      onChange={(event) => setNewContact({...newContact, responseTime: event.target.value})}
+                      styles={{
+                        input: {
+                          borderColor: '#e9ecef',
+                          '&:focus': {
+                            borderColor: '#667eea',
+                            boxShadow: '0 0 0 1px #667eea'
+                          }
+                        }
+                      }}
+                    />
+                  </Grid.Col>
+                  <Grid.Col span={6}>
+                    <Select
+                      label="Status"
+                      placeholder="Select status"
+                      size="md"
+                      radius="md"
+                      value={newContact.status}
+                      onChange={(value) => setNewContact({...newContact, status: value})}
+                      data={[
+                        { value: 'active', label: 'Active' },
+                        { value: 'inactive', label: 'Inactive' }
+                      ]}
+                      styles={{
+                        input: {
+                          borderColor: '#e9ecef',
+                          '&:focus': {
+                            borderColor: '#667eea',
+                            boxShadow: '0 0 0 1px #667eea'
+                          }
+                        }
+                      }}
+                    />
+                  </Grid.Col>
+                </Grid>
+
+                <Textarea
+                  label="Description"
+                  placeholder="Enter contact description"
+                  size="md"
+                  radius="md"
+                  minRows={3}
+                  value={newContact.description}
+                  onChange={(event) => setNewContact({...newContact, description: event.target.value})}
+                  styles={{
+                    input: {
+                      borderColor: '#e9ecef',
+                      '&:focus': {
+                        borderColor: '#667eea',
+                        boxShadow: '0 0 0 1px #667eea'
+                      }
+                    }
+                  }}
+                />
+
+                <Group justify="flex-end" gap="md">
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setAddContactModalOpened(false)}
+                    size="md"
+                    radius="md"
+                  >
+                    Cancel
+                  </Button>
+                  <Button 
+                    size="md"
+                    radius="md"
+                    style={{
+                      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                      border: 'none',
+                      fontWeight: 600
+                    }}
+                    onClick={handleAddContact}
+                  >
+                    Add Contact
+                  </Button>
+                </Group>
+              </Stack>
+            </Modal>
+
+            {/* Edit Contact Modal */}
+            <Modal 
+              opened={editContactModalOpened} 
+              onClose={() => setEditContactModalOpened(false)} 
+              title={
+                <Text fw={600}>Edit Emergency Contact</Text>
+              }
+              centered
+              size="lg"
+              styles={{
+                header: {
+                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  color: 'white'
+                },
+                title: {
+                  color: 'white'
+                }
+              }}
+            >
+              {editingContact && (
+                <Stack gap="md">
+                  <TextInput
+                    label="Contact Name"
+                    placeholder="Enter contact name"
+                    size="md"
+                    radius="md"
+                    value={editingContact.name}
+                    onChange={(event) => setEditingContact({...editingContact, name: event.target.value})}
+                    styles={{
+                      input: {
+                        borderColor: '#e9ecef',
+                        '&:focus': {
+                          borderColor: '#667eea',
+                          boxShadow: '0 0 0 1px #667eea'
+                        }
+                      }
+                    }}
+                  />
+
+                  <Grid gutter="md">
+                    <Grid.Col span={6}>
+                      <TextInput
+                        label="Phone Number"
+                        placeholder="Enter phone number"
+                        size="md"
+                        radius="md"
+                        value={editingContact.number}
+                        onChange={(event) => setEditingContact({...editingContact, number: event.target.value})}
+                        styles={{
+                          input: {
+                            borderColor: '#e9ecef',
+                            '&:focus': {
+                              borderColor: '#667eea',
+                              boxShadow: '0 0 0 1px #667eea'
+                            }
+                          }
+                        }}
+                      />
+                    </Grid.Col>
+                    <Grid.Col span={6}>
+                      <Select
+                        label="Contact Type"
+                        placeholder="Select contact type"
+                        size="md"
+                        radius="md"
+                        value={editingContact.type}
+                        onChange={(value) => setEditingContact({...editingContact, type: value})}
+                        data={[
+                          { value: 'Primary', label: 'Primary' },
+                          { value: 'Medical', label: 'Medical' },
+                          { value: 'Security', label: 'Security' },
+                          { value: 'Fire', label: 'Fire' },
+                          { value: 'Police', label: 'Police' }
+                        ]}
+                        styles={{
+                          input: {
+                            borderColor: '#e9ecef',
+                            '&:focus': {
+                              borderColor: '#667eea',
+                              boxShadow: '0 0 0 1px #667eea'
+                            }
+                          }
+                        }}
+                      />
+                    </Grid.Col>
+                  </Grid>
+
+                  <Grid gutter="md">
+                    <Grid.Col span={6}>
+                      <TextInput
+                        label="Response Time"
+                        placeholder="e.g., < 2 min"
+                        size="md"
+                        radius="md"
+                        value={editingContact.responseTime}
+                        onChange={(event) => setEditingContact({...editingContact, responseTime: event.target.value})}
+                        styles={{
+                          input: {
+                            borderColor: '#e9ecef',
+                            '&:focus': {
+                              borderColor: '#667eea',
+                              boxShadow: '0 0 0 1px #667eea'
+                            }
+                          }
+                        }}
+                      />
+                    </Grid.Col>
+                    <Grid.Col span={6}>
+                      <Select
+                        label="Status"
+                        placeholder="Select status"
+                        size="md"
+                        radius="md"
+                        value={editingContact.status}
+                        onChange={(value) => setEditingContact({...editingContact, status: value})}
+                        data={[
+                          { value: 'active', label: 'Active' },
+                          { value: 'inactive', label: 'Inactive' }
+                        ]}
+                        styles={{
+                          input: {
+                            borderColor: '#e9ecef',
+                            '&:focus': {
+                              borderColor: '#667eea',
+                              boxShadow: '0 0 0 1px #667eea'
+                            }
+                          }
+                        }}
+                      />
+                    </Grid.Col>
+                  </Grid>
+
+                  <Textarea
+                    label="Description"
+                    placeholder="Enter contact description"
+                    size="md"
+                    radius="md"
+                    minRows={3}
+                    value={editingContact.description}
+                    onChange={(event) => setEditingContact({...editingContact, description: event.target.value})}
+                    styles={{
+                      input: {
+                        borderColor: '#e9ecef',
+                        '&:focus': {
+                          borderColor: '#667eea',
+                          boxShadow: '0 0 0 1px #667eea'
+                        }
+                      }
+                    }}
+                  />
+
+                  <Group justify="flex-end" gap="md">
+                    <Button 
+                      variant="outline" 
+                      onClick={() => setEditContactModalOpened(false)}
+                      size="md"
+                      radius="md"
+                    >
+                      Cancel
+                    </Button>
+                    <Button 
+                      size="md"
+                      radius="md"
+                      style={{
+                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                        border: 'none',
+                        fontWeight: 600
+                      }}
+                      onClick={handleSaveContact}
+                    >
+                      Save Changes
+                    </Button>
+                  </Group>
+                </Stack>
+              )}
+            </Modal>
+
+            {/* Edit Service Modal */}
+            <Modal 
+              opened={editServiceModalOpened} 
+              onClose={() => setEditServiceModalOpened(false)} 
+              title={
+                <Text fw={600}>Edit Nearby Service</Text>
+              }
+              centered
+              size="lg"
+              styles={{
+                header: {
+                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  color: 'white'
+                },
+                title: {
+                  color: 'white'
+                }
+              }}
+            >
+              {editingService && (
+                <Stack gap="md">
+                  <Grid gutter="md">
+                    <Grid.Col span={6}>
+                      <TextInput
+                        label="Service Name"
+                        placeholder="Enter service name"
+                        size="md"
+                        radius="md"
+                        value={editingService.name}
+                        onChange={(event) => setEditingService({...editingService, name: event.target.value})}
+                        styles={{
+                          input: {
+                            borderColor: '#e9ecef',
+                            '&:focus': {
+                              borderColor: '#667eea',
+                              boxShadow: '0 0 0 1px #667eea'
+                            }
+                          }
+                        }}
+                      />
+                    </Grid.Col>
+                    <Grid.Col span={6}>
+                      <Select
+                        label="Service Type"
+                        placeholder="Select service type"
+                        size="md"
+                        radius="md"
+                        value={editingService.type}
+                        onChange={(value) => setEditingService({...editingService, type: value})}
+                        data={[
+                          { value: 'Hospital', label: 'Hospital' },
+                          { value: 'Police', label: 'Police Station' },
+                          { value: 'Fire', label: 'Fire Station' },
+                          { value: 'Ambulance', label: 'Ambulance Service' },
+                          { value: 'Pharmacy', label: 'Pharmacy' },
+                          { value: 'Clinic', label: 'Medical Clinic' }
+                        ]}
+                        styles={{
+                          input: {
+                            borderColor: '#e9ecef',
+                            '&:focus': {
+                              borderColor: '#667eea',
+                              boxShadow: '0 0 0 1px #667eea'
+                            }
+                          }
+                        }}
+                      />
+                    </Grid.Col>
+                  </Grid>
+
+                  <TextInput
+                    label="Address"
+                    placeholder="Enter full address"
+                    size="md"
+                    radius="md"
+                    value={editingService.address}
+                    onChange={(event) => setEditingService({...editingService, address: event.target.value})}
+                    styles={{
+                      input: {
+                        borderColor: '#e9ecef',
+                        '&:focus': {
+                          borderColor: '#667eea',
+                          boxShadow: '0 0 0 1px #667eea'
+                        }
+                      }
+                    }}
+                  />
+
+                  <Grid gutter="md">
+                    <Grid.Col span={6}>
+                      <TextInput
+                        label="Phone Number"
+                        placeholder="Enter phone number"
+                        size="md"
+                        radius="md"
+                        value={editingService.phone}
+                        onChange={(event) => setEditingService({...editingService, phone: event.target.value})}
+                        styles={{
+                          input: {
+                            borderColor: '#e9ecef',
+                            '&:focus': {
+                              borderColor: '#667eea',
+                              boxShadow: '0 0 0 1px #667eea'
+                            }
+                          }
+                        }}
+                      />
+                    </Grid.Col>
+                    <Grid.Col span={6}>
+                      <TextInput
+                        label="Distance"
+                        placeholder="e.g., 2.3 km"
+                        size="md"
+                        radius="md"
+                        value={editingService.distance}
+                        onChange={(event) => setEditingService({...editingService, distance: event.target.value})}
+                        styles={{
+                          input: {
+                            borderColor: '#e9ecef',
+                            '&:focus': {
+                              borderColor: '#667eea',
+                              boxShadow: '0 0 0 1px #667eea'
+                            }
+                          }
+                        }}
+                      />
+                    </Grid.Col>
+                  </Grid>
+
+                  <TextInput
+                    label="Google Maps Link"
+                    placeholder="Paste Google Maps URL"
+                    size="md"
+                    radius="md"
+                    value={editingService.mapsLink}
+                    onChange={(event) => setEditingService({...editingService, mapsLink: event.target.value})}
+                    styles={{
+                      input: {
+                        borderColor: '#e9ecef',
+                        '&:focus': {
+                          borderColor: '#667eea',
+                          boxShadow: '0 0 0 1px #667eea'
+                        }
+                      }
+                    }}
+                  />
+
+                  <Textarea
+                    label="Description"
+                    placeholder="Enter service description"
+                    size="md"
+                    radius="md"
+                    minRows={3}
+                    value={editingService.description}
+                    onChange={(event) => setEditingService({...editingService, description: event.target.value})}
+                    styles={{
+                      input: {
+                        borderColor: '#e9ecef',
+                        '&:focus': {
+                          borderColor: '#667eea',
+                          boxShadow: '0 0 0 1px #667eea'
+                        }
+                      }
+                    }}
+                  />
+
+                  <Group justify="flex-end" gap="md">
+                    <Button 
+                      variant="outline" 
+                      onClick={() => setEditServiceModalOpened(false)}
+                      size="md"
+                      radius="md"
+                    >
+                      Cancel
+                    </Button>
+                    <Button 
+                      size="md"
+                      radius="md"
+                      style={{
+                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                        border: 'none',
+                        fontWeight: 600
+                      }}
+                      onClick={handleSaveService}
+                    >
+                      Save Changes
+                    </Button>
+                  </Group>
+                </Stack>
+              )}
             </Modal>
           </Stack>
         </Container>

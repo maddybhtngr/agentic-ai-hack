@@ -1,0 +1,103 @@
+{
+  "reported": [
+    {
+      "id": 3,
+      "reporter": "Staff",
+      "reporter_name": "Rahul Rana",
+      "incident_priority": "MODERATE",
+      "incident_type": "SECURITY REQUIRED",
+      "status": "REPORTED",
+      "resolver": null,
+      "creation_time": "2025-07-25T21:49:29.427039Z",
+      "updated_at": "2025-07-25T21:49:29.427064Z",
+      "incident_summary": "afesg",
+      "incident_details": "afdgs",
+      "additional_image": null,
+      "zone_id": 2,
+      "is_broadcast": false
+    },
+    {
+      "id": 4,
+      "reporter": "Staff",
+      "reporter_name": "Rahul Rana",
+      "incident_priority": "MODERATE",
+      "incident_type": "SECURITY REQUIRED",
+      "status": "REPORTED",
+      "resolver": null,
+      "creation_time": "2025-07-25T21:49:58.415598Z",
+      "updated_at": "2025-07-25T21:49:58.415727Z",
+      "incident_summary": "adsfds",
+      "incident_details": "asfdg",
+      "additional_image": null,
+      "zone_id": 1,
+      "is_broadcast": false
+    },
+    {
+      "id": 5,
+      "reporter": "Admin",
+      "reporter_name": "Admin User",
+      "incident_priority": "GENERAL",
+      "incident_type": "CROWD OVERFLOW",
+      "status": "REPORTED",
+      "resolver": null,
+      "creation_time": "2025-07-25T21:50:58.596926Z",
+      "updated_at": "2025-07-25T21:50:58.596947Z",
+      "incident_summary": "dsafds",
+      "incident_details": "adsfd",
+      "additional_image": null,
+      "zone_id": 1,
+      "is_broadcast": false
+    }
+  ],
+  "assigned": [],
+  "resolved": [
+    {
+      "id": 1,
+      "reporter": "Staff",
+      "reporter_name": "Rahul Rana",
+      "incident_priority": "MODERATE",
+      "incident_type": "SECURITY REQUIRED",
+      "status": "RESOLVED",
+      "resolver": "Rahul Rana",
+      "creation_time": "2025-07-25T21:35:10.305808Z",
+      "updated_at": "2025-07-25T21:56:34.764402Z",
+      "incident_summary": "dsafdsg",
+      "incident_details": "dafdsg",
+      "additional_image": null,
+      "zone_id": 1,
+      "is_broadcast": false
+    },
+    {
+      "id": 6,
+      "reporter": "Attendee",
+      "reporter_name": "Madhur Bhatnagar",
+      "incident_priority": "CRITICAL",
+      "incident_type": "CROWD OVERFLOW",
+      "status": "RESOLVED",
+      "resolver": "Rahul Rana",
+      "creation_time": "2025-07-25T22:09:14.172206Z",
+      "updated_at": "2025-07-25T22:10:06.217952Z",
+      "incident_summary": "asdfdsg",
+      "incident_details": "dafdsgdafesgr",
+      "additional_image": null,
+      "zone_id": 1,
+      "is_broadcast": false
+    },
+    {
+      "id": 2,
+      "reporter": "Staff",
+      "reporter_name": "Rahul Rana",
+      "incident_priority": "MODERATE",
+      "incident_type": "CROWD OVERFLOW",
+      "status": "RESOLVED",
+      "resolver": "Rahul Rana",
+      "creation_time": "2025-07-25T21:35:16.808119Z",
+      "updated_at": "2025-07-25T22:30:46.809843Z",
+      "incident_summary": "safdsg",
+      "incident_details": "dsafdgs",
+      "additional_image": null,
+      "zone_id": null,
+      "is_broadcast": true
+    }
+  ]
+}

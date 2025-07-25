@@ -1,0 +1,64 @@
+{
+  "zones": [
+    {
+      "id": 1,
+      "name": "Test Zone",
+      "zoneType": "general",
+      "x": 10.0,
+      "y": 10.0,
+      "width": 40.0,
+      "height": 50.0,
+      "centerLat": 40.7128,
+      "centerLng": -74.006,
+      "radius": 50.0,
+      "maxCapacity": 100,
+      "createdAt": "2025-07-25T18:38:56.908567Z",
+      "updatedAt": "2025-07-25T18:47:07.433102Z"
+    },
+    {
+      "id": 2,
+      "name": "VIP Area",
+      "zoneType": "vip_area",
+      "x": 70.0,
+      "y": 20.0,
+      "width": 25.0,
+      "height": 30.0,
+      "centerLat": 40.7128,
+      "centerLng": -74.006,
+      "radius": 30.0,
+      "maxCapacity": 50,
+      "createdAt": "2025-07-25T18:39:47.441598Z",
+      "updatedAt": "2025-07-25T18:39:47.441605Z"
+    },
+    {
+      "id": 3,
+      "name": "Food Court",
+      "zoneType": "food_court",
+      "x": 20.0,
+      "y": 60.0,
+      "width": 35.0,
+      "height": 20.0,
+      "centerLat": 40.7128,
+      "centerLng": -74.006,
+      "radius": 40.0,
+      "maxCapacity": 150,
+      "createdAt": "2025-07-25T18:39:56.522341Z",
+      "updatedAt": "2025-07-25T18:39:56.522348Z"
+    },
+    {
+      "id": 4,
+      "name": "Parking Area",
+      "zoneType": "parking",
+      "x": 80.0,
+      "y": 80.0,
+      "width": 15.0,
+      "height": 15.0,
+      "centerLat": 40.7128,
+      "centerLng": -74.006,
+      "radius": 60.0,
+      "maxCapacity": 300,
+      "createdAt": "2025-07-25T18:45:55.473694Z",
+      "updatedAt": "2025-07-25T18:45:55.473701Z"
+    }
+  ]
+}

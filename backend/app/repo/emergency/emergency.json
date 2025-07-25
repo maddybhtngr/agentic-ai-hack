@@ -1,0 +1,25 @@
+{
+  "emergency_contacts": [
+    {
+      "id": 2,
+      "name": "Emergency Hotline",
+      "number": "100",
+      "type": "Police",
+      "status": "active",
+      "responseTime": "< 5 mins",
+      "description": "Police Emergency Hotline"
+    }
+  ],
+  "nearby_services": [
+    {
+      "id": 1,
+      "name": "Some Hospital",
+      "type": "Hospital",
+      "address": "asfdsg",
+      "phone": "1234567890",
+      "mapsLink": "adfsdsg",
+      "description": "Some Hospital Pvt Ltd",
+      "distance": "2.3 km"
+    }
+  ]
+}

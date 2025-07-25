@@ -69,6 +69,7 @@ function StaffManagement() {
   const [searchTerm, setSearchTerm] = useState('')
   const [filterRole, setFilterRole] = useState('all')
   const [staffData, setStaffData] = useState([])
+  const [zones, setZones] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [addingStaff, setAddingStaff] = useState(false)
@@ -101,26 +102,36 @@ function StaffManagement() {
     profile_photo: null
   })
 
-  // Fetch staff data on component mount
+  // Fetch staff and zones data on component mount
   useEffect(() => {
-    const fetchStaffData = async () => {
+    const fetchData = async () => {
       try {
         setLoading(true)
-        const response = await apiService.getAllStaff()
-        if (response.success) {
-          setStaffData(response.data)
+        const [staffResponse, zonesResponse] = await Promise.all([
+          apiService.getAllStaff(),
+          apiService.getAvailableZones()
+        ])
+        
+        if (staffResponse.success) {
+          setStaffData(staffResponse.data)
         } else {
           setError('Failed to fetch staff data')
         }
+        
+        if (zonesResponse.success) {
+          setZones(zonesResponse.data)
+        } else {
+          setError('Failed to fetch zones data')
+        }
       } catch (err) {
-        console.error('Error fetching staff data:', err)
-        setError('Failed to load staff data')
+        console.error('Error fetching data:', err)
+        setError('Failed to load data')
       } finally {
         setLoading(false)
       }
     }
 
-    fetchStaffData()
+    fetchData()
   }, [])
 
   const handleViewStaff = (staff) => {
@@ -721,11 +732,12 @@ function StaffManagement() {
                       size="md"
                       radius="md"
                     />
-                    <TextInput
+                    <Select
                       label="Assigned Zone"
-                      placeholder="Enter assigned zone"
+                      placeholder="Select assigned zone"
                       value={newStaff.assignedZone}
-                      onChange={(event) => setNewStaff({...newStaff, assignedZone: event.target.value})}
+                      onChange={(value) => setNewStaff({...newStaff, assignedZone: value})}
+                      data={zones.map(zone => ({ value: zone.name, label: zone.name }))}
                       required
                       size="md"
                       radius="md"
@@ -995,13 +1007,14 @@ function StaffManagement() {
                   />
                 </Grid.Col>
                 <Grid.Col span={6}>
-                  <TextInput
+                  <Select
                     label="Assigned Zone"
-                    placeholder="Enter assigned zone"
+                    placeholder="Select assigned zone"
                     size="md"
                     radius="md"
                     value={editStaff.assignedZone}
-                    onChange={(event) => setEditStaff({...editStaff, assignedZone: event.target.value})}
+                    onChange={(value) => setEditStaff({...editStaff, assignedZone: value})}
+                    data={zones.map(zone => ({ value: zone.name, label: zone.name }))}
                     styles={{
                       input: {
                         borderColor: '#e9ecef',

@@ -1,0 +1,35 @@
+{
+  "event_details": {
+    "name": "Major Event",
+    "date": "July 26, 2025",
+    "time": "9:00 AM - 6:00 PM",
+    "location": "Bangalore International Exhibition Centre",
+    "address": "K73, Madanayakahalli, Bengaluru, Karnataka 562162",
+    "capacity": 5000,
+    "registered": 342,
+    "description": "Google Agentic Hackathon",
+    "organizer": "Hack2Skill",
+    "contact": "1234567890",
+    "email": "asdfg@gmail.com",
+    "website": "adfds",
+    "status": "active",
+    "type": "Exhibition",
+    "category": "Technology"
+  },
+  "event_schedule": [
+    {
+      "id": 1,
+      "start_time": "08:00",
+      "end_time": "00:00",
+      "location": "Main Ground",
+      "details": "Day 1"
+    },
+    {
+      "id": 2,
+      "start_time": "00:00",
+      "end_time": "14:00",
+      "location": "Main Ground",
+      "details": "Day 2"
+    }
+  ]
+}

@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pathlib import Path
-from routers import auth, user
+from routers import auth, user, zones, events, emergency, incidents
 
 app = FastAPI(
     title="Crowd Management API",
@@ -27,6 +27,10 @@ app.mount("/static", StaticFiles(directory=static_dir), name="static")
 # Include routers
 app.include_router(auth.router)
 app.include_router(user.router)
+app.include_router(zones.router)
+app.include_router(events.router)
+app.include_router(emergency.router)
+app.include_router(incidents.router)
 
 @app.get("/")
 async def root():

@@ -1,5 +1,5 @@
-import { Container, Title, Text, Paper, Stack, AppShell, Grid, Group, rem, Card, Badge, Button, ActionIcon, Select } from '@mantine/core'
-import { useState } from 'react'
+import { Container, Title, Text, Paper, Stack, AppShell, Grid, Group, rem, Card, Badge, Button, ActionIcon, Select, LoadingOverlay, Alert } from '@mantine/core'
+import { useState, useEffect } from 'react'
 import { 
   IconPhoneCall,
   IconMapPin,
@@ -16,12 +16,18 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import AppBar from '../components/AppBar'
 import AttendeeSidebar from '../components/AttendeeSidebar'
 import FloatingAssistant from '../components/FloatingAssistant'
-import { authUtils } from '../services/api'
+import { authUtils, apiService } from '../services/api'
 
 function AttendeeEmergencyServices() {
   const [opened, { toggle }] = useDisclosure(true);
   const isSmallScreen = useMediaQuery('(max-width: 768px)');
   const [selectedZone, setSelectedZone] = useState('All');
+  const [staff, setStaff] = useState([]);
+  const [zones, setZones] = useState([]);
+  const [emergencyServices, setEmergencyServices] = useState([]);
+  const [emergencyContacts, setEmergencyContacts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   
   // Get current user data
   const currentUser = authUtils.getCurrentUser();
@@ -36,91 +42,40 @@ function AttendeeEmergencyServices() {
     setSelectedZone(zone);
   }
 
-  const emergencyPlaces = [
-    {
-      id: 1,
-      name: 'City General Hospital',
-      type: 'Hospital',
-      address: '123 Medical Center Dr, New York, NY 10001',
-      phone: '+1 (555) 123-4567',
-      distance: '0.8 miles',
-      zone: 'Zone A',
-      status: 'Available',
-      description: '24/7 Emergency Department with trauma center'
-    },
-    {
-      id: 2,
-      name: 'Downtown Police Station',
-      type: 'Police',
-      address: '456 Law Enforcement Ave, New York, NY 10002',
-      phone: '+1 (555) 987-6543',
-      distance: '1.2 miles',
-      zone: 'Zone B',
-      status: 'Available',
-      description: 'Local police department with emergency response unit'
-    },
-    {
-      id: 3,
-      name: 'Central Fire Station',
-      type: 'Fire',
-      address: '789 Fire Safety Blvd, New York, NY 10003',
-      phone: '+1 (555) 456-7890',
-      distance: '0.5 miles',
-      zone: 'Zone A',
-      status: 'Available',
-      description: 'Fire department with emergency medical services'
-    },
-    {
-      id: 4,
-      name: 'Emergency Medical Services',
-      type: 'EMS',
-      address: '321 Emergency Way, New York, NY 10004',
-      phone: '+1 (555) 789-0123',
-      distance: '1.0 miles',
-      zone: 'Zone C',
-      status: 'Available',
-      description: 'Ambulance services and emergency medical care'
-    }
-  ];
+  // Fetch staff, zones, emergency services, and emergency contacts data from API
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const [staffData, zonesData, emergencyData, contactsData] = await Promise.all([
+          apiService.getAvailableStaff(),
+          apiService.getAvailableZones(),
+          apiService.getNearbyServices(),
+          apiService.getEmergencyContacts()
+        ]);
+        
+        setStaff(staffData.data || staffData);
+        setEmergencyServices(emergencyData.data || emergencyData);
+        setEmergencyContacts(contactsData.data || contactsData);
+        
+        // Create zones array with 'All' option
+        const zoneOptions = ['All', ...(zonesData.data || zonesData).map(zone => zone.name)];
+        setZones(zoneOptions);
+      } catch (err) {
+        console.error('Error fetching data:', err);
+        setError('Failed to load data from server');
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const zoneStaff = [
-    {
-      id: 1,
-      name: 'Officer Sarah Johnson',
-      role: 'Security Officer',
-      zone: 'Zone A - Main Entrance',
-      phone: '+1 (555) 111-2222',
-      status: 'Active',
-      distance: '50m'
-    },
-    {
-      id: 2,
-      name: 'Officer Mike Chen',
-      role: 'Security Officer',
-      zone: 'Zone B - Food Court',
-      phone: '+1 (555) 333-4444',
-      status: 'Active',
-      distance: '120m'
-    },
-    {
-      id: 3,
-      name: 'Officer Lisa Rodriguez',
-      role: 'Security Officer',
-      zone: 'Zone C - Parking Area',
-      phone: '+1 (555) 555-6666',
-      status: 'Active',
-      distance: '200m'
-    },
-    {
-      id: 4,
-      name: 'Dr. James Wilson',
-      role: 'Medical Staff',
-      zone: 'Zone A - Medical Station',
-      phone: '+1 (555) 777-8888',
-      status: 'Active',
-      distance: '75m'
-    }
-  ];
+    fetchData();
+  }, []);
+
+
+
+
 
   const getTypeColor = (type) => {
     switch (type) {
@@ -155,13 +110,18 @@ function AttendeeEmergencyServices() {
     window.open(`tel:${phone}`, '_self');
   };
 
-  // Get unique zones from staff data
-  const zones = ['All', ...new Set(zoneStaff.map(staff => staff.zone.split(' - ')[0]))];
+  const handleCallContact = (phone) => {
+    window.open(`tel:${phone}`, '_self');
+  };
+
+  const handleEmailContact = (email) => {
+    window.open(`mailto:${email}`, '_self');
+  };
 
   // Filter staff based on selected zone
   const filteredStaff = selectedZone === 'All' 
-    ? zoneStaff 
-    : zoneStaff.filter(staff => staff.zone.startsWith(selectedZone));
+    ? staff 
+    : staff.filter(staffMember => staffMember.assigned_zone && staffMember.assigned_zone.includes(selectedZone));
 
   return (
     <AppShell
@@ -190,7 +150,13 @@ function AttendeeEmergencyServices() {
       <AttendeeSidebar opened={opened} />
 
       <AppShell.Main>
-        <Container size="100%" py="xl" px="xl">
+        <Container size="100%" py="xl" px="xl" style={{ position: 'relative' }}>
+          <LoadingOverlay visible={loading} />
+          {error && (
+            <Alert color="red" title="Error" mb="md">
+              {error}
+            </Alert>
+          )}
           <Stack spacing="xl">
             {/* Header Section */}
             <Stack spacing="xs">
@@ -321,24 +287,24 @@ function AttendeeEmergencyServices() {
                       >
                         <Stack gap="xs">
                           <Group gap="xs" align="center">
-                            <Text fw={600} size="sm">{staff.name}</Text>
+                            <Text fw={600} size="sm">{`${staff.first_name} ${staff.last_name}`}</Text>
                             <Badge 
                               color="green" 
                               variant="light"
                               size="xs"
                             >
-                              {staff.status}
+                              Active
                             </Badge>
                           </Group>
                           
                           <Text size="xs" c="dimmed">{staff.role}</Text>
-                          <Text size="xs" c="dimmed">{staff.zone}</Text>
+                          <Text size="xs" c="dimmed">{staff.assigned_zone}</Text>
                           <Badge 
                             color="blue" 
                             variant="light"
                             size="xs"
                           >
-                            Distance: {staff.distance}
+                            Available
                           </Badge>
                           
                           <Button 
@@ -350,7 +316,7 @@ function AttendeeEmergencyServices() {
                               border: 'none'
                             }}
                           >
-                            Report Incident
+                            Call Staff
                           </Button>
                         </Stack>
                       </Card>
@@ -437,7 +403,7 @@ function AttendeeEmergencyServices() {
                 </Group>
 
                 <Stack gap="md">
-                  {emergencyPlaces.map((place) => {
+                  {emergencyServices.map((place) => {
                     const TypeIcon = getTypeIcon(place.type);
                     return (
                       <Card 
@@ -471,31 +437,11 @@ function AttendeeEmergencyServices() {
                               >
                                 {place.type}
                               </Badge>
-                              <Badge 
-                                color="green" 
-                                variant="light"
-                                size="sm"
-                              >
-                                {place.status}
-                              </Badge>
                             </Group>
                             
                             <Text size="sm" c="dimmed">{place.description}</Text>
                             
-                            <Group gap="lg">
-                              <Group gap="xs">
-                                <IconMapPin size={14} style={{ color: '#667eea' }} />
-                                <Text size="xs" c="dimmed">{place.address}</Text>
-                              </Group>
-                              <Group gap="xs">
-                                <IconMapPin size={14} style={{ color: '#667eea' }} />
-                                <Text size="xs" c="dimmed">{place.zone}</Text>
-                              </Group>
-                              <Group gap="xs">
-                                <IconMapPin size={14} style={{ color: '#667eea' }} />
-                                <Text size="xs" c="dimmed">{place.distance}</Text>
-                              </Group>
-                            </Group>
+                            <Text size="xs" c="dimmed">{place.distance}</Text>
                           </Stack>
                           
                           <Group gap="xs">
@@ -521,6 +467,163 @@ function AttendeeEmergencyServices() {
                     );
                   })}
                 </Stack>
+              </Stack>
+            </Paper>
+
+            {/* Emergency Contacts */}
+            <Paper 
+              shadow="xl" 
+              p="xl" 
+              radius="lg" 
+              style={{
+                background: 'rgba(255, 255, 255, 0.95)',
+                backdropFilter: 'blur(10px)',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                position: 'relative',
+                overflow: 'hidden'
+              }}
+            >
+              {/* Background gradient accent */}
+              <div style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                height: '4px',
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                borderRadius: `${rem(12)} ${rem(12)} 0 0`
+              }} />
+
+              <Stack spacing="lg">
+                <Group gap="md">
+                  <div style={{
+                    padding: rem(12),
+                    borderRadius: rem(12),
+                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}>
+                    <IconPhoneCall size={24} style={{ color: 'white' }} />
+                  </div>
+                  <Stack gap="xs">
+                    <Title order={3} style={{ 
+                      fontWeight: 700,
+                      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent'
+                    }}>
+                      Emergency Contacts
+                    </Title>
+                    <Text size="sm" c="dimmed">
+                      Important emergency contact numbers
+                    </Text>
+                  </Stack>
+                </Group>
+
+                <Grid gutter="md">
+                  {emergencyContacts.map((contact) => (
+                    <Grid.Col key={contact.id} span={{ base: 12, sm: 6, lg: 4 }}>
+                      <Card 
+                        shadow="sm" 
+                        p="lg" 
+                        radius="md" 
+                        withBorder
+                        style={{
+                          background: 'rgba(255, 255, 255, 0.8)',
+                          backdropFilter: 'blur(5px)',
+                          border: '1px solid rgba(255, 255, 255, 0.3)',
+                          transition: 'all 0.2s ease',
+                          '&:hover': {
+                            transform: 'translateY(-2px)',
+                            boxShadow: '0 8px 16px rgba(0,0,0,0.1)'
+                          }
+                        }}
+                      >
+                        <Stack gap="md">
+                          <Group gap="md" align="center">
+                            <Group gap="xs">
+                              <IconPhoneCall size={20} style={{ color: '#667eea' }} />
+                              <Text fw={600} size="lg">{contact.name}</Text>
+                            </Group>
+                            <Badge 
+                              color="red" 
+                              variant="light"
+                              size="sm"
+                            >
+                              Emergency
+                            </Badge>
+                          </Group>
+                          
+                          <Text size="sm" c="dimmed">{contact.description || 'Emergency contact'}</Text>
+                          
+                          <Stack gap="xs">
+                            <Text size="sm" fw={500}>{contact.phone}</Text>
+                            {contact.email && (
+                              <Group gap="xs">
+                                <IconMail size={14} style={{ color: '#667eea' }} />
+                                <Text size="sm" c="dimmed">{contact.email}</Text>
+                              </Group>
+                            )}
+                          </Stack>
+                          
+                          <Group gap="xs">
+                            <Button 
+                              size="xs"
+                              leftSection={<IconPhone size={12} />}
+                              onClick={() => handleCallContact(contact.phone)}
+                              style={{
+                                background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)',
+                                border: 'none'
+                              }}
+                            >
+                              Call Now
+                            </Button>
+                            {contact.email && (
+                              <Button 
+                                size="xs"
+                                variant="light"
+                                leftSection={<IconMail size={12} />}
+                                onClick={() => handleEmailContact(contact.email)}
+                                style={{
+                                  border: '1px solid #667eea',
+                                  color: '#667eea'
+                                }}
+                              >
+                                Email
+                              </Button>
+                            )}
+                          </Group>
+                        </Stack>
+                      </Card>
+                    </Grid.Col>
+                  ))}
+                </Grid>
+
+                {/* No Contacts Message */}
+                {emergencyContacts.length === 0 && (
+                  <Card 
+                    shadow="sm" 
+                    p="xl" 
+                    radius="md" 
+                    withBorder
+                    style={{
+                      background: 'rgba(255, 255, 255, 0.8)',
+                      backdropFilter: 'blur(5px)',
+                      border: '1px solid rgba(255, 255, 255, 0.3)'
+                    }}
+                  >
+                    <Stack gap="md" align="center">
+                      <IconPhoneCall size={48} style={{ color: '#667eea', opacity: 0.5 }} />
+                      <Text size="lg" fw={600} c="dimmed">
+                        No emergency contacts available
+                      </Text>
+                      <Text size="sm" c="dimmed" ta="center">
+                        Emergency contacts will be displayed here when available.
+                      </Text>
+                    </Stack>
+                  </Card>
+                )}
               </Stack>
             </Paper>
           </Stack>

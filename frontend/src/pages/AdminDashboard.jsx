@@ -312,7 +312,7 @@ function AdminDashboard() {
                 </Grid>
 
                 {/* Heat Map Component */}
-                <CrowdHeatMap />
+                <CrowdHeatMap updateInterval={10000} />
               </Stack>
             </Paper>
           </Stack>

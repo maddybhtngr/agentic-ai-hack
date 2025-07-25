@@ -322,7 +322,7 @@ function AttendeeDashboard() {
                 </Grid>
 
                 {/* Heat Map Component */}
-                <CrowdHeatMap showZoneManagement={false} />
+                <CrowdHeatMap showZoneManagement={false} updateInterval={10000} />
               </Stack>
             </Paper>
           </Stack>

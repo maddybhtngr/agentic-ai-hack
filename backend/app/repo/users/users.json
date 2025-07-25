@@ -15,13 +15,47 @@
       "first_name": "Rahul",
       "last_name": "Rana",
       "role": "Security",
-      "assigned_zone": "Entrance",
+      "assigned_zone": "Test Zone",
       "contact_email": "ardfsg@gmail.com",
       "contact_number": "1234567890",
       "address": "sdfgh",
       "status": "active",
       "user_type": "staff",
       "profile_photo": "data/staff/rahul.rana.jpg",
+      "created_at": "2025-01-27T00:00:00.000Z",
+      "updated_at": "2025-01-27T00:00:00.000Z"
+    },
+    {
+      "id": 2,
+      "username": "vip.staff",
+      "password": "1234",
+      "first_name": "VIP",
+      "last_name": "Staff",
+      "role": "Security",
+      "assigned_zone": "VIP Area",
+      "contact_email": "vip@example.com",
+      "contact_number": "9876543210",
+      "address": "VIP Zone",
+      "status": "active",
+      "user_type": "staff",
+      "profile_photo": null,
+      "created_at": "2025-01-27T00:00:00.000Z",
+      "updated_at": "2025-01-27T00:00:00.000Z"
+    },
+    {
+      "id": 3,
+      "username": "food.staff",
+      "password": "1234",
+      "first_name": "Food",
+      "last_name": "Staff",
+      "role": "Security",
+      "assigned_zone": "Food Court",
+      "contact_email": "food@example.com",
+      "contact_number": "5555555555",
+      "address": "Food Zone",
+      "status": "active",
+      "user_type": "staff",
+      "profile_photo": null,
       "created_at": "2025-01-27T00:00:00.000Z",
       "updated_at": "2025-01-27T00:00:00.000Z"
     }
@@ -49,16 +83,7 @@
       },
       "created_at": "2025-07-25T10:12:10.434274Z",
       "updated_at": "2025-07-25T10:12:10.434274Z",
-      "family_members": [
-        {
-          "username": "maddybhtngr__Big__Sister",
-          "first_name": "Big",
-          "last_name": "Sister",
-          "contact": "1234567890",
-          "photo_path": "data/attendees/maddybhtngr__Big__Sister.jpg",
-          "created_at": "2025-07-25T10:12:10.434274Z"
-        }
-      ]
+      "family_members": []
     },
     {
       "username": "Amitrajit",
