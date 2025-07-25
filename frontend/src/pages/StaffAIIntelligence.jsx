@@ -20,10 +20,15 @@ import AppBar from '../components/AppBar'
 import StaffSidebar from '../components/StaffSidebar'
 import FloatingAssistant from '../components/FloatingAssistant'
 import { useState } from 'react'
+import { authUtils } from '../services/api'
 
 function StaffAIIntelligence() {
   const [opened, { toggle }] = useDisclosure(true);
   const isSmallScreen = useMediaQuery('(max-width: 768px)');
+
+  // Get current user data
+  const currentUser = authUtils.getCurrentUser();
+  const userName = currentUser ? `${currentUser.first_name} ${currentUser.last_name}` : 'Staff User';
 
   const handleMenuClick = () => {
     toggle();
@@ -144,7 +149,7 @@ function StaffAIIntelligence() {
     >
       <AppShell.Header>
         <AppBar 
-          userName="Staff User" 
+          userName={userName} 
           onMenuClick={handleMenuClick}
           opened={opened}
         />

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { 
   AppShell,
   Container,
@@ -20,7 +20,11 @@ import {
   Select,
   ActionIcon,
   Avatar,
-  Table
+  Table,
+  LoadingOverlay,
+  Stepper,
+  FileInput,
+  Alert
 } from '@mantine/core'
 import { useDisclosure, useMediaQuery } from '@mantine/hooks'
 import { 
@@ -46,182 +50,197 @@ import {
   IconBriefcase,
   IconClock,
   IconCheck,
-  IconX
+  IconX,
+  IconUpload,
+  IconEye
 } from '@tabler/icons-react'
 import AppBar from '../components/AppBar'
 import Sidebar from '../components/Sidebar'
 import FloatingAssistant from '../components/FloatingAssistant'
+import { apiService } from '../services/api'
 
 function StaffManagement() {
   const [opened, { toggle }] = useDisclosure(true)
   const isSmallScreen = useMediaQuery('(max-width: 768px)')
   const [addModalOpened, setAddModalOpened] = useState(false)
   const [editModalOpened, setEditModalOpened] = useState(false)
+  const [viewModalOpened, setViewModalOpened] = useState(false)
   const [selectedStaff, setSelectedStaff] = useState(null)
   const [searchTerm, setSearchTerm] = useState('')
   const [filterRole, setFilterRole] = useState('all')
-
-  const [staffData, setStaffData] = useState([
-    {
-      id: 1,
-      name: 'John Smith',
-      email: 'john.smith@drishti.com',
-      phone: '+1 (555) 123-4567',
-      role: 'Security Officer',
-      department: 'Security',
-      status: 'active',
-      joinDate: '2023-01-15',
-      employeeId: 'EMP001',
-      avatar: null,
-      shifts: 'Day Shift',
-      location: 'Zone A',
-      supervisor: 'Sarah Johnson'
-    },
-    {
-      id: 2,
-      name: 'Sarah Johnson',
-      email: 'sarah.johnson@drishti.com',
-      phone: '+1 (555) 234-5678',
-      role: 'Security Supervisor',
-      department: 'Security',
-      status: 'active',
-      joinDate: '2022-08-20',
-      employeeId: 'EMP002',
-      avatar: null,
-      shifts: 'Day Shift',
-      location: 'All Zones',
-      supervisor: 'Mike Wilson'
-    },
-    {
-      id: 3,
-      name: 'Mike Wilson',
-      email: 'mike.wilson@drishti.com',
-      phone: '+1 (555) 345-6789',
-      role: 'Security Manager',
-      department: 'Security',
-      status: 'active',
-      joinDate: '2021-12-10',
-      employeeId: 'EMP003',
-      avatar: null,
-      shifts: 'Flexible',
-      location: 'Headquarters',
-      supervisor: 'Director'
-    },
-    {
-      id: 4,
-      name: 'Emily Davis',
-      email: 'emily.davis@drishti.com',
-      phone: '+1 (555) 456-7890',
-      role: 'Medical Staff',
-      department: 'Medical',
-      status: 'active',
-      joinDate: '2023-03-05',
-      employeeId: 'EMP004',
-      avatar: null,
-      shifts: 'Night Shift',
-      location: 'Medical Center',
-      supervisor: 'Dr. Robert Brown'
-    },
-    {
-      id: 5,
-      name: 'Dr. Robert Brown',
-      email: 'robert.brown@drishti.com',
-      phone: '+1 (555) 567-8901',
-      role: 'Medical Director',
-      department: 'Medical',
-      status: 'active',
-      joinDate: '2022-06-15',
-      employeeId: 'EMP005',
-      avatar: null,
-      shifts: 'Day Shift',
-      location: 'Medical Center',
-      supervisor: 'Director'
-    },
-    {
-      id: 6,
-      name: 'Alex Rodriguez',
-      email: 'alex.rodriguez@drishti.com',
-      phone: '+1 (555) 678-9012',
-      role: 'Crowd Control',
-      department: 'Operations',
-      status: 'inactive',
-      joinDate: '2023-02-20',
-      employeeId: 'EMP006',
-      avatar: null,
-      shifts: 'Day Shift',
-      location: 'Zone B',
-      supervisor: 'Sarah Johnson'
-    }
-  ])
+  const [staffData, setStaffData] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const [addingStaff, setAddingStaff] = useState(false)
+  const [updatingStaff, setUpdatingStaff] = useState(false)
+  const [activeStep, setActiveStep] = useState(0)
 
   const [newStaff, setNewStaff] = useState({
-    name: '',
-    email: '',
-    phone: '',
+    username: '',
+    firstName: '',
+    lastName: '',
     role: '',
-    location: ''
+    assignedZone: '',
+    contactEmail: '',
+    contactNumber: '',
+    address: '',
+    status: 'active',
+    profile_photo: null
   })
 
   const [editStaff, setEditStaff] = useState({
-    name: '',
-    email: '',
-    phone: '',
+    username: '',
+    firstName: '',
+    lastName: '',
     role: '',
-    location: ''
+    assignedZone: '',
+    contactEmail: '',
+    contactNumber: '',
+    address: '',
+    status: 'active',
+    profile_photo: null
   })
 
+  // Fetch staff data on component mount
+  useEffect(() => {
+    const fetchStaffData = async () => {
+      try {
+        setLoading(true)
+        const response = await apiService.getAllStaff()
+        if (response.success) {
+          setStaffData(response.data)
+        } else {
+          setError('Failed to fetch staff data')
+        }
+      } catch (err) {
+        console.error('Error fetching staff data:', err)
+        setError('Failed to load staff data')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchStaffData()
+  }, [])
+
+  const handleViewStaff = (staff) => {
+    console.log('Viewing staff:', staff);
+    console.log('Profile photo path:', staff.profile_photo);
+    setSelectedStaff(staff)
+    setViewModalOpened(true)
+  }
+
   const handleEditStaff = (staff) => {
-    setEditStaff({
-      name: staff.name,
-      email: staff.email,
-      phone: staff.phone,
+    // Prefill the add staff form with existing data
+    setNewStaff({
+      username: staff.username,
+      firstName: staff.first_name,
+      lastName: staff.last_name,
       role: staff.role,
-      location: staff.location
+      assignedZone: staff.assigned_zone,
+      contactEmail: staff.contact_email,
+      contactNumber: staff.contact_number,
+      address: staff.address,
+      status: staff.status,
+      profile_photo: null // We'll handle profile photo separately
     })
     setSelectedStaff(staff)
-    setEditModalOpened(true)
+    setActiveStep(0) // Start from the first step
+    setAddModalOpened(true)
   }
 
-  const handleAddStaff = () => {
-    if (newStaff.name && newStaff.email && newStaff.role && newStaff.location) {
-      const staff = {
-        id: staffData.length + 1,
-        ...newStaff,
-        status: 'active',
-        joinDate: new Date().toISOString().split('T')[0],
-        employeeId: `EMP${String(staffData.length + 1).padStart(3, '0')}`,
-        avatar: null,
-        department: 'General',
-        shifts: 'Day Shift',
-        supervisor: 'Manager'
+  const resetAddForm = () => {
+    setNewStaff({
+      username: '',
+      firstName: '',
+      lastName: '',
+      role: '',
+      assignedZone: '',
+      contactEmail: '',
+      contactNumber: '',
+      address: '',
+      status: 'active',
+      profile_photo: null
+    })
+    setActiveStep(0)
+    setSelectedStaff(null)
+  }
+
+  const handleAddStaff = async () => {
+    if (!newStaff.username || !newStaff.firstName || !newStaff.lastName || !newStaff.role || !newStaff.assignedZone || !newStaff.contactEmail || !newStaff.contactNumber || !newStaff.address) {
+      return
+    }
+
+    try {
+      setAddingStaff(true)
+      
+      let response
+      if (selectedStaff) {
+        // Update existing staff
+        response = await apiService.updateStaff(selectedStaff.username, newStaff)
+      } else {
+        // Add new staff
+        response = await apiService.addStaff(newStaff)
       }
-      setStaffData([...staffData, staff])
-      setNewStaff({
-        name: '',
-        email: '',
-        phone: '',
-        role: '',
-        location: ''
-      })
-      setAddModalOpened(false)
+      
+      if (response.success) {
+        // Refresh staff data
+        const staffResponse = await apiService.getAllStaff()
+        if (staffResponse.success) {
+          setStaffData(staffResponse.data)
+        }
+        
+        resetAddForm()
+        setAddModalOpened(false)
+        setSelectedStaff(null) // Clear selected staff
+      }
+    } catch (err) {
+      console.error('Error saving staff:', err)
+      setError(selectedStaff ? 'Failed to update staff member' : 'Failed to add staff member')
+    } finally {
+      setAddingStaff(false)
     }
   }
 
-  const handleSaveEdit = () => {
-    if (editStaff.name && editStaff.email && editStaff.role && editStaff.location) {
-      const updatedStaff = staffData.map(staff => 
-        staff.id === selectedStaff.id 
-          ? { ...staff, ...editStaff }
-          : staff
-      )
-      setStaffData(updatedStaff)
-      setEditModalOpened(false)
-      setSelectedStaff(null)
+  const handleSaveEdit = async () => {
+    if (!editStaff.username || !editStaff.firstName || !editStaff.lastName || !editStaff.role || !editStaff.assignedZone || !editStaff.contactEmail || !editStaff.contactNumber || !editStaff.address) {
+      return
+    }
+
+    try {
+      setUpdatingStaff(true)
+      const response = await apiService.updateStaff(selectedStaff.username, editStaff)
+      if (response.success) {
+        // Refresh staff data
+        const staffResponse = await apiService.getAllStaff()
+        if (staffResponse.success) {
+          setStaffData(staffResponse.data)
+        }
+        setEditModalOpened(false)
+        setSelectedStaff(null)
+      }
+    } catch (err) {
+      console.error('Error updating staff:', err)
+      setError('Failed to update staff member')
+    } finally {
+      setUpdatingStaff(false)
     }
   }
 
-  const handleDeleteStaff = (id) => {
-    setStaffData(staffData.filter(staff => staff.id !== id))
+  const handleDeleteStaff = async (username) => {
+    try {
+      const response = await apiService.deleteStaff(username)
+      if (response.success) {
+        // Refresh staff data
+        const staffResponse = await apiService.getAllStaff()
+        if (staffResponse.success) {
+          setStaffData(staffResponse.data)
+        }
+      }
+    } catch (err) {
+      console.error('Error deleting staff:', err)
+      setError('Failed to delete staff member')
+    }
   }
 
   const handleToggleStatus = (id) => {
@@ -236,20 +255,20 @@ function StaffManagement() {
     return status === 'active' ? 'green' : 'red'
   }
 
-  const getDepartmentColor = (department) => {
-    switch (department.toLowerCase()) {
+  const getRoleColor = (role) => {
+    switch (role?.toLowerCase()) {
       case 'security': return 'blue'
-      case 'medical': return 'red'
-      case 'operations': return 'yellow'
+      case 'volunteer': return 'green'
       default: return 'gray'
     }
   }
 
   const filteredStaff = staffData.filter(staff => {
-    const matchesSearch = staff.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         staff.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         staff.employeeId.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesRole = filterRole === 'all' || staff.department.toLowerCase() === filterRole.toLowerCase()
+    const fullName = `${staff.first_name} ${staff.last_name}`.toLowerCase()
+    const matchesSearch = fullName.includes(searchTerm.toLowerCase()) ||
+                         staff.contact_email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         staff.username.toLowerCase().includes(searchTerm.toLowerCase())
+    const matchesRole = filterRole === 'all' || staff.role.toLowerCase() === filterRole.toLowerCase()
     return matchesSearch && matchesRole
   })
 
@@ -281,7 +300,15 @@ function StaffManagement() {
       </AppShell.Navbar>
 
       <AppShell.Main>
-        <Container size="100%" py="xl" px="xl">
+        <Container size="100%" py="xl" px="xl" style={{ position: 'relative' }}>
+          <LoadingOverlay visible={loading} />
+          
+          {error && (
+            <Paper p="md" radius="md" style={{ background: 'rgba(255, 0, 0, 0.1)', border: '1px solid rgba(255, 0, 0, 0.3)' }}>
+              <Text c="red" ta="center">{error}</Text>
+            </Paper>
+          )}
+
           <Stack spacing="xl">
             {/* Header */}
             <Stack spacing="xs">
@@ -469,10 +496,9 @@ function StaffManagement() {
                     value={filterRole}
                     onChange={setFilterRole}
                     data={[
-                      { value: 'all', label: 'All Departments' },
-                      { value: 'security', label: 'Security' },
-                      { value: 'medical', label: 'Medical' },
-                      { value: 'operations', label: 'Operations' }
+                      { value: 'all', label: 'All Roles' },
+                      { value: 'Security', label: 'Security' },
+                      { value: 'Volunteer', label: 'Volunteer' }
                     ]}
                     size="md"
                     radius="md"
@@ -484,6 +510,7 @@ function StaffManagement() {
                   <Table.Thead>
                     <Table.Tr>
                       <Table.Th>Name</Table.Th>
+                      <Table.Th>Username</Table.Th>
                       <Table.Th>Role</Table.Th>
                       <Table.Th>Zone</Table.Th>
                       <Table.Th>Status</Table.Th>
@@ -493,38 +520,40 @@ function StaffManagement() {
                   </Table.Thead>
                   <Table.Tbody>
                     {filteredStaff.map((staff) => (
-                      <Table.Tr key={staff.id}>
+                      <Table.Tr key={staff.id || staff.username}>
                         <Table.Td>
                           <Group gap="sm">
-                            <Avatar size="md" radius="xl" color={getDepartmentColor(staff.department)}>
-                              {staff.name.split(' ').map(n => n[0]).join('')}
+                            <Avatar size="md" radius="xl" color={getRoleColor(staff.role)}>
+                              {staff.first_name?.[0] || 'S'}{staff.last_name?.[0] || 'T'}
                             </Avatar>
                             <Stack gap={4}>
-                              <Text size="sm" fw={600}>{staff.name}</Text>
-                              <Text size="xs" c="dimmed">{staff.employeeId}</Text>
+                              <Text size="sm" fw={600}>{staff.first_name || 'Unknown'} {staff.last_name || 'Staff'}</Text>
                             </Stack>
                           </Group>
                         </Table.Td>
                         <Table.Td>
-                          <Text size="sm">{staff.role}</Text>
+                          <Text size="sm" c="dimmed">{staff.username || 'N/A'}</Text>
                         </Table.Td>
                         <Table.Td>
-                          <Text size="sm">{staff.location}</Text>
+                          <Text size="sm">{staff.role || 'N/A'}</Text>
                         </Table.Td>
                         <Table.Td>
-                          <Badge color={getStatusColor(staff.status)} variant="light">
-                            {staff.status.charAt(0).toUpperCase() + staff.status.slice(1)}
+                          <Text size="sm">{staff.assigned_zone || 'N/A'}</Text>
+                        </Table.Td>
+                        <Table.Td>
+                          <Badge color={getStatusColor(staff.status || 'active')} variant="light">
+                            {(staff.status || 'active').charAt(0).toUpperCase() + (staff.status || 'active').slice(1)}
                           </Badge>
                         </Table.Td>
                         <Table.Td>
                           <Stack gap={4}>
                             <Group gap="xs">
                               <IconMail size={12} style={{ color: '#667eea' }} />
-                              <Text size="xs">{staff.email}</Text>
+                              <Text size="xs">{staff.contact_email || 'N/A'}</Text>
                             </Group>
                             <Group gap="xs">
                               <IconPhone size={12} style={{ color: '#667eea' }} />
-                              <Text size="xs">{staff.phone}</Text>
+                              <Text size="xs">{staff.contact_number || 'N/A'}</Text>
                             </Group>
                           </Stack>
                         </Table.Td>
@@ -534,7 +563,7 @@ function StaffManagement() {
                               size="sm"
                               variant="light"
                               color="blue"
-                              onClick={() => handleEditStaff(staff)}
+                              onClick={() => handleViewStaff(staff)}
                               style={{
                                 background: 'rgba(102, 126, 234, 0.1)',
                                 color: '#667eea',
@@ -544,13 +573,29 @@ function StaffManagement() {
                                 }
                               }}
                             >
+                              <IconEye size={14} />
+                            </ActionIcon>
+                            <ActionIcon
+                              size="sm"
+                              variant="light"
+                              color="orange"
+                              onClick={() => handleEditStaff(staff)}
+                              style={{
+                                background: 'rgba(255, 165, 0, 0.1)',
+                                color: '#ffa500',
+                                border: '1px solid rgba(255, 165, 0, 0.2)',
+                                '&:hover': {
+                                  background: 'rgba(255, 165, 0, 0.2)'
+                                }
+                              }}
+                            >
                               <IconEdit size={14} />
                             </ActionIcon>
                             <ActionIcon
                               size="sm"
                               variant="light"
                               color="red"
-                              onClick={() => handleDeleteStaff(staff.id)}
+                              onClick={() => handleDeleteStaff(staff.username)}
                               style={{
                                 background: 'rgba(239, 68, 68, 0.1)',
                                 color: '#ef4444',
@@ -575,12 +620,16 @@ function StaffManagement() {
           {/* Add Staff Modal */}
           <Modal 
             opened={addModalOpened} 
-            onClose={() => setAddModalOpened(false)} 
+            onClose={() => {
+              setAddModalOpened(false)
+              resetAddForm()
+              setSelectedStaff(null)
+            }} 
             title={
-              <Text fw={600}>Add New Staff Member</Text>
+              <Text fw={600}>{selectedStaff ? 'Edit Staff Member' : 'Add New Staff Member'}</Text>
             }
             centered
-            size="lg"
+            size="xl"
             styles={{
               header: {
                 background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
@@ -591,130 +640,236 @@ function StaffManagement() {
               }
             }}
           >
-            <Stack gap="md">
-              <Grid gutter="md">
-                <Grid.Col span={6}>
-                  <TextInput
-                    label="Full Name"
-                    placeholder="Enter full name"
-                    size="md"
-                    radius="md"
-                    value={newStaff.name}
-                    onChange={(event) => setNewStaff({...newStaff, name: event.target.value})}
-                    styles={{
-                      input: {
-                        borderColor: '#e9ecef',
-                        '&:focus': {
-                          borderColor: '#667eea',
-                          boxShadow: '0 0 0 1px #667eea'
-                        }
-                      }
-                    }}
-                  />
-                </Grid.Col>
-                <Grid.Col span={6}>
-                  <TextInput
-                    label="Role"
-                    placeholder="Enter role/title"
-                    size="md"
-                    radius="md"
-                    value={newStaff.role}
-                    onChange={(event) => setNewStaff({...newStaff, role: event.target.value})}
-                    styles={{
-                      input: {
-                        borderColor: '#e9ecef',
-                        '&:focus': {
-                          borderColor: '#667eea',
-                          boxShadow: '0 0 0 1px #667eea'
-                        }
-                      }
-                    }}
-                  />
-                </Grid.Col>
-              </Grid>
-
-              <Grid gutter="md">
-                <Grid.Col span={6}>
-                  <TextInput
-                    label="Zone"
-                    placeholder="Enter assigned zone"
-                    size="md"
-                    radius="md"
-                    value={newStaff.location}
-                    onChange={(event) => setNewStaff({...newStaff, location: event.target.value})}
-                    styles={{
-                      input: {
-                        borderColor: '#e9ecef',
-                        '&:focus': {
-                          borderColor: '#667eea',
-                          boxShadow: '0 0 0 1px #667eea'
-                        }
-                      }
-                    }}
-                  />
-                </Grid.Col>
-                <Grid.Col span={6}>
-                  <TextInput
-                    label="Email"
-                    placeholder="Enter email address"
-                    size="md"
-                    radius="md"
-                    value={newStaff.email}
-                    onChange={(event) => setNewStaff({...newStaff, email: event.target.value})}
-                    styles={{
-                      input: {
-                        borderColor: '#e9ecef',
-                        '&:focus': {
-                          borderColor: '#667eea',
-                          boxShadow: '0 0 0 1px #667eea'
-                        }
-                      }
-                    }}
-                  />
-                </Grid.Col>
-              </Grid>
-
-              <TextInput
-                label="Phone"
-                placeholder="Enter phone number"
-                size="md"
-                radius="md"
-                value={newStaff.phone}
-                onChange={(event) => setNewStaff({...newStaff, phone: event.target.value})}
-                styles={{
-                  input: {
-                    borderColor: '#e9ecef',
-                    '&:focus': {
-                      borderColor: '#667eea',
-                      boxShadow: '0 0 0 1px #667eea'
-                    }
+            <Stepper 
+              active={activeStep} 
+              onStepClick={setActiveStep}
+              breakpoint="sm"
+              size="sm"
+              styles={{
+                step: {
+                  '&[data-progress="true"]': {
+                    borderColor: '#667eea'
                   }
-                }}
-              />
+                },
+                stepIcon: {
+                  '&[data-progress="true"]': {
+                    backgroundColor: '#667eea',
+                    borderColor: '#667eea'
+                  }
+                }
+              }}
+            >
+              <Stepper.Step label="Basic Info" description="Personal details">
+                <Stack spacing="lg" mt="xl">
+                  <TextInput
+                    label="Username"
+                    placeholder="Enter username"
+                    value={newStaff.username}
+                    onChange={(event) => setNewStaff({...newStaff, username: event.target.value})}
+                    required
+                    size="md"
+                    radius="md"
+                  />
 
-              <Group justify="flex-end" gap="md">
+                  <Group grow>
+                    <TextInput
+                      label="First Name"
+                      placeholder="Enter first name"
+                      value={newStaff.firstName}
+                      onChange={(event) => setNewStaff({...newStaff, firstName: event.target.value})}
+                      required
+                      size="md"
+                      radius="md"
+                    />
+                    <TextInput
+                      label="Last Name"
+                      placeholder="Enter last name"
+                      value={newStaff.lastName}
+                      onChange={(event) => setNewStaff({...newStaff, lastName: event.target.value})}
+                      required
+                      size="md"
+                      radius="md"
+                    />
+                  </Group>
+
+                  <FileInput
+                    label="Profile Photo"
+                    placeholder="Upload profile photo"
+                    accept="image/*"
+                    icon={<IconUpload size={14} />}
+                    value={newStaff.profile_photo}
+                    onChange={(value) => setNewStaff({...newStaff, profile_photo: value})}
+                    size="md"
+                    radius="md"
+                  />
+                </Stack>
+              </Stepper.Step>
+
+              <Stepper.Step label="Role & Zone" description="Assignment details">
+                <Stack spacing="lg" mt="xl">
+                  <Group grow>
+                    <Select
+                      label="Role"
+                      placeholder="Select role"
+                      value={newStaff.role}
+                      onChange={(value) => setNewStaff({...newStaff, role: value})}
+                      data={[
+                        { value: 'Security', label: 'Security' },
+                        { value: 'Volunteer', label: 'Volunteer' }
+                      ]}
+                      required
+                      size="md"
+                      radius="md"
+                    />
+                    <TextInput
+                      label="Assigned Zone"
+                      placeholder="Enter assigned zone"
+                      value={newStaff.assignedZone}
+                      onChange={(event) => setNewStaff({...newStaff, assignedZone: event.target.value})}
+                      required
+                      size="md"
+                      radius="md"
+                    />
+                  </Group>
+
+                  <Select
+                    label="Status"
+                    placeholder="Select status"
+                    value={newStaff.status}
+                    onChange={(value) => setNewStaff({...newStaff, status: value})}
+                    data={[
+                      { value: 'active', label: 'Active' },
+                      { value: 'inactive', label: 'Inactive' }
+                    ]}
+                    size="md"
+                    radius="md"
+                  />
+                </Stack>
+              </Stepper.Step>
+
+              <Stepper.Step label="Contact Info" description="Contact details">
+                <Stack spacing="lg" mt="xl">
+                  <Group grow>
+                    <TextInput
+                      label="Contact Email"
+                      placeholder="Enter email address"
+                      value={newStaff.contactEmail}
+                      onChange={(event) => setNewStaff({...newStaff, contactEmail: event.target.value})}
+                      required
+                      type="email"
+                      size="md"
+                      radius="md"
+                    />
+                    <TextInput
+                      label="Contact Number"
+                      placeholder="Enter phone number"
+                      value={newStaff.contactNumber}
+                      onChange={(event) => setNewStaff({...newStaff, contactNumber: event.target.value})}
+                      required
+                      size="md"
+                      radius="md"
+                    />
+                  </Group>
+
+                  <Textarea
+                    label="Address"
+                    placeholder="Enter address"
+                    value={newStaff.address}
+                    onChange={(event) => setNewStaff({...newStaff, address: event.target.value})}
+                    required
+                    size="md"
+                    radius="md"
+                    minRows={3}
+                  />
+                </Stack>
+              </Stepper.Step>
+
+              <Stepper.Completed>
+                <Stack spacing="lg" mt="xl">
+                  <Text ta="center" size="lg" fw={600}>
+                    Review Staff Information
+                  </Text>
+                  
+                  <Paper p="md" withBorder>
+                    <Stack spacing="xs">
+                      <Text><strong>Name:</strong> {newStaff.firstName} {newStaff.lastName}</Text>
+                      <Text><strong>Username:</strong> {newStaff.username}</Text>
+                      <Text><strong>Role:</strong> {newStaff.role}</Text>
+                      <Text><strong>Zone:</strong> {newStaff.assignedZone}</Text>
+                      <Text><strong>Email:</strong> {newStaff.contactEmail}</Text>
+                      <Text><strong>Phone:</strong> {newStaff.contactNumber}</Text>
+                      <Text><strong>Address:</strong> {newStaff.address}</Text>
+                      <Text><strong>Status:</strong> {newStaff.status}</Text>
+                    </Stack>
+                  </Paper>
+                </Stack>
+              </Stepper.Completed>
+            </Stepper>
+
+            {activeStep < 3 && (
+              <Group justify="center" mt="xl">
                 <Button 
-                  variant="outline" 
-                  onClick={() => setAddModalOpened(false)}
+                  variant="default" 
+                  onClick={() => setActiveStep(activeStep - 1)}
+                  disabled={activeStep === 0}
                   size="md"
                   radius="md"
                 >
-                  Cancel
+                  Back
                 </Button>
                 <Button 
-                  size="md"
-                  radius="md"
+                  onClick={() => setActiveStep(activeStep + 1)}
+                  disabled={
+                    (activeStep === 0 && (!newStaff.username || !newStaff.firstName || !newStaff.lastName)) ||
+                    (activeStep === 1 && (!newStaff.role || !newStaff.assignedZone)) ||
+                    (activeStep === 2 && (!newStaff.contactEmail || !newStaff.contactNumber || !newStaff.address))
+                  }
                   style={{
                     background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                     border: 'none',
                     fontWeight: 600
                   }}
-                  onClick={handleAddStaff}
+                  size="md"
+                  radius="md"
                 >
-                  Add Staff
+                  {activeStep === 2 ? 'Complete' : 'Next'}
                 </Button>
               </Group>
-            </Stack>
+            )}
+
+            {activeStep === 3 && (
+              <Stack spacing="lg" mt="xl">
+                <Button 
+                  onClick={handleAddStaff}
+                  loading={addingStaff}
+                  fullWidth
+                  size="md"
+                  radius="md"
+                  style={{
+                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    border: 'none',
+                    fontWeight: 600,
+                    fontSize: rem(16),
+                    height: rem(48)
+                  }}
+                                  >
+                    {addingStaff ? (selectedStaff ? 'Updating Staff...' : 'Adding Staff...') : (selectedStaff ? 'Update Staff' : 'Add Staff')}
+                  </Button>
+                
+                <Button 
+                  variant="outline" 
+                  onClick={() => {
+                    setAddModalOpened(false)
+                    resetAddForm()
+                  }}
+                  fullWidth
+                  size="md"
+                  radius="md"
+                >
+                  {selectedStaff ? 'Cancel Edit' : 'Cancel'}
+                </Button>
+              </Stack>
+            )}
           </Modal>
 
           {/* Edit Staff Modal */}
@@ -740,12 +895,12 @@ function StaffManagement() {
               <Grid gutter="md">
                 <Grid.Col span={6}>
                   <TextInput
-                    label="Full Name"
-                    placeholder="Enter full name"
+                    label="Username"
+                    placeholder="Enter username"
                     size="md"
                     radius="md"
-                    value={editStaff.name}
-                    onChange={(event) => setEditStaff({...editStaff, name: event.target.value})}
+                    value={editStaff.username}
+                    onChange={(event) => setEditStaff({...editStaff, username: event.target.value})}
                     styles={{
                       input: {
                         borderColor: '#e9ecef',
@@ -759,12 +914,12 @@ function StaffManagement() {
                 </Grid.Col>
                 <Grid.Col span={6}>
                   <TextInput
-                    label="Role"
-                    placeholder="Enter role/title"
+                    label="First Name"
+                    placeholder="Enter first name"
                     size="md"
                     radius="md"
-                    value={editStaff.role}
-                    onChange={(event) => setEditStaff({...editStaff, role: event.target.value})}
+                    value={editStaff.firstName}
+                    onChange={(event) => setEditStaff({...editStaff, firstName: event.target.value})}
                     styles={{
                       input: {
                         borderColor: '#e9ecef',
@@ -781,12 +936,53 @@ function StaffManagement() {
               <Grid gutter="md">
                 <Grid.Col span={6}>
                   <TextInput
-                    label="Zone"
-                    placeholder="Enter assigned zone"
+                    label="Last Name"
+                    placeholder="Enter last name"
                     size="md"
                     radius="md"
-                    value={editStaff.location}
-                    onChange={(event) => setEditStaff({...editStaff, location: event.target.value})}
+                    value={editStaff.lastName}
+                    onChange={(event) => setEditStaff({...editStaff, lastName: event.target.value})}
+                    styles={{
+                      input: {
+                        borderColor: '#e9ecef',
+                        '&:focus': {
+                          borderColor: '#667eea',
+                          boxShadow: '0 0 0 1px #667eea'
+                        }
+                      }
+                    }}
+                  />
+                </Grid.Col>
+                <Grid.Col span={6}>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(event) => setEditStaff({...editStaff, profile_photo: event.target.files[0]})}
+                    style={{
+                      padding: '8px',
+                      border: '1px solid #e9ecef',
+                      borderRadius: '8px',
+                      width: '100%',
+                      fontSize: '14px'
+                    }}
+                  />
+                  <Text size="xs" c="dimmed" mt={4}>Profile Photo</Text>
+                </Grid.Col>
+              </Grid>
+
+              <Grid gutter="md">
+                <Grid.Col span={6}>
+                  <Select
+                    label="Role"
+                    placeholder="Select role"
+                    size="md"
+                    radius="md"
+                    value={editStaff.role}
+                    onChange={(value) => setEditStaff({...editStaff, role: value})}
+                    data={[
+                      { value: 'Security', label: 'Security' },
+                      { value: 'Volunteer', label: 'Volunteer' }
+                    ]}
                     styles={{
                       input: {
                         borderColor: '#e9ecef',
@@ -800,12 +996,53 @@ function StaffManagement() {
                 </Grid.Col>
                 <Grid.Col span={6}>
                   <TextInput
-                    label="Email"
+                    label="Assigned Zone"
+                    placeholder="Enter assigned zone"
+                    size="md"
+                    radius="md"
+                    value={editStaff.assignedZone}
+                    onChange={(event) => setEditStaff({...editStaff, assignedZone: event.target.value})}
+                    styles={{
+                      input: {
+                        borderColor: '#e9ecef',
+                        '&:focus': {
+                          borderColor: '#667eea',
+                          boxShadow: '0 0 0 1px #667eea'
+                        }
+                      }
+                    }}
+                  />
+                </Grid.Col>
+              </Grid>
+
+              <Grid gutter="md">
+                <Grid.Col span={6}>
+                  <TextInput
+                    label="Contact Email"
                     placeholder="Enter email address"
                     size="md"
                     radius="md"
-                    value={editStaff.email}
-                    onChange={(event) => setEditStaff({...editStaff, email: event.target.value})}
+                    value={editStaff.contactEmail}
+                    onChange={(event) => setEditStaff({...editStaff, contactEmail: event.target.value})}
+                    styles={{
+                      input: {
+                        borderColor: '#e9ecef',
+                        '&:focus': {
+                          borderColor: '#667eea',
+                          boxShadow: '0 0 0 1px #667eea'
+                        }
+                      }
+                    }}
+                  />
+                </Grid.Col>
+                <Grid.Col span={6}>
+                  <TextInput
+                    label="Contact Number"
+                    placeholder="Enter phone number"
+                    size="md"
+                    radius="md"
+                    value={editStaff.contactNumber}
+                    onChange={(event) => setEditStaff({...editStaff, contactNumber: event.target.value})}
                     styles={{
                       input: {
                         borderColor: '#e9ecef',
@@ -820,12 +1057,12 @@ function StaffManagement() {
               </Grid>
 
               <TextInput
-                label="Phone"
-                placeholder="Enter phone number"
+                label="Address"
+                placeholder="Enter address"
                 size="md"
                 radius="md"
-                value={editStaff.phone}
-                onChange={(event) => setEditStaff({...editStaff, phone: event.target.value})}
+                value={editStaff.address}
+                onChange={(event) => setEditStaff({...editStaff, address: event.target.value})}
                 styles={{
                   input: {
                     borderColor: '#e9ecef',
@@ -849,6 +1086,8 @@ function StaffManagement() {
                 <Button 
                   size="md"
                   radius="md"
+                  loading={updatingStaff}
+                  disabled={updatingStaff}
                   style={{
                     background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                     border: 'none',
@@ -860,6 +1099,124 @@ function StaffManagement() {
                 </Button>
               </Group>
             </Stack>
+          </Modal>
+
+          {/* View Staff Modal */}
+          <Modal 
+            opened={viewModalOpened} 
+            onClose={() => setViewModalOpened(false)} 
+            title={
+              <Text fw={600}>Staff Member Details</Text>
+            }
+            centered
+            size="lg"
+            styles={{
+              header: {
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                color: 'white'
+              },
+              title: {
+                color: 'white'
+              }
+            }}
+          >
+            {selectedStaff && (
+              <Stack spacing="lg">
+                {/* Profile Photo */}
+                <Group justify="center">
+                  {selectedStaff.profile_photo ? (
+                    <Avatar 
+                      size={120} 
+                      radius="xl" 
+                      src={`http://localhost:8000/static/${selectedStaff.profile_photo.replace('data/', '')}`}
+                      color={getRoleColor(selectedStaff.role)}
+                      onError={(e) => {
+                        console.log('Image failed to load:', selectedStaff.profile_photo);
+                        e.target.style.display = 'none';
+                      }}
+                    >
+                      {selectedStaff.first_name?.[0] || 'S'}{selectedStaff.last_name?.[0] || 'T'}
+                    </Avatar>
+                  ) : (
+                    <Avatar 
+                      size={120} 
+                      radius="xl" 
+                      color={getRoleColor(selectedStaff.role)}
+                    >
+                      {selectedStaff.first_name?.[0] || 'S'}{selectedStaff.last_name?.[0] || 'T'}
+                    </Avatar>
+                  )}
+                </Group>
+
+                {/* Staff Information */}
+                <Paper p="md" withBorder>
+                  <Stack spacing="md">
+                    <Group grow>
+                      <div>
+                        <Text size="sm" fw={600} c="dimmed">Full Name</Text>
+                        <Text size="md">{selectedStaff.first_name || 'Unknown'} {selectedStaff.last_name || 'Staff'}</Text>
+                      </div>
+                      <div>
+                        <Text size="sm" fw={600} c="dimmed">Username</Text>
+                        <Text size="md">{selectedStaff.username || 'N/A'}</Text>
+                      </div>
+                    </Group>
+
+                    <Group grow>
+                      <div>
+                        <Text size="sm" fw={600} c="dimmed">Role</Text>
+                        <Badge color={getRoleColor(selectedStaff.role)} variant="light">
+                          {selectedStaff.role || 'N/A'}
+                        </Badge>
+                      </div>
+                      <div>
+                        <Text size="sm" fw={600} c="dimmed">Status</Text>
+                        <Badge color={getStatusColor(selectedStaff.status || 'active')} variant="light">
+                          {(selectedStaff.status || 'active').charAt(0).toUpperCase() + (selectedStaff.status || 'active').slice(1)}
+                        </Badge>
+                      </div>
+                    </Group>
+
+                    <div>
+                      <Text size="sm" fw={600} c="dimmed">Assigned Zone</Text>
+                      <Text size="md">{selectedStaff.assigned_zone || 'N/A'}</Text>
+                    </div>
+
+                    <Divider />
+
+                    <div>
+                      <Text size="sm" fw={600} c="dimmed">Contact Information</Text>
+                      <Stack spacing="xs" mt="xs">
+                        <Group gap="xs">
+                          <IconMail size={16} style={{ color: '#667eea' }} />
+                          <Text size="sm">{selectedStaff.contact_email || 'N/A'}</Text>
+                        </Group>
+                        <Group gap="xs">
+                          <IconPhone size={16} style={{ color: '#667eea' }} />
+                          <Text size="sm">{selectedStaff.contact_number || 'N/A'}</Text>
+                        </Group>
+                      </Stack>
+                    </div>
+
+                    <div>
+                      <Text size="sm" fw={600} c="dimmed">Address</Text>
+                      <Text size="sm">{selectedStaff.address || 'N/A'}</Text>
+                    </div>
+                  </Stack>
+                </Paper>
+
+                <Group justify="center">
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setViewModalOpened(false)}
+                    size="md"
+                    radius="md"
+                  >
+                    Close
+                  </Button>
+                </Group>
+              </Stack>
+            )}
           </Modal>
         </Container>
         <FloatingAssistant />

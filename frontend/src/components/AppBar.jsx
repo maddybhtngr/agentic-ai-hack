@@ -125,30 +125,6 @@ const AppBar = ({ userName = "User", onMenuClick, opened = false }) => {
               }}
             >
               <Menu.Item
-                leftSection={<IconUser size={16} />}
-                style={{
-                  '&:hover': {
-                    background: 'rgba(102, 126, 234, 0.1)'
-                  }
-                }}
-              >
-                Profile
-              </Menu.Item>
-              
-              <Menu.Item
-                leftSection={<IconSettings size={16} />}
-                style={{
-                  '&:hover': {
-                    background: 'rgba(102, 126, 234, 0.1)'
-                  }
-                }}
-              >
-                Settings
-              </Menu.Item>
-              
-              <Menu.Divider />
-              
-              <Menu.Item
                 leftSection={<IconLogout size={16} />}
                 color="red"
                 onClick={handleLogout}

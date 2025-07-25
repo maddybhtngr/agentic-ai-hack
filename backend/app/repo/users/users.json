@@ -9,10 +9,21 @@
   ],
   "staff": [
     {
-      "username": "staff",
+      "id": 1,
+      "username": "rahul.rana",
       "password": "1234",
+      "first_name": "Rahul",
+      "last_name": "Rana",
+      "role": "Security",
+      "assigned_zone": "Entrance",
+      "contact_email": "ardfsg@gmail.com",
+      "contact_number": "1234567890",
+      "address": "sdfgh",
+      "status": "active",
       "user_type": "staff",
-      "role": "Staff Member"
+      "profile_photo": "data/staff/rahul.rana.jpg",
+      "created_at": "2025-01-27T00:00:00.000Z",
+      "updated_at": "2025-01-27T00:00:00.000Z"
     }
   ],
   "attendees": [
@@ -37,7 +48,17 @@
         "contact_email": "lonelyman@gmail.com"
       },
       "created_at": "2025-07-25T10:12:10.434274Z",
-      "updated_at": "2025-07-25T10:12:10.434274Z"
+      "updated_at": "2025-07-25T10:12:10.434274Z",
+      "family_members": [
+        {
+          "username": "maddybhtngr__Big__Sister",
+          "first_name": "Big",
+          "last_name": "Sister",
+          "contact": "1234567890",
+          "photo_path": "data/attendees/maddybhtngr__Big__Sister.jpg",
+          "created_at": "2025-07-25T10:12:10.434274Z"
+        }
+      ]
     },
     {
       "username": "Amitrajit",

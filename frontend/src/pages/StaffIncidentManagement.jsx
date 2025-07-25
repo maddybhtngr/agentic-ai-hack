@@ -5,6 +5,7 @@ import AppBar from '../components/AppBar';
 import StaffSidebar from '../components/StaffSidebar';
 import FloatingAssistant from '../components/FloatingAssistant';
 import { useState, useEffect } from 'react';
+import { authUtils } from '../services/api';
 
 function StaffIncidentManagement() {
   const [opened, { toggle }] = useDisclosure(true);
@@ -13,6 +14,10 @@ function StaffIncidentManagement() {
   const [viewModalOpened, setViewModalOpened] = useState(false);
   const [addModalOpened, setAddModalOpened] = useState(false);
   const [updateModalOpened, setUpdateModalOpened] = useState(false);
+
+  // Get current user data
+  const currentUser = authUtils.getCurrentUser();
+  const userName = currentUser ? `${currentUser.first_name} ${currentUser.last_name}` : 'Staff User';
   const [newIncident, setNewIncident] = useState({
     title: '',
     description: '',
@@ -200,7 +205,7 @@ function StaffIncidentManagement() {
       }}
     >
       <AppShell.Header>
-        <AppBar userName="Staff User" onMenuClick={handleMenuClick} opened={opened} />
+        <AppBar userName={userName} onMenuClick={handleMenuClick} opened={opened} />
       </AppShell.Header>
       <StaffSidebar opened={opened} />
       <AppShell.Main>

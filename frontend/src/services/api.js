@@ -69,6 +69,125 @@ export const apiService = {
       throw new Error(`HTTP error! status: ${response.status}`)
     }
     return await response.json()
+  },
+
+  // Get user details by username
+  async getUserDetails(username) {
+    const response = await fetch(`${API_BASE_URL}/users/${username}/details`)
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    return await response.json()
+  },
+
+  // Add family member
+  async addFamilyMember(username, familyMemberData) {
+    const formData = new FormData()
+    formData.append('first_name', familyMemberData.firstName)
+    formData.append('last_name', familyMemberData.lastName)
+    formData.append('contact', familyMemberData.contact)
+    
+    if (familyMemberData.photo) {
+      formData.append('photo', familyMemberData.photo)
+    }
+
+    const response = await fetch(`${API_BASE_URL}/users/${username}/family-members`, {
+      method: 'POST',
+      body: formData
+    })
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    return await response.json()
+  },
+
+  // Remove family member
+  async removeFamilyMember(username, familyUsername) {
+    const response = await fetch(`${API_BASE_URL}/users/${username}/family-members/${familyUsername}`, {
+      method: 'DELETE'
+    })
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    return await response.json()
+  },
+
+  // Staff Management APIs
+  async getAllStaff() {
+    const response = await fetch(`${API_BASE_URL}/users/staff`)
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    return await response.json()
+  },
+
+  async addStaff(staffData) {
+    const formData = new FormData()
+    formData.append('username', staffData.username)
+    formData.append('first_name', staffData.firstName)
+    formData.append('last_name', staffData.lastName)
+    formData.append('role', staffData.role)
+    formData.append('assigned_zone', staffData.assignedZone)
+    formData.append('contact_email', staffData.contactEmail)
+    formData.append('contact_number', staffData.contactNumber)
+    formData.append('address', staffData.address)
+    formData.append('status', staffData.status || 'active')
+    
+    // Add profile photo if exists
+    if (staffData.profile_photo) {
+      formData.append('profile_photo', staffData.profile_photo)
+    }
+
+    const response = await fetch(`${API_BASE_URL}/users/staff`, {
+      method: 'POST',
+      body: formData
+    })
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    return await response.json()
+  },
+
+  async updateStaff(username, staffData) {
+    const formData = new FormData()
+    formData.append('new_username', staffData.username)
+    formData.append('first_name', staffData.firstName)
+    formData.append('last_name', staffData.lastName)
+    formData.append('role', staffData.role)
+    formData.append('assigned_zone', staffData.assignedZone)
+    formData.append('contact_email', staffData.contactEmail)
+    formData.append('contact_number', staffData.contactNumber)
+    formData.append('address', staffData.address)
+    formData.append('status', staffData.status)
+    
+    // Add profile photo if exists
+    if (staffData.profile_photo) {
+      formData.append('profile_photo', staffData.profile_photo)
+    }
+
+    const response = await fetch(`${API_BASE_URL}/users/staff/${username}`, {
+      method: 'PUT',
+      body: formData
+    })
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    return await response.json()
+  },
+
+  async deleteStaff(username) {
+    const response = await fetch(`${API_BASE_URL}/users/staff/${username}`, {
+      method: 'DELETE'
+    })
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    return await response.json()
   }
 }
 

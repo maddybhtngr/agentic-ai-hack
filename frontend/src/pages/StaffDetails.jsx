@@ -1,34 +1,63 @@
-import { Container, Title, Text, Paper, Stack, AppShell, Grid, Group, rem, Badge, Avatar } from '@mantine/core'
+import { useState, useEffect } from 'react'
+import { Container, Title, Text, Paper, Stack, AppShell, Grid, Group, rem, Badge, Avatar, LoadingOverlay } from '@mantine/core'
 import { 
   IconUser,
   IconMapPin,
   IconPhone,
   IconMail,
-  IconCheck
+  IconCheck,
+  IconAlertCircle
 } from '@tabler/icons-react'
 import { useDisclosure, useMediaQuery } from '@mantine/hooks'
 import AppBar from '../components/AppBar'
 import StaffSidebar from '../components/StaffSidebar'
 import FloatingAssistant from '../components/FloatingAssistant'
+import { apiService, authUtils } from '../services/api'
 
 function StaffDetails() {
   const [opened, { toggle }] = useDisclosure(true);
   const isSmallScreen = useMediaQuery('(max-width: 768px)');
+  const [staffMember, setStaffMember] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const handleMenuClick = () => {
     toggle();
   }
 
-  // Sample staff data
-  const staffMember = {
-    name: 'Sarah Johnson',
-    role: 'Security Officer',
-    department: 'Security Team',
-    email: 'sarah.johnson@drishti.com',
-    phone: '+1 (555) 123-4567',
-    address: '456 Security Lane, Suite 12, New York, NY 10002',
-    currentZone: 'Zone A - Main Entrance'
-  };
+  // Get current user from localStorage
+  const currentUser = authUtils.getCurrentUser();
+  const userName = currentUser ? `${currentUser.first_name} ${currentUser.last_name}` : 'Staff User';
+
+  // Debug: Log current user data
+  console.log('Current user from localStorage:', currentUser);
+
+  useEffect(() => {
+    const fetchStaffDetails = async () => {
+      if (!currentUser?.username) {
+        setError('No user logged in');
+        setLoading(false);
+        return;
+      }
+
+      try {
+        setLoading(true);
+        const response = await apiService.getUserDetails(currentUser.username);
+        if (response.success) {
+          setStaffMember(response.data);
+        } else {
+          setError('Failed to fetch staff details');
+        }
+      } catch (err) {
+        console.error('Error fetching staff details:', err);
+        setError('Failed to load staff details');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStaffDetails();
+  }, [currentUser?.username]);
 
   return (
     <AppShell
@@ -48,7 +77,7 @@ function StaffDetails() {
     >
       <AppShell.Header>
         <AppBar 
-          userName="Staff User" 
+          userName={userName} 
           onMenuClick={handleMenuClick}
           opened={opened}
         />
@@ -57,8 +86,17 @@ function StaffDetails() {
       <StaffSidebar opened={opened} />
 
       <AppShell.Main>
-        <Container size="100%" py="xl" px="xl">
-          <Stack spacing="xl">
+        <Container size="100%" py="xl" px="xl" style={{ position: 'relative' }}>
+          <LoadingOverlay visible={loading} />
+          
+          {error && (
+            <Paper p="md" radius="md" style={{ background: 'rgba(255, 0, 0, 0.1)', border: '1px solid rgba(255, 0, 0, 0.3)' }}>
+              <Text c="red" ta="center">{error}</Text>
+            </Paper>
+          )}
+
+          {staffMember && (
+            <Stack spacing="xl">
             {/* Header Section */}
             <Stack spacing="xs">
               <Group gap="xs">
@@ -136,26 +174,27 @@ function StaffDetails() {
                     <Grid.Col span={{ base: 12, lg: 4 }}>
                     <Stack gap="lg" align="center">
                       <Avatar 
-                        size={120} 
+                        size={240} 
                         radius="xl"
-                        src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face"
+                        src={staffMember.profile_photo ? `http://localhost:8000/static/${staffMember.profile_photo.replace('data/', '')}` : undefined}
+                        color={staffMember.role?.toLowerCase() === 'security' ? 'blue' : 'green'}
                         style={{
                           border: '4px solid rgba(255, 255, 255, 0.3)',
                           boxShadow: '0 8px 32px rgba(102, 126, 234, 0.3)'
                         }}
                       >
-                        <IconUser size={60} style={{ color: 'white' }} />
+                        {staffMember.first_name?.[0] || 'S'}{staffMember.last_name?.[0] || 'T'}
                       </Avatar>
                       
                       <Stack gap="xs" align="center">
-                        <Text size="xl" fw={700} ta="center">{staffMember.name}</Text>
+                        <Text size="xl" fw={700} ta="center">{staffMember.first_name} {staffMember.last_name}</Text>
                         <Badge 
-                          color="green" 
+                          color={staffMember.role?.toLowerCase() === 'security' ? 'blue' : 'green'}
                           variant="light"
                           size="md"
                           leftSection={<IconCheck size={12} />}
                         >
-                          Active Staff
+                          {staffMember.role || 'Staff Member'}
                         </Badge>
                       </Stack>
                     </Stack>
@@ -185,12 +224,12 @@ function StaffDetails() {
                                 <Group gap="xs">
                                   <IconMail size={16} style={{ color: '#667eea' }} />
                                   <Text size="sm" fw={500}>Email:</Text>
-                                  <Text size="sm">{staffMember.email}</Text>
+                                  <Text size="sm">{staffMember.email || 'N/A'}</Text>
                                 </Group>
                                 <Group gap="xs">
                                   <IconPhone size={16} style={{ color: '#667eea' }} />
                                   <Text size="sm" fw={500}>Phone:</Text>
-                                  <Text size="sm">{staffMember.phone}</Text>
+                                  <Text size="sm">{staffMember.phone || 'N/A'}</Text>
                                 </Group>
                               </Stack>
                             </Grid.Col>
@@ -200,12 +239,12 @@ function StaffDetails() {
                                 <Group gap="xs">
                                   <IconMapPin size={16} style={{ color: '#667eea' }} />
                                   <Text size="sm" fw={500}>Current Zone:</Text>
-                                  <Text size="sm">{staffMember.currentZone}</Text>
+                                  <Text size="sm">{staffMember.current_zone || 'N/A'}</Text>
                                 </Group>
                                 <Group gap="xs">
                                   <IconMapPin size={16} style={{ color: '#667eea' }} />
                                   <Text size="sm" fw={500}>Address:</Text>
-                                  <Text size="sm">{staffMember.address}</Text>
+                                  <Text size="sm">{staffMember.address || 'N/A'}</Text>
                                 </Group>
                               </Stack>
                             </Grid.Col>
@@ -219,11 +258,8 @@ function StaffDetails() {
                 </Grid>
                 </Stack>
             </Paper>
-
-
-
-
           </Stack>
+          )}
         </Container>
         <FloatingAssistant />
       </AppShell.Main>

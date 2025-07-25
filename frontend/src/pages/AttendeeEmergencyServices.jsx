@@ -16,11 +16,16 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import AppBar from '../components/AppBar'
 import AttendeeSidebar from '../components/AttendeeSidebar'
 import FloatingAssistant from '../components/FloatingAssistant'
+import { authUtils } from '../services/api'
 
 function AttendeeEmergencyServices() {
   const [opened, { toggle }] = useDisclosure(true);
   const isSmallScreen = useMediaQuery('(max-width: 768px)');
   const [selectedZone, setSelectedZone] = useState('All');
+  
+  // Get current user data
+  const currentUser = authUtils.getCurrentUser();
+  const userName = currentUser ? `${currentUser.first_name} ${currentUser.last_name}` : 'Attendee User';
 
   const handleMenuClick = () => {
     toggle();
@@ -176,7 +181,7 @@ function AttendeeEmergencyServices() {
     >
       <AppShell.Header>
         <AppBar 
-          userName="Attendee User" 
+          userName={userName} 
           onMenuClick={handleMenuClick}
           opened={opened}
         />

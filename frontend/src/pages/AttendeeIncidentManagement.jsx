@@ -16,6 +16,7 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import AppBar from '../components/AppBar'
 import AttendeeSidebar from '../components/AttendeeSidebar'
 import FloatingAssistant from '../components/FloatingAssistant'
+import { authUtils } from '../services/api'
 
 function AttendeeIncidentManagement() {
   const [opened, { toggle }] = useDisclosure(true);
@@ -23,6 +24,10 @@ function AttendeeIncidentManagement() {
   const [reportModalOpened, { open: openReportModal, close: closeReportModal }] = useDisclosure(false);
   const [viewModalOpened, { open: openViewModal, close: closeViewModal }] = useDisclosure(false);
   const [selectedIncident, setSelectedIncident] = useState(null);
+  
+  // Get current user data
+  const currentUser = authUtils.getCurrentUser();
+  const userName = currentUser ? `${currentUser.first_name} ${currentUser.last_name}` : 'Attendee User';
 
   const handleMenuClick = () => {
     toggle();
@@ -156,7 +161,7 @@ function AttendeeIncidentManagement() {
     >
       <AppShell.Header>
         <AppBar 
-          userName="Attendee User" 
+          userName={userName} 
           onMenuClick={handleMenuClick}
           opened={opened}
         />

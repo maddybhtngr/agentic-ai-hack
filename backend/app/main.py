@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pathlib import Path
-from routers import auth
+from routers import auth, user
 
 app = FastAPI(
     title="Crowd Management API",
@@ -20,10 +20,13 @@ app.add_middleware(
 )
 
 # Mount static files for serving uploaded images
-app.mount("/static", StaticFiles(directory="app/data"), name="static")
+import os
+static_dir = os.path.join(os.path.dirname(__file__), "data")
+app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
 # Include routers
 app.include_router(auth.router)
+app.include_router(user.router)
 
 @app.get("/")
 async def root():

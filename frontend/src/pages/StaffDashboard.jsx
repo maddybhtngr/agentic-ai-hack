@@ -14,12 +14,17 @@ import StaffSidebar from '../components/StaffSidebar'
 import CrowdHeatMap from '../components/CrowdHeatMap'
 import FloatingAssistant from '../components/FloatingAssistant'
 import { useNavigate, useLocation } from 'react-router-dom'
+import { authUtils } from '../services/api'
 
 function StaffDashboard() {
   const [opened, { toggle }] = useDisclosure(true);
   const isSmallScreen = useMediaQuery('(max-width: 768px)');
   const navigate = useNavigate();
   const location = useLocation();
+
+  // Get current user data
+  const currentUser = authUtils.getCurrentUser();
+  const userName = currentUser ? `${currentUser.first_name} ${currentUser.last_name}` : 'Staff User';
 
   const handleMenuClick = () => {
     toggle();
@@ -94,7 +99,7 @@ function StaffDashboard() {
     >
       <AppShell.Header>
         <AppBar 
-          userName="Staff User" 
+          userName={userName} 
           onMenuClick={handleMenuClick}
           opened={opened}
         />

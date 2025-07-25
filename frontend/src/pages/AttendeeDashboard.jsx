@@ -15,12 +15,17 @@ import AppBar from '../components/AppBar'
 import AttendeeSidebar from '../components/AttendeeSidebar'
 import CrowdHeatMap from '../components/CrowdHeatMap'
 import FloatingAssistant from '../components/FloatingAssistant'
+import { authUtils } from '../services/api'
 
 function AttendeeDashboard() {
   const [opened, { toggle }] = useDisclosure(true);
   const isSmallScreen = useMediaQuery('(max-width: 768px)');
   const navigate = useNavigate();
   const location = useLocation();
+  
+  // Get current user data
+  const currentUser = authUtils.getCurrentUser();
+  const userName = currentUser ? `${currentUser.first_name} ${currentUser.last_name}` : 'Attendee User';
 
   const handleMenuClick = () => {
     toggle();
@@ -96,7 +101,7 @@ function AttendeeDashboard() {
     >
       <AppShell.Header>
         <AppBar 
-          userName="Attendee User" 
+          userName={userName} 
           onMenuClick={handleMenuClick}
           opened={opened}
         />
