@@ -1,13 +1,13 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from agents import run_data_processing_workflow, run_content_analysis_workflow, run_crowd_monitoring_workflow
+from agents import run_crowd_monitoring_workflow
 import uvicorn
 
 # Create FastAPI app
 app = FastAPI(
-    title="Sequential Workflow API",
-    description="API server with 2 endpoints triggering different ADK sequential workflows",
+    title="Crowd Monitoring API",
+    description="Real-time crowd monitoring system using ADK sequential workflows",
     version="1.0.0"
 )
 
@@ -20,38 +20,18 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Request models
-class WorkflowInput(BaseModel):
-    text: str
-    
-    class Config:
-        json_schema_extra = {
-            "example": {
-                "text": "This is sample text to process through the workflow"
-            }
-        }
-
-class CrowdInput(BaseModel):
-    crowd: str  # LOW, MODERATE, HIGH
-    
-    class Config:
-        json_schema_extra = {
-            "example": {
-                "crowd": "HIGH"
-            }
-        }
+# No request models needed - using GET endpoint for crowd monitoring
 
 # Root endpoint
 @app.get("/")
 async def root():
     return {
-        "message": "Sequential Workflow API Server",
-        "description": "2 endpoints with different ADK sequential workflows",
+        "message": "Crowd Monitoring API Server",
+        "description": "Real-time crowd monitoring with ADK workflow integration",
         "endpoints": {
-            "data_processing": "/api/v1/process-data",
-            "content_analysis": "/api/v1/analyze-content",
             "crowd_monitoring": "/api/v1/monitor-crowd"
         },
+        "backend_integration": "http://localhost:8000/zones/crowd/details",
         "health_check": "/health"
     }
 
@@ -60,73 +40,41 @@ async def root():
 async def health_check():
     return {
         "status": "healthy",
-        "service": "Sequential Workflow API",
-        "workflows_available": ["data_processing", "content_analysis", "crowd_monitoring"]
+        "service": "Crowd Monitoring API",
+        "workflows_available": ["crowd_monitoring"],
+        "backend_connection": "http://localhost:8000"
     }
 
-# Endpoint 1: Data Processing Workflow (Extract → Validate → Format)
-@app.post("/api/v1/process-data")
-async def process_data(input_data: WorkflowInput):
+# Main Endpoint: Real-time Crowd Monitoring Workflow
+@app.get("/api/v1/monitor-crowd")
+async def monitor_crowd():
     """
-    Triggers the Data Processing Sequential Workflow:
-    1. Extract data from input text
-    2. Validate the extracted data  
-    3. Format the final output
-    """
-    try:
-        result = await run_data_processing_workflow(input_data.text)
-        return {
-            "success": True,
-            "workflow_type": "data_processing",
-            "description": "Sequential pipeline: Extract → Validate → Format",
-            "data": result
-        }
-    except Exception as e:
-        raise HTTPException(
-            status_code=500, 
-            detail=f"Data processing workflow failed: {str(e)}"
-        )
-
-# Endpoint 2: Content Analysis Workflow (Analyze → Summarize → Score)  
-@app.post("/api/v1/analyze-content")
-async def analyze_content(input_data: WorkflowInput):
-    """
-    Triggers the Content Analysis Sequential Workflow:
-    1. Analyze content characteristics
-    2. Summarize the content
-    3. Score the content quality
+    Triggers the Real-time Crowd Monitoring Sequential Workflow:
+    1. Fetch live crowd data from backend API
+    2. Analyze crowd density and assess incident risk
+    3. Make incident notification decision
+    
+    Returns real-time crowd analysis with notification recommendations.
     """
     try:
-        result = await run_content_analysis_workflow(input_data.text)
-        return {
-            "success": True,
-            "workflow_type": "content_analysis", 
-            "description": "Sequential pipeline: Analyze → Summarize → Score",
-            "data": result
-        }
-    except Exception as e:
-        raise HTTPException(
-            status_code=500,
-            detail=f"Content analysis workflow failed: {str(e)}"
-        )
-
-# Endpoint 3: Crowd Monitoring Workflow (Analyze Crowd → Incident Decision)
-@app.post("/api/v1/monitor-crowd")
-async def monitor_crowd(crowd_data: CrowdInput):
-    """
-    Triggers the Crowd Monitoring Sequential Workflow:
-    1. Analyze crowd data and assess incident risk
-    2. Make incident notification decision
-    """
-    try:
-        # Convert Pydantic model to dict
-        crowd_dict = crowd_data.dict()
-        result = await run_crowd_monitoring_workflow(crowd_dict)
+        result = await run_crowd_monitoring_workflow()
+        
+        # Extract card metrics for frontend integration
+        card_metrics = result.get("card_metrics", {})
+        
         return {
             "success": True,
             "workflow_type": "crowd_monitoring",
-            "description": "Sequential pipeline: Analyze Crowd → Incident Decision",
-            "data": result
+            "description": "Real-time pipeline: Fetch Live Data → Analyze Density → Incident Decision",
+            "data": result,
+            # Frontend card integration
+            "ui_metrics": {
+                "confidence_percentage": card_metrics.get("overall_confidence", 90),
+                "accuracy_percentage": card_metrics.get("prediction_accuracy", 90), 
+                "model_performance": card_metrics.get("model_performance", 90),
+                "status": "active",
+                "last_updated": "real-time"
+            }
         }
     except Exception as e:
         raise HTTPException(
@@ -135,31 +83,31 @@ async def monitor_crowd(crowd_data: CrowdInput):
         )
 
 # Get workflow information
-@app.get("/api/v1/workflows")
+@app.get("/api/v1/workflow-info")
 async def get_workflow_info():
-    """Get information about available workflows."""
+    """Get information about the crowd monitoring workflow."""
     return {
-        "available_workflows": {
-            "data_processing": {
-                "endpoint": "/api/v1/process-data",
-                "description": "Extract → Validate → Format pipeline",
-                "agents": ["data_extractor", "data_validator", "output_formatter"],
-                "use_cases": ["Data cleaning", "Text processing", "Content validation"]
-            },
-            "content_analysis": {
-                "endpoint": "/api/v1/analyze-content", 
-                "description": "Analyze → Summarize → Score pipeline",
-                "agents": ["content_analyzer", "content_summarizer", "content_scorer"],
-                "use_cases": ["Content evaluation", "Quality scoring", "Text analysis"]
-            },
-            "crowd_monitoring": {
-                "endpoint": "/api/v1/monitor-crowd",
-                "description": "Analyze Crowd → Incident Decision pipeline", 
-                "agents": ["crowd_data_analyzer", "incident_notifier"],
-                "use_cases": ["Crowd safety monitoring", "Incident detection", "Emergency notifications"]
-            }
+        "workflow": {
+            "name": "Real-time Crowd Monitoring",
+            "endpoint": "/api/v1/monitor-crowd",
+            "method": "GET",
+            "description": "Fetch Live Data → Analyze Density → Incident Decision",
+            "agents": ["crowd_data_analyzer", "incident_notifier"],
+            "data_source": "http://localhost:8000/zones/crowd/details",
+            "density_levels": ["LOW", "MODERATE", "HIGH", "OVERFLOWING"],
+            "use_cases": [
+                "Real-time crowd safety monitoring",
+                "Automatic incident detection", 
+                "Emergency notification decisions",
+                "Zone-based capacity management"
+            ]
         },
-        "total_workflows": 3
+        "density_calculation": {
+            "LOW": "0-50% of capacity",
+            "MODERATE": "51-80% of capacity", 
+            "HIGH": "81-100% of capacity",
+            "OVERFLOWING": ">100% of capacity"
+        }
     }
 
 if __name__ == "__main__":

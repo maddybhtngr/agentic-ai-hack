@@ -652,6 +652,59 @@ export const apiService = {
       throw new Error(`HTTP error! status: ${response.status}`)
     }
     return await response.json()
+  },
+
+  // CCTV Analytics API calls
+  async getCCTVFeeds() {
+    const response = await fetch(`${API_BASE_URL}/cctv/feeds`)
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    return await response.json()
+  },
+
+  async getCCTVFeedData(cctvId, timestampIndex = null) {
+    const url = timestampIndex !== null 
+      ? `${API_BASE_URL}/cctv/feeds/${cctvId}?timestamp_index=${timestampIndex}`
+      : `${API_BASE_URL}/cctv/feeds/${cctvId}`
+    const response = await fetch(url)
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    return await response.json()
+  },
+
+  async getNextCCTVTimestamp(cctvId, currentIndex = 0) {
+    const response = await fetch(`${API_BASE_URL}/cctv/feeds/${cctvId}/next?current_index=${currentIndex}`)
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    return await response.json()
+  },
+
+  async getCCTVTimeline(cctvId, limit = 100) {
+    const response = await fetch(`${API_BASE_URL}/cctv/feeds/${cctvId}/timeline?limit=${limit}`)
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    return await response.json()
+  },
+
+  async getCCTVAnalyticsOverview() {
+    const response = await fetch(`${API_BASE_URL}/cctv/analytics/overview`)
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    return await response.json()
+  },
+
+  // Crowd Monitoring AI API calls
+  async getCrowdMonitoringAnalysis() {
+    const response = await fetch('http://localhost:8002/api/v1/monitor-crowd')
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    return await response.json()
   }
 }
 

@@ -1,17 +1,25 @@
-# Sequential Workflow API Server
+# Real-time Crowd Monitoring API
 
-A FastAPI server with 2 endpoints that trigger different ADK sequential workflows.
+A FastAPI server integrated with Google ADK that provides real-time crowd monitoring and incident detection.
 
 ## Project Structure
 
 ```
 simple_workflow_api/
-├── agents.py           # ADK sequential workflows and agents
-├── main.py            # FastAPI server with 2 endpoints  
+├── agents.py           # ADK crowd monitoring workflow and agents
+├── main.py            # FastAPI server with crowd monitoring endpoint  
 ├── requirements.txt   # Python dependencies
 ├── .env              # Environment configuration
 └── README.md         # This file
 ```
+
+## Features
+
+🔄 **Real-time Integration** - Fetches live crowd data from backend API  
+🤖 **ADK Workflow** - Uses Google Agent Development Kit for intelligent analysis  
+📊 **Density Calculation** - Categorizes zones as LOW/MODERATE/HIGH/OVERFLOWING  
+🚨 **Incident Detection** - Automatic notification decisions based on crowd levels  
+⚡ **GET Endpoint** - Simple API call for instant crowd status  
 
 ## Setup
 
@@ -23,90 +31,86 @@ pip install -r requirements.txt
 
 2. **Set up environment:**
 ```bash
-# Copy and edit .env file
-cp .env .env.local
-
-# Add your Google AI Studio API key
+# Edit .env file and add your Google AI Studio API key
 GOOGLE_API_KEY=your_actual_api_key_here
 ```
 
-3. **Run the server:**
+3. **Start backend server (in another terminal):**
+```bash
+cd ../backend
+uvicorn app.main:app --reload --port 8000
+```
+
+4. **Run the crowd monitoring server:**
 ```bash
 python main.py
 ```
 
 Server will be available at: http://localhost:8002
 
-## API Endpoints
+## API Endpoint
 
-### 1. Data Processing Workflow
-**POST** `/api/v1/process-data`
+### Real-time Crowd Monitoring
+**GET** `/api/v1/monitor-crowd`
 
-Sequential pipeline: **Extract → Validate → Format**
-
-```bash
-curl -X POST "http://localhost:8002/api/v1/process-data" \
-  -H "Content-Type: application/json" \
-  -d '{"text": "Hello world, this is sample data to process!"}'
-```
-
-### 2. Content Analysis Workflow  
-**POST** `/api/v1/analyze-content`
-
-Sequential pipeline: **Analyze → Summarize → Score**
+Fetches live crowd data and analyzes incident risk.
 
 ```bash
-curl -X POST "http://localhost:8002/api/v1/analyze-content" \
-  -H "Content-Type: application/json" \
-  -d '{"text": "What is artificial intelligence? How does machine learning work?"}'
+curl -X GET "http://localhost:8002/api/v1/monitor-crowd"
 ```
 
-### 3. Other Endpoints
+### Other Endpoints
 
 - **GET** `/` - Root information
-- **GET** `/health` - Health check
-- **GET** `/api/v1/workflows` - Workflow information
+- **GET** `/health` - Health check  
+- **GET** `/api/v1/workflow-info` - Workflow details
 
-## Workflows Overview
+## How It Works
 
-### Workflow 1: Data Processing
-1. **Extract Agent** - Processes and extracts data
-2. **Validator Agent** - Validates extracted data
-3. **Formatter Agent** - Formats final output
+### Sequential Workflow:
+1. **Crowd Data Analyzer** - Fetches live data from `http://localhost:8000/zones/crowd/details`
+2. **Density Calculator** - Calculates occupancy ratios for each zone
+3. **Incident Notifier** - Makes notification decisions based on density levels
 
-### Workflow 2: Content Analysis  
-1. **Analyzer Agent** - Analyzes content characteristics
-2. **Summarizer Agent** - Creates content summary
-3. **Scorer Agent** - Scores content quality
+### Density Levels:
+- **LOW**: 0-50% of capacity
+- **MODERATE**: 51-80% of capacity  
+- **HIGH**: 81-100% of capacity
+- **OVERFLOWING**: >100% of capacity
 
 ## Testing
 
-Visit http://localhost:8002/docs for interactive API documentation (Swagger UI).
+Visit http://localhost:8002/docs for interactive API documentation.
 
-## Example Responses
+## Example Response
 
-**Data Processing:**
 ```json
 {
   "success": true,
-  "workflow_type": "data_processing",
-  "description": "Sequential pipeline: Extract → Validate → Format",
+  "workflow_type": "crowd_monitoring", 
+  "description": "Real-time pipeline: Fetch Live Data → Analyze Density → Incident Decision",
   "data": {
-    "workflow": "data_processing",
-    "results": [...]
+    "workflow": "crowd_monitoring",
+    "source": "live_backend_data",
+    "results": [
+      {
+        "agent": "crowd_data_analyzer",
+        "response": "Analysis shows 2 zones are OVERFLOWING capacity..."
+      },
+      {
+        "agent": "incident_notifier",
+        "response": "🚨 IMMEDIATE NOTIFICATION REQUIRED - Critical zones: Exit, Stage"
+      }
+    ],
+    "status": "completed"
   }
 }
 ```
 
-**Content Analysis:**
-```json
-{
-  "success": true, 
-  "workflow_type": "content_analysis",
-  "description": "Sequential pipeline: Analyze → Summarize → Score",
-  "data": {
-    "workflow": "content_analysis",
-    "results": [...]
-  }
-}
+## Integration Notes
+
+- Requires backend server running on port 8000
+- Automatically handles zone capacity calculations
+- Provides actionable incident notifications
+- Real-time data updates on each API call 
 ``` 
