@@ -1,0 +1,686 @@
+{
+  "cctv_id": "4",
+  "total_timestamps": 15,
+  "high_risk_periods": 1,
+  "analysis_complete": true,
+  "predictions": {
+    "0": {
+      "flow_metrics": {
+        "timestamp": 0,
+        "inflow_count": 0,
+        "outflow_count": 0,
+        "net_flow": 0,
+        "total_people": 88,
+        "density_level": "high",
+        "average_velocity": 0.01,
+        "movement_vectors": [],
+        "congestion_points": [
+          [
+            0.5,
+            0.6
+          ]
+        ],
+        "fire_detected": false,
+        "smoke_detected": false,
+        "violence_detected": false,
+        "weapon_detected": false,
+        "weapon_types": [],
+        "suspicious_behavior": false,
+        "emergency_evacuation": false
+      },
+      "prediction": {
+        "incident_probability": 0.5900000000000001,
+        "prediction_confidence": 0.9249999999999999,
+        "predicted_incident_type": "crowd_surge",
+        "time_to_incident_seconds": 300,
+        "risk_factors": [
+          "fire_detected",
+          "immediate_evacuation_needed",
+          "emergency_evacuation",
+          "mass_panic_risk",
+          "moderate_density",
+          "severe_flow_imbalance",
+          "moderate_congestion"
+        ],
+        "recommended_action": "security_dispatch",
+        "alert_level": "orange"
+      }
+    },
+    "1": {
+      "flow_metrics": {
+        "timestamp": 1,
+        "inflow_count": 0,
+        "outflow_count": 0,
+        "net_flow": 0,
+        "total_people": 88,
+        "density_level": "high",
+        "average_velocity": 0.01,
+        "movement_vectors": [],
+        "congestion_points": [
+          [
+            0.5,
+            0.6
+          ]
+        ],
+        "fire_detected": false,
+        "smoke_detected": false,
+        "violence_detected": false,
+        "weapon_detected": false,
+        "weapon_types": [],
+        "suspicious_behavior": false,
+        "emergency_evacuation": false
+      },
+      "prediction": {
+        "incident_probability": 0.5900000000000001,
+        "prediction_confidence": 0.9249999999999999,
+        "predicted_incident_type": "crowd_surge",
+        "time_to_incident_seconds": 300,
+        "risk_factors": [
+          "fire_detected",
+          "immediate_evacuation_needed",
+          "emergency_evacuation",
+          "mass_panic_risk",
+          "moderate_density",
+          "severe_flow_imbalance",
+          "moderate_congestion"
+        ],
+        "recommended_action": "security_dispatch",
+        "alert_level": "orange"
+      }
+    },
+    "2": {
+      "flow_metrics": {
+        "timestamp": 2,
+        "inflow_count": 0,
+        "outflow_count": 0,
+        "net_flow": 0,
+        "total_people": 88,
+        "density_level": "high",
+        "average_velocity": 0.03,
+        "movement_vectors": [
+          [
+            0.0,
+            0.01
+          ]
+        ],
+        "congestion_points": [
+          [
+            0.5,
+            0.6
+          ]
+        ],
+        "fire_detected": false,
+        "smoke_detected": false,
+        "violence_detected": false,
+        "weapon_detected": false,
+        "weapon_types": [],
+        "suspicious_behavior": true,
+        "emergency_evacuation": false
+      },
+      "prediction": {
+        "incident_probability": 0.5900000000000001,
+        "prediction_confidence": 0.9249999999999999,
+        "predicted_incident_type": "crowd_surge",
+        "time_to_incident_seconds": 300,
+        "risk_factors": [
+          "fire_detected",
+          "immediate_evacuation_needed",
+          "emergency_evacuation",
+          "mass_panic_risk",
+          "moderate_density",
+          "severe_flow_imbalance",
+          "moderate_congestion"
+        ],
+        "recommended_action": "security_dispatch",
+        "alert_level": "orange"
+      }
+    },
+    "3": {
+      "flow_metrics": {
+        "timestamp": 3,
+        "inflow_count": 0,
+        "outflow_count": 0,
+        "net_flow": 0,
+        "total_people": 88,
+        "density_level": "high",
+        "average_velocity": 0.05,
+        "movement_vectors": [
+          [
+            0.01,
+            0.01
+          ]
+        ],
+        "congestion_points": [
+          [
+            0.5,
+            0.6
+          ]
+        ],
+        "fire_detected": false,
+        "smoke_detected": false,
+        "violence_detected": false,
+        "weapon_detected": false,
+        "weapon_types": [],
+        "suspicious_behavior": true,
+        "emergency_evacuation": false
+      },
+      "prediction": {
+        "incident_probability": 0.5900000000000001,
+        "prediction_confidence": 0.9249999999999999,
+        "predicted_incident_type": "crowd_surge",
+        "time_to_incident_seconds": 300,
+        "risk_factors": [
+          "fire_detected",
+          "immediate_evacuation_needed",
+          "emergency_evacuation",
+          "mass_panic_risk",
+          "moderate_density",
+          "severe_flow_imbalance",
+          "moderate_congestion"
+        ],
+        "recommended_action": "security_dispatch",
+        "alert_level": "orange"
+      }
+    },
+    "4": {
+      "flow_metrics": {
+        "timestamp": 4,
+        "inflow_count": 0,
+        "outflow_count": 0,
+        "net_flow": 0,
+        "total_people": 88,
+        "density_level": "high",
+        "average_velocity": 0.08,
+        "movement_vectors": [
+          [
+            0.02,
+            0.01
+          ]
+        ],
+        "congestion_points": [
+          [
+            0.5,
+            0.6
+          ]
+        ],
+        "fire_detected": false,
+        "smoke_detected": true,
+        "violence_detected": false,
+        "weapon_detected": false,
+        "weapon_types": [],
+        "suspicious_behavior": true,
+        "emergency_evacuation": false
+      },
+      "prediction": {
+        "incident_probability": 0.5900000000000001,
+        "prediction_confidence": 0.9249999999999999,
+        "predicted_incident_type": "crowd_surge",
+        "time_to_incident_seconds": 300,
+        "risk_factors": [
+          "fire_detected",
+          "immediate_evacuation_needed",
+          "emergency_evacuation",
+          "mass_panic_risk",
+          "moderate_density",
+          "severe_flow_imbalance",
+          "moderate_congestion"
+        ],
+        "recommended_action": "security_dispatch",
+        "alert_level": "orange"
+      }
+    },
+    "5": {
+      "flow_metrics": {
+        "timestamp": 5,
+        "inflow_count": 0,
+        "outflow_count": 0,
+        "net_flow": 0,
+        "total_people": 88,
+        "density_level": "high",
+        "average_velocity": 0.15,
+        "movement_vectors": [
+          [
+            0.05,
+            -0.03
+          ]
+        ],
+        "congestion_points": [
+          [
+            0.2,
+            0.8
+          ]
+        ],
+        "fire_detected": true,
+        "smoke_detected": true,
+        "violence_detected": false,
+        "weapon_detected": false,
+        "weapon_types": [],
+        "suspicious_behavior": true,
+        "emergency_evacuation": true
+      },
+      "prediction": {
+        "incident_probability": 0.5900000000000001,
+        "prediction_confidence": 0.9249999999999999,
+        "predicted_incident_type": "crowd_surge",
+        "time_to_incident_seconds": 300,
+        "risk_factors": [
+          "fire_detected",
+          "immediate_evacuation_needed",
+          "emergency_evacuation",
+          "mass_panic_risk",
+          "moderate_density",
+          "severe_flow_imbalance",
+          "moderate_congestion"
+        ],
+        "recommended_action": "security_dispatch",
+        "alert_level": "orange"
+      }
+    },
+    "6": {
+      "flow_metrics": {
+        "timestamp": 6,
+        "inflow_count": 0,
+        "outflow_count": 1,
+        "net_flow": -1,
+        "total_people": 87,
+        "density_level": "high",
+        "average_velocity": 0.3,
+        "movement_vectors": [
+          [
+            0.1,
+            -0.05
+          ]
+        ],
+        "congestion_points": [
+          [
+            0.5,
+            0.6
+          ]
+        ],
+        "fire_detected": true,
+        "smoke_detected": true,
+        "violence_detected": false,
+        "weapon_detected": false,
+        "weapon_types": [],
+        "suspicious_behavior": true,
+        "emergency_evacuation": true
+      },
+      "prediction": {
+        "incident_probability": 0.5900000000000001,
+        "prediction_confidence": 0.9249999999999999,
+        "predicted_incident_type": "crowd_surge",
+        "time_to_incident_seconds": 300,
+        "risk_factors": [
+          "fire_detected",
+          "immediate_evacuation_needed",
+          "emergency_evacuation",
+          "mass_panic_risk",
+          "moderate_density",
+          "severe_flow_imbalance",
+          "moderate_congestion"
+        ],
+        "recommended_action": "security_dispatch",
+        "alert_level": "orange"
+      }
+    },
+    "7": {
+      "flow_metrics": {
+        "timestamp": 7,
+        "inflow_count": 0,
+        "outflow_count": 6,
+        "net_flow": -6,
+        "total_people": 82,
+        "density_level": "high",
+        "average_velocity": 0.5,
+        "movement_vectors": [
+          [
+            0.2,
+            -0.1
+          ]
+        ],
+        "congestion_points": [
+          [
+            0.6,
+            0.4
+          ]
+        ],
+        "fire_detected": true,
+        "smoke_detected": true,
+        "violence_detected": false,
+        "weapon_detected": false,
+        "weapon_types": [],
+        "suspicious_behavior": true,
+        "emergency_evacuation": true
+      },
+      "prediction": {
+        "incident_probability": 0.5900000000000001,
+        "prediction_confidence": 0.9249999999999999,
+        "predicted_incident_type": "crowd_surge",
+        "time_to_incident_seconds": 300,
+        "risk_factors": [
+          "fire_detected",
+          "immediate_evacuation_needed",
+          "emergency_evacuation",
+          "mass_panic_risk",
+          "moderate_density",
+          "severe_flow_imbalance",
+          "moderate_congestion"
+        ],
+        "recommended_action": "security_dispatch",
+        "alert_level": "orange"
+      }
+    },
+    "8": {
+      "flow_metrics": {
+        "timestamp": 8,
+        "inflow_count": 0,
+        "outflow_count": 27,
+        "net_flow": -27,
+        "total_people": 55,
+        "density_level": "high",
+        "average_velocity": 0.8,
+        "movement_vectors": [
+          [
+            0.4,
+            -0.2
+          ]
+        ],
+        "congestion_points": [],
+        "fire_detected": true,
+        "smoke_detected": true,
+        "violence_detected": false,
+        "weapon_detected": false,
+        "weapon_types": [],
+        "suspicious_behavior": true,
+        "emergency_evacuation": true
+      },
+      "prediction": {
+        "incident_probability": 0.5900000000000001,
+        "prediction_confidence": 0.9249999999999999,
+        "predicted_incident_type": "crowd_surge",
+        "time_to_incident_seconds": 300,
+        "risk_factors": [
+          "fire_detected",
+          "immediate_evacuation_needed",
+          "emergency_evacuation",
+          "mass_panic_risk",
+          "moderate_density",
+          "severe_flow_imbalance",
+          "moderate_congestion"
+        ],
+        "recommended_action": "security_dispatch",
+        "alert_level": "orange"
+      }
+    },
+    "9": {
+      "flow_metrics": {
+        "timestamp": 9,
+        "inflow_count": 0,
+        "outflow_count": 30,
+        "net_flow": -30,
+        "total_people": 25,
+        "density_level": "medium",
+        "average_velocity": 0.9,
+        "movement_vectors": [
+          [
+            0.5,
+            -0.3
+          ]
+        ],
+        "congestion_points": [],
+        "fire_detected": false,
+        "smoke_detected": true,
+        "violence_detected": false,
+        "weapon_detected": false,
+        "weapon_types": [],
+        "suspicious_behavior": true,
+        "emergency_evacuation": true
+      },
+      "prediction": {
+        "incident_probability": 0.5900000000000001,
+        "prediction_confidence": 0.9249999999999999,
+        "predicted_incident_type": "crowd_surge",
+        "time_to_incident_seconds": 300,
+        "risk_factors": [
+          "fire_detected",
+          "immediate_evacuation_needed",
+          "emergency_evacuation",
+          "mass_panic_risk",
+          "moderate_density",
+          "severe_flow_imbalance",
+          "moderate_congestion"
+        ],
+        "recommended_action": "security_dispatch",
+        "alert_level": "orange"
+      }
+    },
+    "10": {
+      "flow_metrics": {
+        "timestamp": 10,
+        "inflow_count": 0,
+        "outflow_count": 15,
+        "net_flow": -15,
+        "total_people": 10,
+        "density_level": "low",
+        "average_velocity": 1.0,
+        "movement_vectors": [
+          [
+            0.6,
+            -0.4
+          ]
+        ],
+        "congestion_points": [],
+        "fire_detected": false,
+        "smoke_detected": true,
+        "violence_detected": false,
+        "weapon_detected": false,
+        "weapon_types": [],
+        "suspicious_behavior": false,
+        "emergency_evacuation": true
+      },
+      "prediction": {
+        "incident_probability": 0.5900000000000001,
+        "prediction_confidence": 0.9249999999999999,
+        "predicted_incident_type": "crowd_surge",
+        "time_to_incident_seconds": 300,
+        "risk_factors": [
+          "fire_detected",
+          "immediate_evacuation_needed",
+          "emergency_evacuation",
+          "mass_panic_risk",
+          "moderate_density",
+          "severe_flow_imbalance",
+          "moderate_congestion"
+        ],
+        "recommended_action": "security_dispatch",
+        "alert_level": "orange"
+      }
+    },
+    "11": {
+      "flow_metrics": {
+        "timestamp": 11,
+        "inflow_count": 0,
+        "outflow_count": 6,
+        "net_flow": -6,
+        "total_people": 4,
+        "density_level": "low",
+        "average_velocity": 1.2,
+        "movement_vectors": [
+          [
+            0.7,
+            -0.5
+          ]
+        ],
+        "congestion_points": [],
+        "fire_detected": false,
+        "smoke_detected": true,
+        "violence_detected": false,
+        "weapon_detected": false,
+        "weapon_types": [],
+        "suspicious_behavior": false,
+        "emergency_evacuation": true
+      },
+      "prediction": {
+        "incident_probability": 0.5900000000000001,
+        "prediction_confidence": 0.9249999999999999,
+        "predicted_incident_type": "crowd_surge",
+        "time_to_incident_seconds": 300,
+        "risk_factors": [
+          "fire_detected",
+          "immediate_evacuation_needed",
+          "emergency_evacuation",
+          "mass_panic_risk",
+          "moderate_density",
+          "severe_flow_imbalance",
+          "moderate_congestion"
+        ],
+        "recommended_action": "security_dispatch",
+        "alert_level": "orange"
+      }
+    },
+    "12": {
+      "flow_metrics": {
+        "timestamp": 12,
+        "inflow_count": 0,
+        "outflow_count": 2,
+        "net_flow": -2,
+        "total_people": 2,
+        "density_level": "low",
+        "average_velocity": 1.4,
+        "movement_vectors": [
+          [
+            0.8,
+            -0.6
+          ]
+        ],
+        "congestion_points": [],
+        "fire_detected": false,
+        "smoke_detected": false,
+        "violence_detected": false,
+        "weapon_detected": false,
+        "weapon_types": [],
+        "suspicious_behavior": false,
+        "emergency_evacuation": true
+      },
+      "prediction": {
+        "incident_probability": 0.5900000000000001,
+        "prediction_confidence": 0.9249999999999999,
+        "predicted_incident_type": "crowd_surge",
+        "time_to_incident_seconds": 300,
+        "risk_factors": [
+          "fire_detected",
+          "immediate_evacuation_needed",
+          "emergency_evacuation",
+          "mass_panic_risk",
+          "moderate_density",
+          "severe_flow_imbalance",
+          "moderate_congestion"
+        ],
+        "recommended_action": "security_dispatch",
+        "alert_level": "orange"
+      }
+    },
+    "13": {
+      "flow_metrics": {
+        "timestamp": 13,
+        "inflow_count": 0,
+        "outflow_count": 1,
+        "net_flow": -1,
+        "total_people": 1,
+        "density_level": "low",
+        "average_velocity": 1.5,
+        "movement_vectors": [
+          [
+            0.9,
+            0.0
+          ]
+        ],
+        "congestion_points": [],
+        "fire_detected": false,
+        "smoke_detected": false,
+        "violence_detected": false,
+        "weapon_detected": false,
+        "weapon_types": [],
+        "suspicious_behavior": false,
+        "emergency_evacuation": true
+      },
+      "prediction": {
+        "incident_probability": 0.5900000000000001,
+        "prediction_confidence": 0.9249999999999999,
+        "predicted_incident_type": "crowd_surge",
+        "time_to_incident_seconds": 300,
+        "risk_factors": [
+          "fire_detected",
+          "immediate_evacuation_needed",
+          "emergency_evacuation",
+          "mass_panic_risk",
+          "moderate_density",
+          "severe_flow_imbalance",
+          "moderate_congestion"
+        ],
+        "recommended_action": "security_dispatch",
+        "alert_level": "orange"
+      }
+    },
+    "14": {
+      "flow_metrics": {
+        "timestamp": 14,
+        "inflow_count": 0,
+        "outflow_count": 0,
+        "net_flow": 0,
+        "total_people": 1,
+        "density_level": "low",
+        "average_velocity": 1.5,
+        "movement_vectors": [
+          [
+            0.9,
+            0.0
+          ]
+        ],
+        "congestion_points": [],
+        "fire_detected": false,
+        "smoke_detected": false,
+        "violence_detected": false,
+        "weapon_detected": false,
+        "weapon_types": [],
+        "suspicious_behavior": false,
+        "emergency_evacuation": true
+      },
+      "prediction": {
+        "incident_probability": 0.5900000000000001,
+        "prediction_confidence": 0.9249999999999999,
+        "predicted_incident_type": "crowd_surge",
+        "time_to_incident_seconds": 300,
+        "risk_factors": [
+          "fire_detected",
+          "immediate_evacuation_needed",
+          "emergency_evacuation",
+          "mass_panic_risk",
+          "moderate_density",
+          "severe_flow_imbalance",
+          "moderate_congestion"
+        ],
+        "recommended_action": "security_dispatch",
+        "alert_level": "orange"
+      }
+    }
+  },
+  "future_forecast": {
+    "incident_probability": 0.5900000000000001,
+    "prediction_confidence": 0.9249999999999999,
+    "predicted_incident_type": "crowd_surge",
+    "time_to_incident_seconds": 300,
+    "risk_factors": [
+      "fire_detected",
+      "immediate_evacuation_needed",
+      "emergency_evacuation",
+      "mass_panic_risk",
+      "moderate_density",
+      "severe_flow_imbalance",
+      "moderate_congestion"
+    ],
+    "recommended_action": "security_dispatch",
+    "alert_level": "orange"
+  },
+  "forecast_horizon_minutes": 10
+}
