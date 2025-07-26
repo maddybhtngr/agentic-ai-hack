@@ -16,6 +16,8 @@ import AttendeeSidebar from '../components/AttendeeSidebar'
 import CrowdHeatMap from '../components/CrowdHeatMap'
 import FloatingAssistant from '../components/FloatingAssistant'
 import { authUtils } from '../services/api'
+import { apiService } from '../services/api'
+import { useState, useEffect } from 'react'
 
 function AttendeeDashboard() {
   const [opened, { toggle }] = useDisclosure(true);
@@ -26,6 +28,15 @@ function AttendeeDashboard() {
   // Get current user data
   const currentUser = authUtils.getCurrentUser();
   const userName = currentUser ? `${currentUser.first_name} ${currentUser.last_name}` : 'Attendee User';
+
+  // State for Quick Stats
+  const [quickStats, setQuickStats] = useState({
+    totalZones: 0,
+    safeZones: 0,
+    busyZones: 0,
+    avoidZones: 0
+  });
+  const [isLoadingQuickStats, setIsLoadingQuickStats] = useState(false);
 
   const handleMenuClick = () => {
     toggle();
@@ -82,6 +93,61 @@ function AttendeeDashboard() {
       color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
     }
   ];
+
+  // Function to fetch and calculate quick stats
+  const fetchQuickStats = async () => {
+    setIsLoadingQuickStats(true);
+    try {
+      const [zones, crowdDetails, incidents] = await Promise.all([
+        apiService.getAllZones(),
+        apiService.getAllZonesCrowdDetails(),
+        apiService.getAllIncidents()
+      ]);
+      const crowdMap = Object.fromEntries(crowdDetails.zones.map(z => [z.zoneId, z.count]));
+      const incidentsData = incidents.data || incidents;
+      // Avoid Zones: zones with Critical Incidents
+      const avoidZoneIds = new Set();
+      incidentsData.forEach(incident => {
+        if (incident.incident_priority === 'CRITICAL' && incident.status !== 'RESOLVED') {
+          if (incident.zone_id) {
+            avoidZoneIds.add(incident.zone_id);
+          }
+        }
+      });
+      // Busy Zones: crowd > 60% capacity
+      const busyZones = zones.filter(zone => {
+        const count = crowdMap[zone.id] || 0;
+        return (count / zone.maxCapacity) > 0.6;
+      }).length;
+      // Safe Zones: not busy and not avoid
+      const safeZones = zones.filter(zone => {
+        const count = crowdMap[zone.id] || 0;
+        return (count / zone.maxCapacity) <= 0.6 && !avoidZoneIds.has(zone.id);
+      }).length;
+      setQuickStats({
+        totalZones: zones.length,
+        safeZones,
+        busyZones,
+        avoidZones: avoidZoneIds.size
+      });
+    } catch (error) {
+      console.error('Error fetching quick stats:', error);
+    } finally {
+      setIsLoadingQuickStats(false);
+    }
+  };
+
+  // Fetch quick stats on component mount
+  useEffect(() => {
+    fetchQuickStats();
+  }, []);
+  // Set up 10-second polling interval for quick stats
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchQuickStats();
+    }, 10000); // 10 seconds
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <AppShell
@@ -278,7 +344,9 @@ function AttendeeDashboard() {
                       border: '1px solid rgba(255, 255, 255, 0.3)'
                     }}>
                       <Stack gap="xs" align="center">
-                        <Text size="xl" fw={700} style={{ color: '#667eea' }}>12</Text>
+                        <Text size="xl" fw={700} style={{ color: '#667eea' }}>
+                          {isLoadingQuickStats ? '...' : quickStats.totalZones}
+                        </Text>
                         <Text size="sm" c="dimmed" ta="center">Total Zones</Text>
                       </Stack>
                     </Card>
@@ -290,7 +358,9 @@ function AttendeeDashboard() {
                       border: '1px solid rgba(255, 255, 255, 0.3)'
                     }}>
                       <Stack gap="xs" align="center">
-                        <Text size="xl" fw={700} style={{ color: '#22c55e' }}>8</Text>
+                        <Text size="xl" fw={700} style={{ color: '#22c55e' }}>
+                          {isLoadingQuickStats ? '...' : quickStats.safeZones}
+                        </Text>
                         <Text size="sm" c="dimmed" ta="center">Safe Zones</Text>
                       </Stack>
                     </Card>
@@ -302,7 +372,9 @@ function AttendeeDashboard() {
                       border: '1px solid rgba(255, 255, 255, 0.3)'
                     }}>
                       <Stack gap="xs" align="center">
-                        <Text size="xl" fw={700} style={{ color: '#f59e0b' }}>3</Text>
+                        <Text size="xl" fw={700} style={{ color: '#f59e0b' }}>
+                          {isLoadingQuickStats ? '...' : quickStats.busyZones}
+                        </Text>
                         <Text size="sm" c="dimmed" ta="center">Busy Zones</Text>
                       </Stack>
                     </Card>
@@ -314,7 +386,9 @@ function AttendeeDashboard() {
                       border: '1px solid rgba(255, 255, 255, 0.3)'
                     }}>
                       <Stack gap="xs" align="center">
-                        <Text size="xl" fw={700} style={{ color: '#ef4444' }}>1</Text>
+                        <Text size="xl" fw={700} style={{ color: '#ef4444' }}>
+                          {isLoadingQuickStats ? '...' : quickStats.avoidZones}
+                        </Text>
                         <Text size="sm" c="dimmed" ta="center">Avoid Zones</Text>
                       </Stack>
                     </Card>

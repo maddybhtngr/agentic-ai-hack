@@ -9,12 +9,13 @@ import {
   IconTrendingDown,
   IconActivity
 } from '@tabler/icons-react'
+import { useState, useEffect } from 'react'
 import AppBar from '../components/AppBar'
 import StaffSidebar from '../components/StaffSidebar'
 import CrowdHeatMap from '../components/CrowdHeatMap'
 import FloatingAssistant from '../components/FloatingAssistant'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { authUtils } from '../services/api'
+import { authUtils, apiService } from '../services/api'
 
 function StaffDashboard() {
   const [opened, { toggle }] = useDisclosure(true);
@@ -26,9 +27,84 @@ function StaffDashboard() {
   const currentUser = authUtils.getCurrentUser();
   const userName = currentUser ? `${currentUser.first_name} ${currentUser.last_name}` : 'Staff User';
 
+  // State for Quick Stats
+  const [quickStats, setQuickStats] = useState({
+    totalZones: 0,
+    activeZones: 0,
+    highDensity: 0,
+    critical: 0
+  });
+  const [isLoadingQuickStats, setIsLoadingQuickStats] = useState(false);
+
   const handleMenuClick = () => {
     toggle();
   }
+
+  // Function to fetch and calculate quick stats
+  const fetchQuickStats = async () => {
+    setIsLoadingQuickStats(true);
+    try {
+      const [zones, crowdDetails, incidents] = await Promise.all([
+        apiService.getAllZones(),
+        apiService.getAllZonesCrowdDetails(),
+        apiService.getAllIncidents()
+      ]);
+      
+      const crowdMap = Object.fromEntries(crowdDetails.zones.map(z => [z.zoneId, z.count]));
+      const incidentsData = incidents.data || incidents;
+      
+      // Calculate stats
+      const totalZones = zones.length;
+      
+      // High Density: zones with crowd > 60% capacity
+      const highDensity = zones.filter(zone => {
+        const count = crowdMap[zone.id] || 0;
+        return (count / zone.maxCapacity) > 0.6;
+      }).length;
+      
+      // Active Zones: zones that have breached 100% capacity
+      const activeZones = zones.filter(zone => {
+        const count = crowdMap[zone.id] || 0;
+        return (count / zone.maxCapacity) >= 1.0;
+      }).length;
+      
+      // Critical: zones with Critical Incidents
+      const criticalIncidentZones = new Set();
+      incidentsData.forEach(incident => {
+        if (incident.incident_priority === 'CRITICAL' && incident.status !== 'RESOLVED') {
+          if (incident.zone_id) {
+            criticalIncidentZones.add(incident.zone_id);
+          }
+        }
+      });
+      const critical = criticalIncidentZones.size;
+      
+      setQuickStats({
+        totalZones,
+        activeZones,
+        highDensity,
+        critical
+      });
+    } catch (error) {
+      console.error('Error fetching quick stats:', error);
+    } finally {
+      setIsLoadingQuickStats(false);
+    }
+  };
+
+  // Fetch quick stats on component mount
+  useEffect(() => {
+    fetchQuickStats();
+  }, []);
+
+  // Set up 10-second polling interval for quick stats
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchQuickStats();
+    }, 10000); // 10 seconds
+
+    return () => clearInterval(interval);
+  }, []);
 
   const statCards = [
     {
@@ -276,7 +352,9 @@ function StaffDashboard() {
                       border: '1px solid rgba(255, 255, 255, 0.3)'
                     }}>
                       <Stack gap="xs" align="center">
-                        <Text size="xl" fw={700} style={{ color: '#667eea' }}>12</Text>
+                        <Text size="xl" fw={700} style={{ color: '#667eea' }}>
+                          {isLoadingQuickStats ? '...' : quickStats.totalZones}
+                        </Text>
                         <Text size="sm" c="dimmed" ta="center">Total Zones</Text>
                       </Stack>
                     </Card>
@@ -288,7 +366,9 @@ function StaffDashboard() {
                       border: '1px solid rgba(255, 255, 255, 0.3)'
                     }}>
                       <Stack gap="xs" align="center">
-                        <Text size="xl" fw={700} style={{ color: '#22c55e' }}>8</Text>
+                        <Text size="xl" fw={700} style={{ color: '#22c55e' }}>
+                          {isLoadingQuickStats ? '...' : quickStats.activeZones}
+                        </Text>
                         <Text size="sm" c="dimmed" ta="center">Active Zones</Text>
                       </Stack>
                     </Card>
@@ -300,7 +380,9 @@ function StaffDashboard() {
                       border: '1px solid rgba(255, 255, 255, 0.3)'
                     }}>
                       <Stack gap="xs" align="center">
-                        <Text size="xl" fw={700} style={{ color: '#f59e0b' }}>3</Text>
+                        <Text size="xl" fw={700} style={{ color: '#f59e0b' }}>
+                          {isLoadingQuickStats ? '...' : quickStats.highDensity}
+                        </Text>
                         <Text size="sm" c="dimmed" ta="center">High Density</Text>
                       </Stack>
                     </Card>
@@ -312,7 +394,9 @@ function StaffDashboard() {
                       border: '1px solid rgba(255, 255, 255, 0.3)'
                     }}>
                       <Stack gap="xs" align="center">
-                        <Text size="xl" fw={700} style={{ color: '#ef4444' }}>1</Text>
+                        <Text size="xl" fw={700} style={{ color: '#ef4444' }}>
+                          {isLoadingQuickStats ? '...' : quickStats.critical}
+                        </Text>
                         <Text size="sm" c="dimmed" ta="center">Critical</Text>
                       </Stack>
                     </Card>
