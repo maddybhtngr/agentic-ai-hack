@@ -1,502 +1,309 @@
-"""
-Video Analyzer using Google Vertex AI Vision API
-This module processes local video files and uses Google Vertex AI Vision to detect people and smoke.
-"""
-
 import os
+import json
 import time
-from typing import Dict, List, Any
+from typing import Dict, List
 from dotenv import load_dotenv
-from google.cloud import aiplatform
 from google.cloud import storage
-from google.cloud import videointelligence_v1 as videointelligence
-import uuid
+import vertexai
+from vertexai.generative_models import GenerativeModel, Part
+from collections import defaultdict
 
-# Load environment variables from .env file
-load_dotenv()
+# Load environment variables from the correct path
+dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
+load_dotenv(dotenv_path)
 
-# Set default location if not specified in environment
 DEFAULT_LOCATION = "us-central1"
 
-class VideoAnalyzer:
-    """Class to analyze video content using Google Vertex AI Vision."""
-    
+class GeminiVideoAnalyzer:
     def __init__(self, project_id: str = None, location: str = None):
-        """
-        Initialize the VideoAnalyzer.
-        
-        Args:
-            project_id: Google Cloud project ID. If None, will try to get from environment.
-            location: Google Cloud region. If None, will try to get from environment.
-        """
-        # Get project ID from arguments or environment variables
         self.project_id = project_id or os.getenv("GOOGLE_CLOUD_PROJECT")
         if not self.project_id:
-            raise ValueError("Project ID must be provided or set as GOOGLE_CLOUD_PROJECT environment variable")
-        
-        # Get location from arguments or environment variables or use default
+            raise ValueError("Project ID must be provided or set as GOOGLE_CLOUD_PROJECT")
         self.location = location or os.getenv("VERTEX_AI_LOCATION", DEFAULT_LOCATION)
-        
-        # Verify credentials are available
         credentials_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
         if not credentials_path or not os.path.exists(credentials_path):
-            raise ValueError(
-                "GOOGLE_APPLICATION_CREDENTIALS environment variable must be set "
-                "to the path of a valid service account key file"
-            )
-        
-        print(f"Initializing Vertex AI with project: {self.project_id}, location: {self.location}")
+            raise ValueError("GOOGLE_APPLICATION_CREDENTIALS must be set to a valid service account key file")
         
         # Initialize Vertex AI
-        aiplatform.init(project=self.project_id, location=self.location)
-        
-    def _upload_video_to_gcs(self, video_path: str) -> str:
-        """
-        Upload a video file to Google Cloud Storage (required for Vertex AI video analysis).
-        Only uploads if the file does not already exist in the bucket.
-        Args:
-            video_path: Path to the local video file.
-        Returns:
-            GCS URI of the uploaded video.
-        """
-        if not os.path.exists(video_path):
-            raise FileNotFoundError(f"Video file not found: {video_path}")
-        
-        bucket_name = f"video-analysis-ai-hack-{self.project_id}".lower()
+        vertexai.init(project=self.project_id, location=self.location)
+        self.model = GenerativeModel("gemini-2.5-pro")
+        print(f"GeminiVideoAnalyzer initialized for project '{self.project_id}' in '{self.location}'.")
+
+    def _upload_video_to_gcs(self, video_path: str, cctv_id: str) -> str:
+        print(f"Uploading {video_path} to GCS with organized folder structure...")
+        bucket_name = f"video-analysis-heatmap-{self.project_id}".lower()
         storage_client = storage.Client(project=self.project_id)
-        # Check if bucket exists, if not create it
-        try:
-            bucket = storage_client.get_bucket(bucket_name)
-        except Exception:
-            print(f"Bucket {bucket_name} does not exist, creating it...")
+        bucket = storage_client.bucket(bucket_name)
+        if not bucket.exists():
+            print(f"Bucket {bucket_name} not found. Creating new bucket.")
             bucket = storage_client.create_bucket(bucket_name, location=self.location)
-            print(f"Created bucket: {bucket_name}")
-        blob_name = os.path.basename(video_path)
+        
+        # Create organized folder structure: cctv_1/video.mp4, cctv_2/video.mp4, etc.
+        folder_name = f"cctv_{cctv_id}"
+        blob_name = f"{folder_name}/video.mp4"
         blob = bucket.blob(blob_name)
-        if blob.exists():
-            print(f"File already exists in bucket: gs://{bucket_name}/{blob_name}")
+        
+        if not blob.exists():
+            blob.upload_from_filename(video_path, timeout=300)
+            print(f"Video uploaded to gs://{bucket_name}/{blob_name}")
         else:
-            blob.upload_from_filename(video_path)
-            print(f"Uploaded video to: gs://{bucket_name}/{blob_name}")
-        gcs_uri = f"gs://{bucket_name}/{blob_name}"
-        return gcs_uri
+            print(f"Video already exists in GCS: gs://{bucket_name}/{blob_name}")
+        
+        return f"gs://{bucket_name}/{blob_name}"
+
+    def _create_analysis_prompt(self) -> str:
+        return """
+You are an expert video analyst specializing in security and emergency detection. 
+Analyze this video and provide detailed frame-by-frame analysis.
+
+For EACH SECOND of the video, provide INDEPENDENT analysis (do not accumulate counts):
+
+1. **People Count & Demographics**: Count ONLY the people visible AT THIS SPECIFIC TIMESTAMP
+   - Count each person you can see in the frame at this exact moment
+   - DO NOT add to previous counts - each timestamp is independent
+   - Provide demographic breakdown of visible people at this moment
+
+2. **People Positions**: For each person visible at this timestamp, estimate their position
+   - **CRITICAL REQUIREMENT**: The number of heatmap_points MUST EXACTLY EQUAL the people_count
+   - If you count 15 people, you must provide exactly 15 heatmap coordinate points
+   - Every person counted must have a corresponding (x, y) coordinate in heatmap_points
+   - DO NOT provide fewer heatmap points than people count - this creates data inconsistency
+
+3. **Fire Detection**: Look for flames, fire, burning objects, torches, molotov cocktails
+4. **Smoke Detection**: Look for smoke, smog, haze from fires  
+5. **Violence Detection**: Look for riots, protests, fighting, weapons, aggressive crowds
+6. **Weapon Detection**: Identify any weapons, guns, knives, sticks, stones, bottles
+7. **Sentiment Analysis**: Analyze crowd emotions and behavioral patterns
+8. **Security Assessment**: Evaluate suspicious activities and crowd behavior
+
+Return your analysis as a JSON object with this exact structure:
+```json
+{
+  "0": {
+    "people_count": 15,
+    "demographics": {
+      "male_count": 8,
+      "female_count": 5,
+      "child_count": 1,
+      "elder_count": 1
+    },
+    "heatmap_points": [
+      {"x": 0.1, "y": 0.2, "value": 95}, {"x": 0.3, "y": 0.4, "value": 90}, {"x": 0.7, "y": 0.6, "value": 85},
+      {"x": 0.2, "y": 0.8, "value": 90}, {"x": 0.9, "y": 0.3, "value": 85}, {"x": 0.5, "y": 0.5, "value": 98},
+      {"x": 0.15, "y": 0.7, "value": 88}, {"x": 0.8, "y": 0.25, "value": 92}, {"x": 0.4, "y": 0.9, "value": 87},
+      {"x": 0.6, "y": 0.15, "value": 89}, {"x": 0.85, "y": 0.75, "value": 93}, {"x": 0.25, "y": 0.45, "value": 91},
+      {"x": 0.65, "y": 0.8, "value": 86}, {"x": 0.35, "y": 0.1, "value": 94}, {"x": 0.75, "y": 0.55, "value": 89}
+    ],
+    "security_flags": {
+      "violence_flag": true,
+      "fire_flag": true,
+      "smoke_flag": false,
+      "weapon_detected": true,
+      "weapon_names": ["sticks", "stones"],
+      "suspicious_behavior": true,
+      "crowd_density": "high",
+      "emergency_evacuation": false
+    },
+    "sentiment_analysis": {
+      "dominant_emotions": ["anger", "fear", "aggression", "panic"],
+      "crowd_mood": "hostile",
+      "energy_level": "high"
+    },
+    "environmental": {
+      "lighting_condition": "daylight",
+      "weather_condition": "clear",
+      "vehicles_present": false
+    }
+  }
+}
+```
+
+Key guidelines:
+- **CRITICAL**: Each timestamp is INDEPENDENT - do not accumulate people counts across frames
+- **CRITICAL**: heatmap_points array LENGTH must EXACTLY EQUAL people_count number
+- **CRITICAL**: If people_count = 85, then heatmap_points must contain exactly 85 coordinate objects
+- Count ONLY people visible in that specific frame/second - not cumulative totals
+- "value" in heatmap_points should be confidence (70-100)
+- Demographics: Analyze age groups and gender (male, female, child <16, elder >60)
+- Weapons: Look for guns, knives, sticks, stones, bottles, any threatening objects
+- Sentiment: Identify emotions like anger, fear, panic, aggression, calm, excitement
+- Crowd density: "low" (<10), "medium" (10-25), "high" (25-50), "very_high" (>50)
+- Suspicious behavior: unusual movements, gathering patterns, aggressive gestures
+- Environmental: lighting (daylight/twilight/night), weather (clear/cloudy/rain)
+- Look carefully for fire/flames - they may be from torches, burning objects, or protests
+- Analyze the entire video duration, providing data for each second
+- ENSURE the JSON is complete and valid
+- **DOUBLE-CHECK**: Verify heatmap_points count matches people_count before responding
+
+Provide ONLY the JSON response, no other text.
+"""
+
+    def _parse_gemini_response(self, response_text: str) -> Dict:
+        """Parse Gemini's JSON response and convert to our expected format"""
+        try:
+            # Clean the response text - remove any markdown formatting
+            clean_text = response_text.strip()
+            if clean_text.startswith('```json'):
+                clean_text = clean_text[7:]  # Remove ```json
+            if clean_text.endswith('```'):
+                clean_text = clean_text[:-3]  # Remove ```
+            clean_text = clean_text.strip()
+            
+            # Additional cleaning: fix common JSON truncation issues
+            import re
+            
+            # Remove trailing commas before closing brackets/braces
+            clean_text = re.sub(r',\s*([}\]])', r'\1', clean_text)
+            
+            # Handle truncated JSON by finding the last complete object
+            lines = clean_text.split('\n')
+            cleaned_lines = []
+            brace_count = 0
+            
+            for line in lines:
+                # Count braces to track JSON structure
+                brace_count += line.count('{') - line.count('}')
+                
+                # Only include lines that maintain valid JSON structure
+                if brace_count >= 0:
+                    cleaned_lines.append(line)
+                else:
+                    # If we get negative brace count, the JSON is malformed
+                    break
+            
+            # Ensure JSON is properly closed
+            clean_text = '\n'.join(cleaned_lines)
+            if brace_count > 0:
+                # Add missing closing braces
+                clean_text += '\n' + '}' * brace_count
+            
+            print(f"Attempting to parse cleaned JSON (first 300 chars): {clean_text[:300]}...")
+            print(f"JSON brace balance check - opening: {clean_text.count('{')} closing: {clean_text.count('}')}")
+            print(f"Cleaned JSON length: {len(clean_text)} characters")
+            
+            # Parse JSON
+            gemini_data = json.loads(clean_text)
+            
+            # Handle both array format and object format from Gemini
+            final_data = {}
+            
+            if isinstance(gemini_data, list):
+                # Handle array format: [{"frame_sec": 0, ...}, {"frame_sec": 1, ...}]
+                for item in gemini_data:
+                    timestamp = item.get('frame_sec', 0)
+                    final_data[timestamp] = self._extract_analysis_data(item)
+            else:
+                # Handle object format: {"0": {...}, "1": {...}}
+                for timestamp_str, data in gemini_data.items():
+                    timestamp = int(timestamp_str)
+                    final_data[timestamp] = self._extract_analysis_data(data)
+            
+            return dict(sorted(final_data.items()))
+            
+        except (json.JSONDecodeError, KeyError, ValueError) as e:
+            print(f"Error parsing Gemini response: {e}")
+            print(f"Raw response (first 500 chars): {response_text[:500]}...")
+            print(f"Raw response (last 200 chars): ...{response_text[-200:]}")
+            return {}
     
-    def analyze_people_count(self, gcs_uri: str) -> dict:
-        """
-        Detects and counts people per second using PERSON_DETECTION.
-        Returns a dict with people count per second.
-        """
-        video_client = videointelligence.VideoIntelligenceServiceClient()
-        features = [videointelligence.Feature.PERSON_DETECTION]
-        config = videointelligence.PersonDetectionConfig(
-            include_bounding_boxes=True,
-            include_attributes=True,
-            include_pose_landmarks=False
-        )
-        context = videointelligence.VideoContext(person_detection_config=config)
-        operation = video_client.annotate_video(
-            request={
-                "features": features,
-                "input_uri": gcs_uri,
-                "video_context": context
-            }
-        )
-        result = operation.result(timeout=600)
-        annotation_results = result.annotation_results[0]
+    def _extract_analysis_data(self, data: dict) -> dict:
+        """Extract and standardize analysis data from Gemini response"""
+        # Extract security flags
+        security_flags = data.get('security_flags', {})
         
-        # Track unique people per timestamp using track IDs
-        timestamp_tracks = {}
-        
-        for person_annotation in getattr(annotation_results, "person_detection_annotations", []):
-            for track in person_annotation.tracks:
-                # Use track ID to identify unique persons
-                track_id = getattr(track, 'track_id', id(track))
-                
-                for timestamped_object in track.timestamped_objects:
-                    time_offset = timestamped_object.time_offset.total_seconds()
-                    frame_time_key = int(time_offset)
-                    
-                    if frame_time_key not in timestamp_tracks:
-                        timestamp_tracks[frame_time_key] = set()
-                    
-                    # Add track ID to the set for this timestamp
-                    timestamp_tracks[frame_time_key].add(track_id)
-        
-        # Convert sets to counts
-        people_counts = {timestamp: len(tracks) for timestamp, tracks in timestamp_tracks.items()}
-        
-        return people_counts
+        return {
+            'heatmap_points': data.get('heatmap_points', []),
+            'people_count': data.get('people_count', 0),
+            
+            # Demographics
+            'demographics': data.get('demographics', {
+                'male_count': 0,
+                'female_count': 0,
+                'child_count': 0,
+                'elder_count': 0
+            }),
+            
+            # Security flags (maintain backward compatibility)
+            'violence_flag': security_flags.get('violence_flag', data.get('violence_flag', False)),
+            'fire_flag': security_flags.get('fire_flag', data.get('fire_flag', False)),
+            'smoke_flag': security_flags.get('smoke_flag', data.get('smoke_flag', False)),
+            
+            # New security features
+            'weapon_detected': security_flags.get('weapon_detected', False),
+            'weapon_names': security_flags.get('weapon_names', []),
+            'suspicious_behavior': security_flags.get('suspicious_behavior', False),
+            'crowd_density': security_flags.get('crowd_density', 'low'),
+            'emergency_evacuation': security_flags.get('emergency_evacuation', False),
+            
+            # Sentiment analysis
+            'sentiment_analysis': data.get('sentiment_analysis', {
+                'dominant_emotions': [],
+                'crowd_mood': 'neutral',
+                'energy_level': 'low'
+            }),
+            
+            # Environmental conditions
+            'environmental': data.get('environmental', {
+                'lighting_condition': 'unknown',
+                'weather_condition': 'unknown',
+                'vehicles_present': False
+            })
+        }
 
-    def analyze_violence_weapon(self, gcs_uri: str, video_path: str) -> dict:
-        """
-        Detects violence/weapon use per second using EXPLICIT_CONTENT_DETECTION and LABEL_DETECTION.
-        If flagged, (stub) extract frame at that time (requires OpenCV/ffmpeg for real extraction).
-        Returns a dict with flags and (stub) snapshot paths.
-        """
-        video_client = videointelligence.VideoIntelligenceServiceClient()
-        features = [
-            videointelligence.Feature.EXPLICIT_CONTENT_DETECTION,
-            videointelligence.Feature.LABEL_DETECTION
-        ]
-        operation = video_client.annotate_video(
-            request={
-                "features": features,
-                "input_uri": gcs_uri
-            }
-        )
-        result = operation.result(timeout=600)
-        annotation_results = result.annotation_results[0]
-        violence_flags = {}
-        # Explicit content
-        for frame in getattr(annotation_results, "explicit_annotation", []).frames:
-            time_offset = frame.time_offset.total_seconds()
-            if frame.pornography_likelihood >= 3:  # POSSIBLE or higher
-                violence_flags[int(time_offset)] = {"flag": True, "type": "explicit", "snapshot": f"snapshot_{int(time_offset)}.jpg"}
-        # Label detection for violence/weapon
-        for label in getattr(annotation_results, "segment_label_annotations", []):
-            desc = label.entity.description.lower()
-            if any(term in desc for term in ["fight", "violence", "weapon", "gun", "knife"]):
-                for segment in label.segments:
-                    start = int(segment.segment.start_time_offset.total_seconds())
-                    end = int(segment.segment.end_time_offset.total_seconds())
-                    for t in range(start, end+1):
-                        violence_flags[t] = {"flag": True, "type": desc, "snapshot": f"snapshot_{t}.jpg"}
-        return violence_flags
-
-    def analyze_age_group(self, gcs_uri: str) -> dict:
-        """
-        Stub: Age group and gender detection is NOT supported by Video Intelligence API.
-        This method is a placeholder for a custom ML model.
-        Returns an empty dict.
-        """
-        # You would need a custom model for age/gender detection.
-        return {}
-
-    def analyze_crying_faces(self, gcs_uri: str, video_path: str) -> dict:
-        """
-        Stub: Crying face detection is NOT supported by Video Intelligence API.
-        This method is a placeholder for a custom ML model.
-        Returns an empty dict.
-        """
-        # You would need a custom model for emotion detection.
-        return {}
-
-    def analyze_fire_smoke(self, gcs_uri: str, video_path: str) -> dict:
-        """
-        Detects fire/smoke using multiple detection methods.
-        Returns a dict with flags and (stub) snapshot paths.
-        """
-        video_client = videointelligence.VideoIntelligenceServiceClient()
+    def _analyze_with_gemini(self, video_path: str) -> Dict:
+        """Analyze video using Gemini 2.5 Pro"""
+        print("--- Starting Gemini 2.5 Pro Video Analysis ---")
         
-        print("\n=== FIRE/SMOKE DETECTION DEBUG ===")
-        
-        fire_smoke_flags = {}
-        
-        # Method 1: Label Detection with comprehensive terms
-        print("\n--- METHOD 1: LABEL DETECTION ---")
         try:
-            features = [videointelligence.Feature.LABEL_DETECTION]
-            operation = video_client.annotate_video(
-                request={
-                    "features": features,
-                    "input_uri": gcs_uri
+            # Create video part for Gemini
+            video_part = Part.from_uri(
+                uri=video_path,
+                mime_type="video/mp4"
+            )
+            
+            prompt = self._create_analysis_prompt()
+            print("Sending video to Gemini 2.5 Pro for analysis...")
+            
+            # Generate content with enhanced settings
+            response = self.model.generate_content(
+                [prompt, video_part],
+                generation_config={
+                    "temperature": 0.1,  # Low temperature for consistent analysis
+                    "max_output_tokens": 60000,  # Maximum tokens for complete heatmap data
                 }
             )
-            result = operation.result(timeout=600)
-            annotation_results = result.annotation_results[0]
             
-            # Comprehensive fire/smoke terms
-            fire_terms = [
-                "fire", "flame", "burning", "burn", "blaze", "inferno", "wildfire", 
-                "bonfire", "campfire", "fireplace", "torch", "flare", "ignite", "combustion"
-            ]
-            smoke_terms = [
-                "smoke", "smoking", "smog", "fume", "vapor", "steam", "mist", 
-                "haze", "fog", "exhaust", "emissions", "ash", "soot"
-            ]
-            related_terms = [
-                "cigarette", "cigar", "tobacco", "lighter", "match", "candle", 
-                "incense", "barbecue", "grill", "chimney", "furnace", "oven",
-                "orange", "red", "glow", "bright", "heat", "ember", "spark"
-            ]
-            
-            all_fire_terms = fire_terms + smoke_terms + related_terms
-            
-            # Check frame-level labels (if available)
-            frame_labels = getattr(annotation_results, "frame_label_annotations", [])
-            print(f"Frame labels found: {len(frame_labels)}")
-            
-            for label in frame_labels:
-                desc = label.entity.description.lower()
-                for frame in label.frames:
-                    confidence = frame.confidence
-                    time_offset = frame.time_offset.total_seconds()
-                    timestamp = int(time_offset)
-                    
-                    print(f"  Frame {timestamp}s: '{desc}' (confidence: {confidence:.3f})")
-                    
-                    matching_terms = [term for term in all_fire_terms if term in desc]
-                    if matching_terms and confidence > 0.1:
-                        print(f"    → FIRE/SMOKE MATCH: {matching_terms}")
-                        if timestamp not in fire_smoke_flags or fire_smoke_flags[timestamp].get('confidence', 0) < confidence:
-                            fire_smoke_flags[timestamp] = {
-                                "flag": True,
-                                "type": desc,
-                                "confidence": confidence,
-                                "method": "frame_label",
-                                "snapshot": f"snapshot_{timestamp}.jpg"
-                            }
-            
-            # Check segment and shot labels
-            label_sources = [
-                (getattr(annotation_results, "segment_label_annotations", []), "segment"),
-                (getattr(annotation_results, "shot_label_annotations", []), "shot")
-            ]
-            
-            all_labels_found = []
-            
-            for labels, source_type in label_sources:
-                print(f"\nChecking {source_type} labels ({len(labels)} found):")
-                
-                for label in labels:
-                    desc = label.entity.description.lower()
-                    confidence = getattr(label, 'confidence', 0.0)
-                    all_labels_found.append((desc, confidence, source_type))
-                    
-                    print(f"  - '{desc}' (confidence: {confidence:.3f})")
-                    
-                    # Check for matches with any confidence (since we're seeing 0.0 confidences)
-                    matching_terms = [term for term in all_fire_terms if term in desc]
-                    if matching_terms:
-                        print(f"    → MATCHES: {matching_terms}")
-                        
-                        # Accept even low confidence due to API issue
-                        if confidence >= 0.0:  # Accept any confidence including 0.0
-                            if source_type == "segment":
-                                segments = label.segments
-                            else:
-                                segments = [label]
-                            
-                            for segment in segments:
-                                if hasattr(segment, 'segment'):
-                                    start_time = segment.segment.start_time_offset
-                                    end_time = segment.segment.end_time_offset
-                                else:
-                                    start_time = getattr(segment, 'start_time_offset', None)
-                                    end_time = getattr(segment, 'end_time_offset', None)
-                                
-                                if start_time and end_time:
-                                    start = int(start_time.total_seconds())
-                                    end = int(end_time.total_seconds())
-                                    print(f"    → FLAGGED: timestamps {start}-{end}s")
-                                    
-                                    for t in range(start, end + 1):
-                                        if t not in fire_smoke_flags or fire_smoke_flags[t].get('confidence', 0) <= confidence:
-                                            fire_smoke_flags[t] = {
-                                                "flag": True,
-                                                "type": desc,
-                                                "confidence": max(confidence, 0.5),  # Boost confidence for matched terms
-                                                "method": source_type + "_label",
-                                                "snapshot": f"snapshot_{t}.jpg"
-                                            }
-            
-            print(f"\nTotal labels found: {len(all_labels_found)}")
+            print("Gemini analysis complete, parsing response...")
+            return self._parse_gemini_response(response.text)
             
         except Exception as e:
-            print(f"Label detection failed: {e}")
-        
-        # Method 2: Try Object Detection as fallback
-        print("\n--- METHOD 2: OBJECT DETECTION FALLBACK ---")
-        try:
-            features = [videointelligence.Feature.OBJECT_TRACKING]
-            operation = video_client.annotate_video(
-                request={
-                    "features": features,
-                    "input_uri": gcs_uri
-                }
-            )
-            result = operation.result(timeout=600)
-            annotation_results = result.annotation_results[0]
-            
-            object_annotations = getattr(annotation_results, "object_annotations", [])
-            print(f"Objects detected: {len(object_annotations)}")
-            
-            for obj in object_annotations:
-                entity_desc = obj.entity.description.lower()
-                confidence = obj.confidence
-                print(f"  Object: '{entity_desc}' (confidence: {confidence:.3f})")
-                
-                # Check if object matches fire/smoke terms
-                if any(term in entity_desc for term in all_fire_terms) and confidence > 0.1:
-                    for frame in obj.frames:
-                        timestamp = int(frame.time_offset.total_seconds())
-                        if timestamp not in fire_smoke_flags or fire_smoke_flags[timestamp].get('confidence', 0) < confidence:
-                            fire_smoke_flags[timestamp] = {
-                                "flag": True,
-                                "type": entity_desc,
-                                "confidence": confidence,
-                                "method": "object_detection",
-                                "snapshot": f"snapshot_{timestamp}.jpg"
-                            }
-        except Exception as e:
-            print(f"Object detection failed: {e}")
-        
-        # Method 3: Look for visual cues and emergency indicators
-        print("\n--- METHOD 3: VISUAL CUES & EMERGENCY INDICATORS ---")
-        try:
-            # Try explicit content detection for dangerous situations
-            features = [videointelligence.Feature.EXPLICIT_CONTENT_DETECTION]
-            operation = video_client.annotate_video(
-                request={
-                    "features": features,
-                    "input_uri": gcs_uri
-                }
-            )
-            result = operation.result(timeout=600)
-            annotation_results = result.annotation_results[0]
-            
-            explicit_annotations = getattr(annotation_results, "explicit_annotation", None)
-            if explicit_annotations:
-                print(f"Explicit content frames: {len(explicit_annotations.frames)}")
-                for frame in explicit_annotations.frames:
-                    timestamp = int(frame.time_offset.total_seconds())
-                    likelihood = frame.pornography_likelihood.name
-                    if likelihood in ['LIKELY', 'VERY_LIKELY']:  # High likelihood of concerning content
-                        print(f"  - Timestamp {timestamp}s: High-risk content detected")
-                        if timestamp not in fire_smoke_flags:
-                            fire_smoke_flags[timestamp] = {
-                                "flag": True,
-                                "type": "emergency_situation_detected",
-                                "confidence": 0.7,
-                                "method": "explicit_content",
-                                "snapshot": f"snapshot_{timestamp}.jpg"
-                            }
-            
-        except Exception as e:
-            print(f"Explicit content detection failed: {e}")
-        
-        # Method 4: Infer from scene context (crowd + specific objects)
-        print("\n--- METHOD 4: SCENE CONTEXT INFERENCE ---")
-        try:
-            # Re-analyze the objects we found for contextual clues
-            all_objects = []
-            features = [videointelligence.Feature.OBJECT_TRACKING]
-            operation = video_client.annotate_video(
-                request={
-                    "features": features,
-                    "input_uri": gcs_uri
-                }
-            )
-            result = operation.result(timeout=600)
-            annotation_results = result.annotation_results[0]
-            
-            # Collect all objects by timestamp
-            timestamp_objects = {}
-            for obj in getattr(annotation_results, "object_annotations", []):
-                entity_desc = obj.entity.description.lower()
-                confidence = obj.confidence
-                
-                for frame in obj.frames:
-                    timestamp = int(frame.time_offset.total_seconds())
-                    if timestamp not in timestamp_objects:
-                        timestamp_objects[timestamp] = []
-                    timestamp_objects[timestamp].append((entity_desc, confidence))
-            
-            # Look for emergency-related object combinations
-            emergency_indicators = [
-                ['person', 'building'],  # People near buildings might indicate evacuation
-                ['car', 'person'],       # Emergency vehicles + people
-                ['lighting'],            # Emergency lighting
-            ]
-            
-            for timestamp, objects in timestamp_objects.items():
-                object_names = [obj[0] for obj in objects]
-                object_confidences = {obj[0]: obj[1] for obj in objects}
-                
-                # Check for emergency patterns
-                for indicator_pattern in emergency_indicators:
-                    if all(indicator in object_names for indicator in indicator_pattern):
-                        if 'lighting' in object_names and object_confidences.get('lighting', 0) > 0.5:
-                            print(f"  - Timestamp {timestamp}s: Emergency lighting detected")
-                            if timestamp not in fire_smoke_flags:
-                                fire_smoke_flags[timestamp] = {
-                                    "flag": True,
-                                    "type": "emergency_lighting_detected",
-                                    "confidence": 0.6,
-                                    "method": "context_inference",
-                                    "snapshot": f"snapshot_{timestamp}.jpg"
-                                }
-                
-                # If there are many people in one area, it might be an emergency gathering
-                person_count = len([obj for obj in objects if obj[0] == 'person'])
-                if person_count >= 8:  # High concentration of people
-                    avg_confidence = sum(obj[1] for obj in objects if obj[0] == 'person') / person_count
-                    if avg_confidence > 0.8:
-                        print(f"  - Timestamp {timestamp}s: Large crowd detected ({person_count} people)")
-                        if timestamp not in fire_smoke_flags:
-                            fire_smoke_flags[timestamp] = {
-                                "flag": True,
-                                "type": "large_crowd_emergency_situation",
-                                "confidence": 0.4,
-                                "method": "crowd_analysis",
-                                "snapshot": f"snapshot_{timestamp}.jpg"
-                            }
-            
-        except Exception as e:
-            print(f"Scene context analysis failed: {e}")
-        
-        print(f"\nFinal fire/smoke detections: {len(fire_smoke_flags)}")
-        if fire_smoke_flags:
-            for timestamp, data in sorted(fire_smoke_flags.items()):
-                print(f"  - Timestamp {timestamp}s: {data['type']} (confidence: {data['confidence']:.3f}, method: {data['method']})")
-        else:
-            print("No fire/smoke or emergency situations detected with any method.")
-            print("\nPossible reasons:")
-            print("  1. The video may not contain visible fire/smoke")
-            print("  2. The fire/smoke may be too subtle for AI detection")
-            print("  3. The video quality may be insufficient for detection")
-            print("  4. The 'fire' in the filename may be metaphorical")
-            
-        print("=== END DEBUG ===")
-        
-        return fire_smoke_flags
+            print(f"Error in Gemini analysis: {e}")
+            return {}
 
-    def analyze_video_comprehensive(self, video_path: str) -> list:
-        """
-        Comprehensive analysis: returns a list of dicts, one per timestamp, with all available info.
-        Each dict contains:
-        - timestamp
-        - people_count
-        - violence_flag, violence_type, violence_snapshot
-        - fire_smoke_flag, fire_smoke_type, fire_smoke_snapshot
-        - age_group (stub)
-        - crying_faces (stub)
-        - crying_faces_snapshot (stub)
-        """
-        # Upload video to GCS
-        gcs_uri = self._upload_video_to_gcs(video_path)
-        # Run all analyses
-        people_counts = self.analyze_people_count(gcs_uri)
-        violence = self.analyze_violence_weapon(gcs_uri, video_path)
-        fire_smoke = self.analyze_fire_smoke(gcs_uri, video_path)
-        # Age group and crying faces are stubs
-        # Collect all timestamps
-        all_timestamps = set(people_counts.keys()) | set(violence.keys()) | set(fire_smoke.keys())
-        result = []
-        for t in sorted(all_timestamps):
-            obj = {
-                "timestamp": t,
-                "people_count": people_counts.get(t, 0),
-                "violence_flag": violence.get(t, {}).get("flag", False),
-                "violence_type": violence.get(t, {}).get("type", None),
-                "violence_snapshot": violence.get(t, {}).get("snapshot", None),
-                "fire_smoke_flag": fire_smoke.get(t, {}).get("flag", False),
-                "fire_smoke_type": fire_smoke.get(t, {}).get("type", None),
-                "fire_smoke_confidence": fire_smoke.get(t, {}).get("confidence", 0.0),
-                "fire_smoke_snapshot": fire_smoke.get(t, {}).get("snapshot", None),
-                "age_group": {},  # stub
-                "crying_faces": 0,  # stub
-                "crying_faces_snapshot": None  # stub
-            }
-            result.append(obj)
-        return result
+    def analyze_video_comprehensive(self, video_path: str, cctv_id: str) -> Dict:
+        """Main method for comprehensive video analysis"""
+        print(f"Starting comprehensive analysis for {video_path}...")
+        
+        # Upload video to GCS with organized folder structure
+        gcs_uri = self._upload_video_to_gcs(video_path, cctv_id)
+        
+        # Analyze with Gemini 2.5 Pro
+        analysis_results = self._analyze_with_gemini(gcs_uri)
+        
+        if not analysis_results:
+            print("Gemini analysis failed - no data returned")
+            return {}
+        
+        # Print summary statistics
+        total_timestamps = len(analysis_results)
+        timestamps_with_people = sum(1 for data in analysis_results.values() if data.get('people_count', 0) > 0)
+        timestamps_with_violence = sum(1 for data in analysis_results.values() if data.get('violence_flag', False))
+        timestamps_with_fire = sum(1 for data in analysis_results.values() if data.get('fire_flag', False))
+        timestamps_with_smoke = sum(1 for data in analysis_results.values() if data.get('smoke_flag', False))
+        
+        print(f"Gemini Analysis Complete: {total_timestamps} timestamps, {timestamps_with_people} with people, {timestamps_with_violence} with violence, {timestamps_with_fire} with fire, {timestamps_with_smoke} with smoke")
+        
+        return analysis_results
+
+# Backward compatibility alias
+VideoAnalyzer = GeminiVideoAnalyzer

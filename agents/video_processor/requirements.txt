@@ -1,3 +1,4 @@
 google-cloud-aiplatform>=1.36.0
 python-dotenv>=1.0.0
 google-cloud-storage>=2.10.0
+vertexai>=1.38.0
