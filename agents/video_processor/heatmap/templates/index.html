@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time CCTV Heatmap</title>
+    <style>
+        body { 
+            font-family: sans-serif; 
+            background-color: #1a1a1a; 
+            color: #f0f0f0; 
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        h1 {
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+        #heatmap-container {
+            width: 800px;
+            height: 600px;
+            border: 1px solid #444;
+            background-color: #2c2c2c;
+            box-shadow: 0 0 15px rgba(0,0,0,0.5);
+        }
+        #status {
+            margin-top: 15px;
+            font-size: 1.1em;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <h1>Real-Time People Heatmap</h1>
+    <div id="heatmap-container"></div>
+    <div id="status">Connecting to server...</div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/heatmap.js/2.0.2/heatmap.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const statusDiv = document.getElementById('status');
+
+            // 1. Create a heatmap instance
+            const heatmapInstance = h337.create({
+                container: document.getElementById('heatmap-container'),
+                radius: 20,
+                maxOpacity: .7,
+                minOpacity: 0,
+                blur: .90,
+                // gradient: { '.1': 'blue', '.5': 'yellow', '.9': 'red' }
+            });
+
+            // 2. Establish WebSocket connection
+            const ws = new WebSocket(`ws://${window.location.host}/ws`);
+
+            ws.onopen = function() {
+                console.log('WebSocket connection established.');
+                statusDiv.textContent = 'Connection successful. Streaming heatmap data...';
+            };
+
+            ws.onmessage = function(event) {
+                const dataPoints = JSON.parse(event.data);
+                
+                if (dataPoints.error) {
+                    statusDiv.textContent = `Error: ${dataPoints.error}`;
+                    return;
+                }
+
+                // 3. Update heatmap with new data
+                const transformedData = {
+                    max: 100, // We set a fixed max value
+                    data: dataPoints
+                };
+                heatmapInstance.setData(transformedData);
+                
+                const timestamp = dataPoints.length > 0 ? (dataPoints[0].timestamp || 'current') : 'current';
+                // statusDiv.textContent = `Displaying data for timestamp: ${timestamp}`;
+            };
+
+            ws.onclose = function() {
+                console.log('WebSocket connection closed.');
+                statusDiv.textContent = 'Stream finished. Connection closed.';
+            };
+
+            ws.onerror = function(error) {
+                console.error('WebSocket Error:', error);
+                statusDiv.textContent = 'Connection error. Please ensure the server is running and try refreshing.';
+            };
+        });
+    </script>
+</body>
+</html>
