@@ -477,9 +477,9 @@ function CommandCenter() {
                           {heatMapsEnabled ? (
                             <CCTVHeatMapOverlay 
                               heatmapPoints={currentAnalysis.heatmap_points || []}
-                              width={400}
-                              height={500}
-                              maxOpacity={0.8}
+                              width={600}
+                              height={400}
+                              maxOpacity={0.9}
                               minOpacity={0.1}
                             />
                           ) : (
