@@ -1,0 +1,671 @@
+{
+  "cctv_id": "6",
+  "total_timestamps": 15,
+  "high_risk_periods": 0,
+  "analysis_complete": true,
+  "predictions": {
+    "0": {
+      "flow_metrics": {
+        "timestamp": 0,
+        "inflow_count": 0,
+        "outflow_count": 0,
+        "net_flow": 0,
+        "total_people": 30,
+        "density_level": "medium",
+        "average_velocity": 0.08,
+        "movement_vectors": [
+          [
+            -0.05,
+            0.0
+          ]
+        ],
+        "congestion_points": [
+          [
+            0.55,
+            0.5
+          ]
+        ],
+        "fire_detected": false,
+        "smoke_detected": false,
+        "violence_detected": false,
+        "weapon_detected": false,
+        "weapon_types": [],
+        "suspicious_behavior": false,
+        "emergency_evacuation": false
+      },
+      "prediction": {
+        "incident_probability": 0.09000000000000001,
+        "prediction_confidence": 0.9249999999999999,
+        "predicted_incident_type": "none",
+        "time_to_incident_seconds": 600,
+        "risk_factors": [
+          "multiple_congestion_points"
+        ],
+        "recommended_action": "no_action",
+        "alert_level": "green"
+      }
+    },
+    "1": {
+      "flow_metrics": {
+        "timestamp": 1,
+        "inflow_count": 3,
+        "outflow_count": 1,
+        "net_flow": 2,
+        "total_people": 32,
+        "density_level": "high",
+        "average_velocity": 0.1,
+        "movement_vectors": [
+          [
+            -0.1,
+            0.0
+          ],
+          [
+            -0.06,
+            0.0
+          ]
+        ],
+        "congestion_points": [
+          [
+            0.55,
+            0.5
+          ]
+        ],
+        "fire_detected": false,
+        "smoke_detected": false,
+        "violence_detected": false,
+        "weapon_detected": false,
+        "weapon_types": [],
+        "suspicious_behavior": false,
+        "emergency_evacuation": false
+      },
+      "prediction": {
+        "incident_probability": 0.09000000000000001,
+        "prediction_confidence": 0.9249999999999999,
+        "predicted_incident_type": "none",
+        "time_to_incident_seconds": 600,
+        "risk_factors": [
+          "multiple_congestion_points"
+        ],
+        "recommended_action": "no_action",
+        "alert_level": "green"
+      }
+    },
+    "2": {
+      "flow_metrics": {
+        "timestamp": 2,
+        "inflow_count": 2,
+        "outflow_count": 0,
+        "net_flow": 2,
+        "total_people": 34,
+        "density_level": "high",
+        "average_velocity": 0.1,
+        "movement_vectors": [
+          [
+            -0.05,
+            0.0
+          ],
+          [
+            0.0,
+            0.08
+          ]
+        ],
+        "congestion_points": [
+          [
+            0.55,
+            0.5
+          ]
+        ],
+        "fire_detected": false,
+        "smoke_detected": false,
+        "violence_detected": false,
+        "weapon_detected": false,
+        "weapon_types": [],
+        "suspicious_behavior": false,
+        "emergency_evacuation": false
+      },
+      "prediction": {
+        "incident_probability": 0.09000000000000001,
+        "prediction_confidence": 0.9249999999999999,
+        "predicted_incident_type": "none",
+        "time_to_incident_seconds": 600,
+        "risk_factors": [
+          "multiple_congestion_points"
+        ],
+        "recommended_action": "no_action",
+        "alert_level": "green"
+      }
+    },
+    "3": {
+      "flow_metrics": {
+        "timestamp": 3,
+        "inflow_count": 2,
+        "outflow_count": 1,
+        "net_flow": 1,
+        "total_people": 35,
+        "density_level": "high",
+        "average_velocity": 0.11,
+        "movement_vectors": [
+          [
+            -0.07,
+            0.0
+          ],
+          [
+            0.0,
+            0.05
+          ]
+        ],
+        "congestion_points": [
+          [
+            0.55,
+            0.5
+          ]
+        ],
+        "fire_detected": false,
+        "smoke_detected": false,
+        "violence_detected": false,
+        "weapon_detected": false,
+        "weapon_types": [],
+        "suspicious_behavior": false,
+        "emergency_evacuation": false
+      },
+      "prediction": {
+        "incident_probability": 0.09000000000000001,
+        "prediction_confidence": 0.9249999999999999,
+        "predicted_incident_type": "none",
+        "time_to_incident_seconds": 600,
+        "risk_factors": [
+          "multiple_congestion_points"
+        ],
+        "recommended_action": "no_action",
+        "alert_level": "green"
+      }
+    },
+    "4": {
+      "flow_metrics": {
+        "timestamp": 4,
+        "inflow_count": 2,
+        "outflow_count": 1,
+        "net_flow": 1,
+        "total_people": 36,
+        "density_level": "high",
+        "average_velocity": 0.12,
+        "movement_vectors": [
+          [
+            -0.05,
+            0.1
+          ],
+          [
+            -0.08,
+            0.0
+          ]
+        ],
+        "congestion_points": [
+          [
+            0.55,
+            0.5
+          ]
+        ],
+        "fire_detected": false,
+        "smoke_detected": false,
+        "violence_detected": false,
+        "weapon_detected": false,
+        "weapon_types": [],
+        "suspicious_behavior": false,
+        "emergency_evacuation": false
+      },
+      "prediction": {
+        "incident_probability": 0.09000000000000001,
+        "prediction_confidence": 0.9249999999999999,
+        "predicted_incident_type": "none",
+        "time_to_incident_seconds": 600,
+        "risk_factors": [
+          "multiple_congestion_points"
+        ],
+        "recommended_action": "no_action",
+        "alert_level": "green"
+      }
+    },
+    "5": {
+      "flow_metrics": {
+        "timestamp": 5,
+        "inflow_count": 1,
+        "outflow_count": 2,
+        "net_flow": -1,
+        "total_people": 35,
+        "density_level": "high",
+        "average_velocity": 0.12,
+        "movement_vectors": [
+          [
+            -0.05,
+            0.1
+          ],
+          [
+            -0.06,
+            0.0
+          ]
+        ],
+        "congestion_points": [
+          [
+            0.55,
+            0.5
+          ]
+        ],
+        "fire_detected": false,
+        "smoke_detected": false,
+        "violence_detected": false,
+        "weapon_detected": false,
+        "weapon_types": [],
+        "suspicious_behavior": false,
+        "emergency_evacuation": false
+      },
+      "prediction": {
+        "incident_probability": 0.09000000000000001,
+        "prediction_confidence": 0.9249999999999999,
+        "predicted_incident_type": "none",
+        "time_to_incident_seconds": 600,
+        "risk_factors": [
+          "multiple_congestion_points"
+        ],
+        "recommended_action": "no_action",
+        "alert_level": "green"
+      }
+    },
+    "6": {
+      "flow_metrics": {
+        "timestamp": 6,
+        "inflow_count": 2,
+        "outflow_count": 1,
+        "net_flow": 1,
+        "total_people": 36,
+        "density_level": "high",
+        "average_velocity": 0.14,
+        "movement_vectors": [
+          [
+            0.15,
+            0.0
+          ],
+          [
+            0.0,
+            0.1
+          ]
+        ],
+        "congestion_points": [
+          [
+            0.55,
+            0.5
+          ]
+        ],
+        "fire_detected": false,
+        "smoke_detected": false,
+        "violence_detected": false,
+        "weapon_detected": false,
+        "weapon_types": [],
+        "suspicious_behavior": false,
+        "emergency_evacuation": false
+      },
+      "prediction": {
+        "incident_probability": 0.09000000000000001,
+        "prediction_confidence": 0.9249999999999999,
+        "predicted_incident_type": "none",
+        "time_to_incident_seconds": 600,
+        "risk_factors": [
+          "multiple_congestion_points"
+        ],
+        "recommended_action": "no_action",
+        "alert_level": "green"
+      }
+    },
+    "7": {
+      "flow_metrics": {
+        "timestamp": 7,
+        "inflow_count": 1,
+        "outflow_count": 2,
+        "net_flow": -1,
+        "total_people": 35,
+        "density_level": "high",
+        "average_velocity": 0.15,
+        "movement_vectors": [
+          [
+            0.15,
+            0.05
+          ],
+          [
+            0.0,
+            0.12
+          ]
+        ],
+        "congestion_points": [
+          [
+            0.55,
+            0.5
+          ]
+        ],
+        "fire_detected": false,
+        "smoke_detected": false,
+        "violence_detected": false,
+        "weapon_detected": false,
+        "weapon_types": [],
+        "suspicious_behavior": false,
+        "emergency_evacuation": false
+      },
+      "prediction": {
+        "incident_probability": 0.09000000000000001,
+        "prediction_confidence": 0.9249999999999999,
+        "predicted_incident_type": "none",
+        "time_to_incident_seconds": 600,
+        "risk_factors": [
+          "multiple_congestion_points"
+        ],
+        "recommended_action": "no_action",
+        "alert_level": "green"
+      }
+    },
+    "8": {
+      "flow_metrics": {
+        "timestamp": 8,
+        "inflow_count": 2,
+        "outflow_count": 1,
+        "net_flow": 1,
+        "total_people": 36,
+        "density_level": "high",
+        "average_velocity": 0.14,
+        "movement_vectors": [
+          [
+            0.1,
+            0.05
+          ],
+          [
+            0.0,
+            0.1
+          ]
+        ],
+        "congestion_points": [
+          [
+            0.55,
+            0.5
+          ]
+        ],
+        "fire_detected": false,
+        "smoke_detected": false,
+        "violence_detected": false,
+        "weapon_detected": false,
+        "weapon_types": [],
+        "suspicious_behavior": false,
+        "emergency_evacuation": false
+      },
+      "prediction": {
+        "incident_probability": 0.09000000000000001,
+        "prediction_confidence": 0.9249999999999999,
+        "predicted_incident_type": "none",
+        "time_to_incident_seconds": 600,
+        "risk_factors": [
+          "multiple_congestion_points"
+        ],
+        "recommended_action": "no_action",
+        "alert_level": "green"
+      }
+    },
+    "9": {
+      "flow_metrics": {
+        "timestamp": 9,
+        "inflow_count": 1,
+        "outflow_count": 2,
+        "net_flow": -1,
+        "total_people": 35,
+        "density_level": "high",
+        "average_velocity": 0.1,
+        "movement_vectors": [
+          [
+            0.05,
+            -0.05
+          ],
+          [
+            0.0,
+            0.08
+          ]
+        ],
+        "congestion_points": [
+          [
+            0.55,
+            0.5
+          ]
+        ],
+        "fire_detected": false,
+        "smoke_detected": false,
+        "violence_detected": false,
+        "weapon_detected": false,
+        "weapon_types": [],
+        "suspicious_behavior": false,
+        "emergency_evacuation": false
+      },
+      "prediction": {
+        "incident_probability": 0.09000000000000001,
+        "prediction_confidence": 0.9249999999999999,
+        "predicted_incident_type": "none",
+        "time_to_incident_seconds": 600,
+        "risk_factors": [
+          "multiple_congestion_points"
+        ],
+        "recommended_action": "no_action",
+        "alert_level": "green"
+      }
+    },
+    "10": {
+      "flow_metrics": {
+        "timestamp": 10,
+        "inflow_count": 1,
+        "outflow_count": 1,
+        "net_flow": 0,
+        "total_people": 35,
+        "density_level": "high",
+        "average_velocity": 0.08,
+        "movement_vectors": [
+          [
+            -0.05,
+            0.0
+          ]
+        ],
+        "congestion_points": [
+          [
+            0.55,
+            0.5
+          ]
+        ],
+        "fire_detected": false,
+        "smoke_detected": false,
+        "violence_detected": false,
+        "weapon_detected": false,
+        "weapon_types": [],
+        "suspicious_behavior": false,
+        "emergency_evacuation": false
+      },
+      "prediction": {
+        "incident_probability": 0.09000000000000001,
+        "prediction_confidence": 0.9249999999999999,
+        "predicted_incident_type": "none",
+        "time_to_incident_seconds": 600,
+        "risk_factors": [
+          "multiple_congestion_points"
+        ],
+        "recommended_action": "no_action",
+        "alert_level": "green"
+      }
+    },
+    "11": {
+      "flow_metrics": {
+        "timestamp": 11,
+        "inflow_count": 0,
+        "outflow_count": 0,
+        "net_flow": 0,
+        "total_people": 35,
+        "density_level": "high",
+        "average_velocity": 0.05,
+        "movement_vectors": [
+          [
+            0.01,
+            0.01
+          ]
+        ],
+        "congestion_points": [
+          [
+            0.55,
+            0.5
+          ]
+        ],
+        "fire_detected": false,
+        "smoke_detected": false,
+        "violence_detected": false,
+        "weapon_detected": false,
+        "weapon_types": [],
+        "suspicious_behavior": false,
+        "emergency_evacuation": false
+      },
+      "prediction": {
+        "incident_probability": 0.09000000000000001,
+        "prediction_confidence": 0.9249999999999999,
+        "predicted_incident_type": "none",
+        "time_to_incident_seconds": 600,
+        "risk_factors": [
+          "multiple_congestion_points"
+        ],
+        "recommended_action": "no_action",
+        "alert_level": "green"
+      }
+    },
+    "12": {
+      "flow_metrics": {
+        "timestamp": 12,
+        "inflow_count": 0,
+        "outflow_count": 0,
+        "net_flow": 0,
+        "total_people": 35,
+        "density_level": "high",
+        "average_velocity": 0.04,
+        "movement_vectors": [
+          [
+            0.01,
+            0.0
+          ]
+        ],
+        "congestion_points": [
+          [
+            0.55,
+            0.5
+          ]
+        ],
+        "fire_detected": false,
+        "smoke_detected": false,
+        "violence_detected": false,
+        "weapon_detected": false,
+        "weapon_types": [],
+        "suspicious_behavior": false,
+        "emergency_evacuation": false
+      },
+      "prediction": {
+        "incident_probability": 0.09000000000000001,
+        "prediction_confidence": 0.9249999999999999,
+        "predicted_incident_type": "none",
+        "time_to_incident_seconds": 600,
+        "risk_factors": [
+          "multiple_congestion_points"
+        ],
+        "recommended_action": "no_action",
+        "alert_level": "green"
+      }
+    },
+    "13": {
+      "flow_metrics": {
+        "timestamp": 13,
+        "inflow_count": 0,
+        "outflow_count": 0,
+        "net_flow": 0,
+        "total_people": 35,
+        "density_level": "high",
+        "average_velocity": 0.04,
+        "movement_vectors": [
+          [
+            0.01,
+            0.0
+          ]
+        ],
+        "congestion_points": [
+          [
+            0.55,
+            0.5
+          ]
+        ],
+        "fire_detected": false,
+        "smoke_detected": false,
+        "violence_detected": false,
+        "weapon_detected": false,
+        "weapon_types": [],
+        "suspicious_behavior": false,
+        "emergency_evacuation": false
+      },
+      "prediction": {
+        "incident_probability": 0.09000000000000001,
+        "prediction_confidence": 0.9249999999999999,
+        "predicted_incident_type": "none",
+        "time_to_incident_seconds": 600,
+        "risk_factors": [
+          "multiple_congestion_points"
+        ],
+        "recommended_action": "no_action",
+        "alert_level": "green"
+      }
+    },
+    "14": {
+      "flow_metrics": {
+        "timestamp": 14,
+        "inflow_count": 0,
+        "outflow_count": 0,
+        "net_flow": 0,
+        "total_people": 35,
+        "density_level": "high",
+        "average_velocity": 0.04,
+        "movement_vectors": [
+          [
+            0.01,
+            0.0
+          ]
+        ],
+        "congestion_points": [
+          [
+            0.55,
+            0.5
+          ]
+        ],
+        "fire_detected": false,
+        "smoke_detected": false,
+        "violence_detected": false,
+        "weapon_detected": false,
+        "weapon_types": [],
+        "suspicious_behavior": false,
+        "emergency_evacuation": false
+      },
+      "prediction": {
+        "incident_probability": 0.09000000000000001,
+        "prediction_confidence": 0.9249999999999999,
+        "predicted_incident_type": "none",
+        "time_to_incident_seconds": 600,
+        "risk_factors": [
+          "multiple_congestion_points"
+        ],
+        "recommended_action": "no_action",
+        "alert_level": "green"
+      }
+    }
+  },
+  "future_forecast": {
+    "incident_probability": 0.09000000000000001,
+    "prediction_confidence": 0.9249999999999999,
+    "predicted_incident_type": "none",
+    "time_to_incident_seconds": 600,
+    "risk_factors": [
+      "multiple_congestion_points"
+    ],
+    "recommended_action": "no_action",
+    "alert_level": "green"
+  },
+  "forecast_horizon_minutes": 10
+}
