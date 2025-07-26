@@ -3,6 +3,35 @@ import { useEffect, useRef } from 'react';
 const CCTVHeatMapOverlay = ({ heatmapPoints = [], width = 300, height = 200, maxOpacity = 0.8, minOpacity = 0.1 }) => {
   const canvasRef = useRef(null);
 
+  const getColorFromIntensity = (intensity) => {
+    // Smooth color transitions for heat map: blue -> green -> yellow -> orange -> red
+    const colors = [
+      { r: 0, g: 0, b: 255 },     // Blue (cold)
+      { r: 0, g: 255, b: 255 },   // Cyan
+      { r: 0, g: 255, b: 0 },     // Green
+      { r: 255, g: 255, b: 0 },   // Yellow
+      { r: 255, g: 165, b: 0 },   // Orange
+      { r: 255, g: 0, b: 0 }      // Red (hot)
+    ];
+
+    const scaledIntensity = intensity * (colors.length - 1);
+    const colorIndex = Math.floor(scaledIntensity);
+    const fraction = scaledIntensity - colorIndex;
+
+    if (colorIndex >= colors.length - 1) {
+      return colors[colors.length - 1];
+    }
+
+    const color1 = colors[colorIndex];
+    const color2 = colors[colorIndex + 1];
+
+    return {
+      r: Math.round(color1.r + (color2.r - color1.r) * fraction),
+      g: Math.round(color1.g + (color2.g - color1.g) * fraction),
+      b: Math.round(color1.b + (color2.b - color1.b) * fraction)
+    };
+  };
+
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas || !heatmapPoints.length) return;
@@ -13,76 +42,75 @@ const CCTVHeatMapOverlay = ({ heatmapPoints = [], width = 300, height = 200, max
     // Clear canvas
     ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
+    // Create image data for pixel manipulation
+    const imageData = ctx.createImageData(canvasWidth, canvasHeight);
+    const data = imageData.data;
+
     // Find max value for normalization
-    const maxValue = Math.max(...heatmapPoints.map(point => point.value), 100);
-
-    // Create a temporary canvas for better blending
-    const tempCanvas = document.createElement('canvas');
-    tempCanvas.width = canvasWidth;
-    tempCanvas.height = canvasHeight;
-    const tempCtx = tempCanvas.getContext('2d');
-
-    // Draw heatmap points with improved heat colors
+    const maxValue = Math.max(...heatmapPoints.map(point => point.value || 100), 100);
+    
+    // Create intensity grid
+    const intensityGrid = new Array(canvasHeight).fill(null).map(() => new Array(canvasWidth).fill(0));
+    
+    // Calculate influence radius based on canvas size
+    const influenceRadius = Math.min(canvasWidth, canvasHeight) * 0.15; // 15% of smaller dimension
+    
+    // Apply gaussian influence for each heatmap point
     heatmapPoints.forEach(point => {
-      const x = point.x * canvasWidth;
-      const y = point.y * canvasHeight;
-      const intensity = point.value / maxValue;
+      const centerX = Math.round(point.x * canvasWidth);
+      const centerY = Math.round(point.y * canvasHeight);
+      const intensity = (point.value || 100) / maxValue;
       
-      // Create radial gradient for each point with larger radius for smoother effect
-      const radius = 35;
-      const gradient = tempCtx.createRadialGradient(x, y, 0, x, y, radius);
-      
-      // Calculate opacity based on intensity
-      const opacity = minOpacity + (maxOpacity - minOpacity) * intensity;
-      
-      // Use proper heat map colors: green (low) → yellow (medium) → red (high)
-      let color;
-      if (intensity < 0.2) {
-        // Very low - transparent blue
-        color = `rgba(0, 100, 255, ${opacity * 0.3})`;
-      } else if (intensity < 0.4) {
-        // Low - green
-        color = `rgba(0, 255, 0, ${opacity * 0.6})`;
-      } else if (intensity < 0.6) {
-        // Medium-low - yellow-green
-        color = `rgba(128, 255, 0, ${opacity * 0.7})`;
-      } else if (intensity < 0.8) {
-        // Medium-high - yellow
-        color = `rgba(255, 255, 0, ${opacity * 0.8})`;
-      } else if (intensity < 0.9) {
-        // High - orange
-        color = `rgba(255, 165, 0, ${opacity})`;
-      } else {
-        // Very high - red
-        color = `rgba(255, 0, 0, ${opacity})`;
+      // Apply gaussian distribution around each point
+      for (let y = 0; y < canvasHeight; y++) {
+        for (let x = 0; x < canvasWidth; x++) {
+          const distance = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
+          
+          if (distance <= influenceRadius) {
+            // Gaussian falloff
+            const falloff = Math.exp(-(distance ** 2) / (2 * (influenceRadius / 3) ** 2));
+            intensityGrid[y][x] += intensity * falloff;
+          }
+        }
       }
-      
-      // Create smoother gradient with multiple color stops
-      gradient.addColorStop(0, color);
-      gradient.addColorStop(0.4, color.replace(/[\d\.]+\)$/g, (opacity * 0.6) + ')'));
-      gradient.addColorStop(0.7, color.replace(/[\d\.]+\)$/g, (opacity * 0.3) + ')'));
-      gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
-      
-      tempCtx.fillStyle = gradient;
-      tempCtx.globalCompositeOperation = 'screen'; // Better blending for heat effects
-      tempCtx.fillRect(x - radius, y - radius, radius * 2, radius * 2);
     });
 
-    // Apply blur for smoother appearance
-    tempCtx.filter = 'blur(8px)';
-    tempCtx.globalCompositeOperation = 'source-over';
-    tempCtx.drawImage(tempCanvas, 0, 0);
+    // Normalize intensity values and apply to image data
+    let maxIntensity = 0;
+    for (let y = 0; y < canvasHeight; y++) {
+      for (let x = 0; x < canvasWidth; x++) {
+        if (intensityGrid[y][x] > maxIntensity) {
+          maxIntensity = intensityGrid[y][x];
+        }
+      }
+    }
 
-    // Draw the final result to main canvas
+    // Apply colors to pixels
+    for (let y = 0; y < canvasHeight; y++) {
+      for (let x = 0; x < canvasWidth; x++) {
+        const normalizedIntensity = maxIntensity > 0 ? intensityGrid[y][x] / maxIntensity : 0;
+        
+        if (normalizedIntensity > 0.01) { // Only render visible pixels
+          const color = getColorFromIntensity(normalizedIntensity);
+          const alpha = Math.round((minOpacity + (maxOpacity - minOpacity) * normalizedIntensity) * 255);
+          
+          const pixelIndex = (y * canvasWidth + x) * 4;
+          data[pixelIndex] = color.r;     // Red
+          data[pixelIndex + 1] = color.g; // Green
+          data[pixelIndex + 2] = color.b; // Blue
+          data[pixelIndex + 3] = alpha;   // Alpha
+        }
+      }
+    }
+
+    // Put the image data back to canvas
+    ctx.putImageData(imageData, 0, 0);
+
+    // Apply additional smoothing with canvas filter
+    ctx.filter = 'blur(1px)';
     ctx.globalCompositeOperation = 'source-over';
-    ctx.drawImage(tempCanvas, 0, 0);
-
-    // Add a subtle overlay for better contrast
-    const overlayGradient = ctx.createLinearGradient(0, 0, 0, canvasHeight);
-    overlayGradient.addColorStop(0, 'rgba(0, 0, 0, 0.05)');
-    overlayGradient.addColorStop(1, 'rgba(0, 0, 0, 0.15)');
-    ctx.fillStyle = overlayGradient;
-    ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+    ctx.drawImage(canvas, 0, 0);
+    ctx.filter = 'none';
 
   }, [heatmapPoints, width, height, maxOpacity, minOpacity]);
 
@@ -105,28 +133,100 @@ const CCTVHeatMapOverlay = ({ heatmapPoints = [], width = 300, height = 200, max
           borderRadius: '12px 12px 0 0'
         }}
       >
-        No Heat Data Available
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ fontSize: '2rem', marginBottom: '8px' }}>📊</div>
+          <div>No Heat Data Available</div>
+          <div style={{ fontSize: '0.75rem', opacity: 0.7, marginTop: '4px' }}>
+            Waiting for analysis data...
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <canvas
-      ref={canvasRef}
-      width={width}
-      height={height}
-      style={{
+    <div style={{
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      width: '100%',
+      height: '100%',
+      borderRadius: '12px 12px 0 0',
+      overflow: 'hidden'
+    }}>
+      {/* Background gradient */}
+      <div style={{
         position: 'absolute',
         top: 0,
         left: 0,
         width: '100%',
         height: '100%',
-        pointerEvents: 'none',
-        zIndex: 5,
-        borderRadius: '12px 12px 0 0',
-        mixBlendMode: 'multiply' // Better integration with background
-      }}
-    />
+        background: 'linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%)',
+        zIndex: 1
+      }} />
+      
+      {/* Heatmap canvas */}
+      <canvas
+        ref={canvasRef}
+        width={width}
+        height={height}
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          pointerEvents: 'none',
+          zIndex: 2,
+          mixBlendMode: 'screen' // Better integration with background
+        }}
+      />
+      
+      {/* Heat map legend */}
+      <div style={{
+        position: 'absolute',
+        bottom: 8,
+        right: 8,
+        background: 'rgba(0, 0, 0, 0.8)',
+        borderRadius: 8,
+        padding: '8px 12px',
+        zIndex: 3,
+        display: 'flex',
+        alignItems: 'center',
+        gap: 8
+      }}>
+        <div style={{
+          width: 60,
+          height: 12,
+          background: 'linear-gradient(90deg, #0000ff 0%, #00ffff 20%, #00ff00 40%, #ffff00 60%, #ffa500 80%, #ff0000 100%)',
+          borderRadius: 6,
+          border: '1px solid rgba(255, 255, 255, 0.3)'
+        }} />
+        <div style={{
+          color: 'white',
+          fontSize: '0.75rem',
+          fontWeight: 500
+        }}>
+          Activity
+        </div>
+      </div>
+      
+      {/* Point count indicator */}
+      <div style={{
+        position: 'absolute',
+        top: 8,
+        right: 8,
+        background: 'rgba(0, 0, 0, 0.8)',
+        borderRadius: 16,
+        padding: '4px 12px',
+        zIndex: 3,
+        color: 'white',
+        fontSize: '0.75rem',
+        fontWeight: 600
+      }}>
+        {heatmapPoints.length} points
+      </div>
+    </div>
   );
 };
 
