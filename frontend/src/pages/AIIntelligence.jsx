@@ -19,25 +19,67 @@ import { useDisclosure, useMediaQuery } from '@mantine/hooks'
 import AppBar from '../components/AppBar'
 import Sidebar from '../components/Sidebar'
 import FloatingAssistant from '../components/FloatingAssistant'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { apiService } from '../services/api'
 
 function AIIntelligence() {
   const [opened, { toggle }] = useDisclosure(true);
   const isSmallScreen = useMediaQuery('(max-width: 768px)');
+  const [crowdMetrics, setCrowdMetrics] = useState({
+    accuracy: 90,
+    confidence: 0.90,
+    status: 'Loading...',
+    isLoading: true
+  });
 
   const handleMenuClick = () => {
     toggle();
   }
 
+  // Fetch crowd monitoring data
+  const fetchCrowdMetrics = async () => {
+    try {
+      const response = await apiService.getCrowdMonitoringAnalysis();
+      if (response.success && response.ui_metrics) {
+        setCrowdMetrics({
+          accuracy: response.ui_metrics.accuracy_percentage || 90,
+          confidence: response.ui_metrics.confidence_percentage / 100 || 0.90,
+          status: 'Active - Real-time Analysis',
+          isLoading: false,
+          lastUpdated: new Date().toLocaleTimeString()
+        });
+      }
+    } catch (error) {
+      console.error('Failed to fetch crowd metrics:', error);
+      setCrowdMetrics(prev => ({
+        ...prev,
+        status: 'Connection Error',
+        isLoading: false
+      }));
+    }
+  };
+
+  useEffect(() => {
+    // Fetch on component mount
+    fetchCrowdMetrics();
+    
+    // Refresh every 30 seconds for real-time updates
+    const interval = setInterval(fetchCrowdMetrics, 30000);
+    
+    return () => clearInterval(interval);
+  }, []);
+
   const aiInsights = [
     {
       id: 1,
       title: 'Crowd Density Prediction',
-      description: 'AI predicts peak crowd times for better resource allocation',
-      accuracy: 94,
-      status: 'Active',
-      type: 'Prediction',
-      confidence: 0.94
+      description: 'Real-time AI analysis of crowd levels and incident detection',
+      accuracy: crowdMetrics.accuracy,
+      status: crowdMetrics.status,
+      type: 'Real-time',
+      confidence: crowdMetrics.confidence,
+      isLoading: crowdMetrics.isLoading,
+      lastUpdated: crowdMetrics.lastUpdated
     },
     {
       id: 2,
@@ -294,14 +336,14 @@ function AIIntelligence() {
                         radius="lg" 
                         withBorder
                         style={{
-                          background: 'rgba(255, 255, 255, 0.8)',
+                          background: insight.id === 1 && !insight.isLoading 
+                            ? 'rgba(102, 126, 234, 0.05)' 
+                            : 'rgba(255, 255, 255, 0.8)',
                           backdropFilter: 'blur(5px)',
-                          border: '1px solid rgba(255, 255, 255, 0.3)',
+                          border: insight.id === 1 && !insight.isLoading 
+                            ? '1px solid rgba(102, 126, 234, 0.3)' 
+                            : '1px solid rgba(255, 255, 255, 0.3)',
                           transition: 'all 0.3s ease',
-                          '&:hover': {
-                            transform: 'translateY(-2px)',
-                            boxShadow: '0 10px 30px rgba(0,0,0,0.1)'
-                          }
                         }}
                       >
                         <Stack gap="md">
@@ -310,22 +352,35 @@ function AIIntelligence() {
                               <Group gap="xs" align="center">
                                 <Text fw={600} size="lg">{insight.title}</Text>
                                 <Badge 
-                                  color="blue" 
-                                  variant="light"
+                                  color={insight.id === 1 ? "green" : "blue"} 
+                                  variant={insight.id === 1 ? "filled" : "light"}
                                   size="sm"
                                 >
                                   {insight.type}
                                 </Badge>
+                                {insight.id === 1 && insight.lastUpdated && (
+                                  <Badge color="gray" variant="light" size="xs">
+                                    {insight.lastUpdated}
+                                  </Badge>
+                                )}
                               </Group>
                               <Text size="sm" c="dimmed">{insight.description}</Text>
+                              {insight.id === 1 && (
+                                <Text size="xs" c="dimmed" fw={500}>
+                                  Status: {insight.status}
+                                </Text>
+                              )}
                             </Stack>
                             <RingProgress
                               size={60}
                               thickness={4}
-                              sections={[{ value: insight.accuracy, color: '#667eea' }]}
+                              sections={[{ 
+                                value: insight.isLoading ? 0 : insight.accuracy, 
+                                color: insight.id === 1 ? '#10B981' : '#667eea' 
+                              }]}
                               label={
                                 <Text ta="center" size="xs" fw={700}>
-                                  {insight.accuracy}%
+                                  {insight.isLoading ? '...' : `${insight.accuracy}%`}
                                 </Text>
                               }
                             />
@@ -334,18 +389,37 @@ function AIIntelligence() {
                           <Stack gap="xs">
                             <Group justify="space-between">
                               <Text size="sm" fw={500}>Accuracy</Text>
-                              <Text size="sm" fw={600}>{insight.accuracy}%</Text>
+                              <Text size="sm" fw={600}>
+                                {insight.isLoading ? 'Loading...' : `${insight.accuracy}%`}
+                              </Text>
                             </Group>
                             <Progress 
-                              value={insight.accuracy} 
-                              color="#667eea" 
+                              value={insight.isLoading ? 0 : insight.accuracy} 
+                              color={insight.id === 1 ? "#10B981" : "#667eea"} 
                               size="sm"
                               radius="xl"
+                              animated={insight.isLoading}
                             />
                             <Group gap="xs">
-                              <IconEye size={14} style={{ color: '#667eea' }} />
-                              <Text size="xs" c="dimmed">Confidence: {(insight.confidence * 100).toFixed(0)}%</Text>
+                              <IconEye size={14} style={{ 
+                                color: insight.id === 1 ? '#10B981' : '#667eea' 
+                              }} />
+                              <Text size="xs" c="dimmed">
+                                Confidence: {insight.isLoading ? 'Loading...' : `${(insight.confidence * 100).toFixed(0)}%`}
+                              </Text>
                             </Group>
+                            {insight.id === 1 && !insight.isLoading && (
+                              <Group gap="xs" mt="xs">
+                                <Button 
+                                  size="xs" 
+                                  variant="light" 
+                                  color="green"
+                                  onClick={fetchCrowdMetrics}
+                                >
+                                  Refresh Data
+                                </Button>
+                              </Group>
+                            )}
                           </Stack>
                         </Stack>
                       </Card>

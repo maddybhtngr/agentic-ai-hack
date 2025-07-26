@@ -652,6 +652,15 @@ export const apiService = {
       throw new Error(`HTTP error! status: ${response.status}`)
     }
     return await response.json()
+  },
+
+  // Crowd Monitoring AI API calls
+  async getCrowdMonitoringAnalysis() {
+    const response = await fetch('http://localhost:8002/api/v1/monitor-crowd')
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    return await response.json()
   }
 }
 
