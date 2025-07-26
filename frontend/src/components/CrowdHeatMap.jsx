@@ -4,7 +4,7 @@ import { IconSettings, IconInfoCircle } from '@tabler/icons-react';
 import ZoneManager from './ZoneManager';
 import { apiService } from '../services/api';
 
-const CrowdHeatMap = ({ venueData, crowdData, updateInterval = 10000, showZoneManagement = true }) => {
+const CrowdHeatMap = ({ venueData, crowdData, updateInterval = 10000, showZoneManagement = true, onDataUpdate }) => {
   const theme = useMantineTheme();
   const [zoneManagerOpened, setZoneManagerOpened] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -60,6 +60,11 @@ const CrowdHeatMap = ({ venueData, crowdData, updateInterval = 10000, showZoneMa
       };
       
       setCrowdDataState(mergedData);
+      
+      // Notify parent component of data update
+      if (onDataUpdate) {
+        onDataUpdate(mergedData);
+      }
     } catch (err) {
       console.error('Error fetching crowd data:', err);
       setError('Failed to load crowd data from server');
@@ -79,6 +84,10 @@ const CrowdHeatMap = ({ venueData, crowdData, updateInterval = 10000, showZoneMa
   useEffect(() => {
     if (crowdData) {
       setCrowdDataState(crowdData);
+      // Notify parent component of data update
+      if (onDataUpdate) {
+        onDataUpdate(crowdData);
+      }
     } else if (zones.length > 0) {
       const interval = setInterval(() => {
         fetchCrowdData();
@@ -86,7 +95,7 @@ const CrowdHeatMap = ({ venueData, crowdData, updateInterval = 10000, showZoneMa
 
       return () => clearInterval(interval);
     }
-  }, [crowdData, updateInterval, zones]);
+  }, [crowdData, updateInterval, zones, onDataUpdate]);
 
   // Get color based on density
   const getDensityColor = (density) => {

@@ -36,9 +36,96 @@ function StaffDashboard() {
   });
   const [isLoadingQuickStats, setIsLoadingQuickStats] = useState(false);
 
+  // State for Staff Zone Crowd Details (will be populated from heat map data)
+  const [staffZoneCrowd, setStaffZoneCrowd] = useState({
+    count: 0,
+    maxCapacity: 0,
+    zoneName: '',
+    lastUpdated: null
+  });
+  const [totalZones, setTotalZones] = useState(0);
+  const [staffZoneName, setStaffZoneName] = useState('');
+  const [staffZoneId, setStaffZoneId] = useState(null);
+  const [zoneStaff, setZoneStaff] = useState([]);
+  const [isLoadingZoneStaff, setIsLoadingZoneStaff] = useState(false);
+  const [zoneIncidents, setZoneIncidents] = useState([]);
+  const [isLoadingZoneIncidents, setIsLoadingZoneIncidents] = useState(false);
+
   const handleMenuClick = () => {
     toggle();
   }
+
+  // Function to get staff member's zone name and ID
+  const fetchStaffZoneName = async () => {
+    try {
+      const currentUser = authUtils.getCurrentUser();
+      if (!currentUser || !currentUser.username) {
+        console.error('No current user found');
+        return;
+      }
+
+      const userDetails = await apiService.getUserDetails(currentUser.username);
+      const zoneName = userDetails.data.current_zone;
+      
+      if (zoneName) {
+        setStaffZoneName(zoneName);
+        
+        // Get zone ID for the zone name
+        const allZones = await apiService.getAllZones();
+        const zone = allZones.find(z => z.name === zoneName);
+        if (zone) {
+          setStaffZoneId(zone.id);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching staff zone name:', error);
+    }
+  };
+
+  // Function to fetch staff for the zone
+  const fetchZoneStaff = async () => {
+    if (!staffZoneId) return;
+    
+    setIsLoadingZoneStaff(true);
+    try {
+      const staffResponse = await apiService.getAvailableStaff(staffZoneId);
+      if (staffResponse.success) {
+        setZoneStaff(staffResponse.data);
+      }
+    } catch (error) {
+      console.error('Error fetching zone staff:', error);
+    } finally {
+      setIsLoadingZoneStaff(false);
+    }
+  };
+
+  // Function to fetch incidents for the zone
+  const fetchZoneIncidents = async () => {
+    if (!staffZoneId) return;
+    
+    setIsLoadingZoneIncidents(true);
+    try {
+      const incidentsResponse = await apiService.getAllIncidents();
+      const allIncidents = incidentsResponse.data || incidentsResponse;
+      
+      // Filter incidents for this zone and broadcast incidents
+      const filteredIncidents = allIncidents.filter(incident => {
+        // Show broadcast incidents (relevant to all staff)
+        if (incident.is_broadcast) return true;
+        
+        // Show incidents assigned to this staff member's zone
+        if (incident.zone_id === staffZoneId) return true;
+        
+        return false;
+      });
+      
+      setZoneIncidents(filteredIncidents);
+    } catch (error) {
+      console.error('Error fetching zone incidents:', error);
+    } finally {
+      setIsLoadingZoneIncidents(false);
+    }
+  };
 
   // Function to fetch and calculate quick stats
   const fetchQuickStats = async () => {
@@ -92,66 +179,117 @@ function StaffDashboard() {
     }
   };
 
+  // Function to update staff zone crowd from heat map data
+  const updateStaffZoneCrowdFromHeatMap = (heatMapData) => {
+    console.log('Heat map data received:', heatMapData);
+    
+    if (heatMapData) {
+      // Update total zones count - try totalZones field first, then fallback to zones array length
+      const zonesCount = heatMapData.totalZones || (heatMapData.zones ? heatMapData.zones.length : 0);
+      console.log('Total zones from heat map:', heatMapData.totalZones);
+      console.log('Zones array length:', heatMapData.zones ? heatMapData.zones.length : 0);
+      console.log('Final zones count:', zonesCount);
+      setTotalZones(zonesCount);
+      
+      // Update staff zone crowd data
+      if (staffZoneName && heatMapData.zones) {
+        const staffZoneData = heatMapData.zones.find(zone => zone.name === staffZoneName);
+        if (staffZoneData) {
+          setStaffZoneCrowd({
+            count: staffZoneData.count || 0,
+            maxCapacity: staffZoneData.maxCapacity || 0,
+            zoneName: staffZoneData.name,
+            lastUpdated: new Date(heatMapData.lastUpdated)
+          });
+        }
+      }
+    }
+  };
+
+  // Fetch staff zone name on component mount
+  useEffect(() => {
+    fetchStaffZoneName();
+  }, []);
+
+  // Fetch zone staff when zone ID is available
+  useEffect(() => {
+    if (staffZoneId) {
+      fetchZoneStaff();
+      fetchZoneIncidents();
+    }
+  }, [staffZoneId]);
+
   // Fetch quick stats on component mount
   useEffect(() => {
     fetchQuickStats();
   }, []);
 
-  // Set up 10-second polling interval for quick stats
+  // Set up 10-second polling interval for quick stats, zone staff, and zone incidents
   useEffect(() => {
     const interval = setInterval(() => {
       fetchQuickStats();
+      if (staffZoneId) {
+        fetchZoneStaff();
+        fetchZoneIncidents();
+      }
     }, 10000); // 10 seconds
 
     return () => clearInterval(interval);
-  }, []);
+  }, [staffZoneId]);
 
   const statCards = [
     {
       title: 'Total Attendees',
-      value: '8,432',
+      value: isLoadingQuickStats ? '...' : staffZoneCrowd.count.toString(),
+      subtitle: staffZoneCrowd.zoneName ? `in ${staffZoneCrowd.zoneName}` : '',
+      lastUpdated: staffZoneCrowd.lastUpdated,
       icon: IconUsers,
       color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
     },
     {
       title: 'Active Volunteers',
-      value: '156',
+      value: isLoadingZoneStaff ? '...' : zoneStaff.filter(staff => staff.role !== 'Security').length.toString(),
+      lastUpdated: staffZoneCrowd.lastUpdated,
       icon: IconUsers,
       color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
     },
     {
       title: 'Security Staff',
-      value: '28',
+      value: isLoadingZoneStaff ? '...' : zoneStaff.filter(staff => staff.role === 'Security').length.toString(),
+      lastUpdated: staffZoneCrowd.lastUpdated,
       icon: IconShieldLock,
       color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
     },
     {
       title: 'Active Incidents',
-      value: '3',
+      value: isLoadingZoneIncidents ? '...' : zoneIncidents.length.toString(),
+      lastUpdated: staffZoneCrowd.lastUpdated,
       icon: IconAlertTriangle,
       color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
     },
     {
       title: 'Current Capacity',
-      value: '65%',
+      value: staffZoneCrowd.maxCapacity > 0 ? `${Math.round((staffZoneCrowd.count / staffZoneCrowd.maxCapacity) * 100)}%` : '0%',
+      lastUpdated: staffZoneCrowd.lastUpdated,
       icon: IconActivity,
       color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
     },
     {
-      title: 'Entry Rate',
-      value: '89/min',
+      title: 'Crowd Flow',
+      value: 'Normal',
       icon: IconTrendingUp,
       color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
     },
     {
-      title: 'Exit Rate',
-      value: '45/min',
-      icon: IconTrendingDown,
+      title: 'Active Alerts',
+      value: '0',
+      icon: IconAlertTriangle,
       color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
     },
     {
       title: 'Total Zones',
-      value: '12',
+      value: totalZones.toString(),
+      lastUpdated: staffZoneCrowd.lastUpdated,
       icon: IconActivity,
       color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
     }
@@ -254,6 +392,15 @@ function StaffDashboard() {
                     }}>
                       {card.value}
                     </Text>
+                    
+
+                    
+                    {/* Last updated time */}
+                    {card.lastUpdated && (
+                      <Text size="xs" c="dimmed" mt="xs">
+                        Updated: {card.lastUpdated.toLocaleTimeString()}
+                      </Text>
+                    )}
                   </Card>
                 </Grid.Col>
               ))}
@@ -404,7 +551,7 @@ function StaffDashboard() {
                 </Grid>
 
                 {/* Heat Map Component */}
-                <CrowdHeatMap showZoneManagement={false} updateInterval={10000} />
+                <CrowdHeatMap showZoneManagement={false} updateInterval={10000} onDataUpdate={updateStaffZoneCrowdFromHeatMap} />
               </Stack>
             </Paper>
           </Stack>
