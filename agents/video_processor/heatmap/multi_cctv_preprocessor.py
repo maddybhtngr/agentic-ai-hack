@@ -51,7 +51,7 @@ def upload_to_gcs(video_path, bucket_name, cctv_id):
 
     if not blob.exists():
         print(f"Uploading CCTV {cctv_id} video to GCS...")
-        blob.upload_from_filename(video_path)
+        blob.upload_from_filename(video_path, timeout=600)
     else:
         print(f"CCTV {cctv_id} video already exists in GCS.")
 
@@ -90,7 +90,7 @@ def analyze_single_cctv(cctv_id):
         )
 
         print(f"Waiting for CCTV {cctv_id} analysis to complete...")
-        result = operation.result(timeout=1500)
+        result = operation.result(timeout=2500)
         print(f"CCTV {cctv_id} analysis complete.")
 
         # Process results
@@ -106,15 +106,16 @@ def analyze_single_cctv(cctv_id):
                     
                     box = obj.normalized_bounding_box
                     point_data = {
-                        'x': int((box.left + box.right) / 2 * 400),  # Scale to smaller container
-                        'y': int((box.top + box.bottom) / 2 * 300),  # Scale to smaller container
-                        'value': int(track.confidence * 100),  # Dynamic value based on confidence
+                        'x': (box.left + box.right) / 2.0,
+                        'y': (box.top + box.bottom) / 2.0,
+                        'value': int(track.confidence * 100),
                         'confidence': track.confidence
                     }
                     heatmap_data[timestamp].append(point_data)
         
         # Save individual CCTV data
-        output_file = os.path.join(OUTPUT_BASE_PATH, f'cctv_{cctv_id}_heatmap.json')
+        cctv_folder = os.path.join(VIDEOS_BASE_PATH, f'cctv_{cctv_id}')
+        output_file = os.path.join(cctv_folder, f'heatmap_cctv_{cctv_id}.json')
         with open(output_file, 'w') as f:
             json.dump(heatmap_data, f, indent=2)
         
