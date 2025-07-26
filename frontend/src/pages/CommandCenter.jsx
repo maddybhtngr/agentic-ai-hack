@@ -1,31 +1,142 @@
-import { Container, Title, Text, Paper, Stack, AppShell, Grid, Badge, Group, Progress, ActionIcon, rem, Card } from '@mantine/core';
-import { IconUser, IconCamera, IconLivePhoto, IconVolume, IconVolumeOff, IconMaximize, IconUserCircle, IconUsersGroup, IconAlertTriangle, IconVideo, IconActivity, IconTrash } from '@tabler/icons-react';
+import { Container, Title, Text, Paper, Stack, AppShell, Grid, Badge, Group, Progress, ActionIcon, rem, Card, Tabs } from '@mantine/core';
+import { IconUser, IconCamera, IconLivePhoto, IconVolume, IconVolumeOff, IconMaximize, IconUserCircle, IconUsersGroup, IconAlertTriangle, IconVideo, IconActivity, IconTrash, IconChartBar, IconShield, IconMoodSmile } from '@tabler/icons-react';
 import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import AppBar from '../components/AppBar';
 import Sidebar from '../components/Sidebar';
 import FloatingAssistant from '../components/FloatingAssistant';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { Modal, TextInput, Button } from '@mantine/core';
 import { IconPencil, IconPlus } from '@tabler/icons-react';
+import { apiService } from '../services/api';
+import CCTVHeatMapOverlay from '../components/CCTVHeatMapOverlay';
 
 function CommandCenter() {
   const [opened, { toggle }] = useDisclosure(true);
   const isSmallScreen = useMediaQuery('(max-width: 768px)');
 
   // Camera state
-  const [cameras, setCameras] = useState([
-    { id: 1, name: 'Camera 1' },
-    { id: 2, name: 'Camera 2' },
-    { id: 3, name: 'Camera 3' },
-    { id: 4, name: 'Camera 4' },
-    { id: 5, name: 'Camera 5' },
-    { id: 6, name: 'Camera 6' },
-  ]);
+  const [cameras, setCameras] = useState([]);
+  const [cctvData, setCctvData] = useState({});
+  const [cameraTimestampIndexes, setCameraTimestampIndexes] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [editCameraId, setEditCameraId] = useState(null);
   const [editCameraName, setEditCameraName] = useState('');
   const [newCameraName, setNewCameraName] = useState('');
+
+  // Fetch initial CCTV feeds data
+  const fetchInitialCCTVData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      // Fetch CCTV feeds list
+      const feedsResponse = await apiService.getCCTVFeeds();
+      const feeds = feedsResponse.feeds || [];
+      
+      // Set cameras from API response
+      setCameras(feeds.map(feed => ({
+        id: feed.id,
+        name: feed.name,
+        status: feed.status,
+        totalTimestamps: feed.total_timestamps,
+        durationSeconds: feed.duration_seconds
+      })));
+      
+      // Initialize timestamp indexes for each camera
+      const initialIndexes = {};
+      feeds.forEach(feed => {
+        initialIndexes[feed.id] = 0;
+      });
+      setCameraTimestampIndexes(initialIndexes);
+      
+      // Fetch initial timestamp data for each camera
+      await fetchAllCameraData(initialIndexes);
+      
+    } catch (err) {
+      console.error('Error fetching CCTV data:', err);
+      setError(err.message);
+      // Fallback to static data if API fails
+      const fallbackCameras = [
+        { id: 'cctv_1', name: 'Camera 1', status: 'active', totalTimestamps: 15, durationSeconds: 30 },
+        { id: 'cctv_2', name: 'Camera 2', status: 'active', totalTimestamps: 15, durationSeconds: 30 },
+        { id: 'cctv_3', name: 'Camera 3', status: 'active', totalTimestamps: 15, durationSeconds: 30 },
+        { id: 'cctv_4', name: 'Camera 4', status: 'active', totalTimestamps: 15, durationSeconds: 30 },
+        { id: 'cctv_5', name: 'Camera 5', status: 'active', totalTimestamps: 15, durationSeconds: 30 },
+        { id: 'cctv_6', name: 'Camera 6', status: 'active', totalTimestamps: 15, durationSeconds: 30 },
+      ];
+      setCameras(fallbackCameras);
+      
+      const fallbackIndexes = {};
+      fallbackCameras.forEach(cam => {
+        fallbackIndexes[cam.id] = 0;
+      });
+      setCameraTimestampIndexes(fallbackIndexes);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch data for all cameras at their current timestamp indexes
+  const fetchAllCameraData = async (indexes = cameraTimestampIndexes) => {
+    try {
+      const dataPromises = Object.entries(indexes).map(([cameraId, timestampIndex]) => 
+        apiService.getCCTVFeedData(cameraId, timestampIndex)
+      );
+      
+      const cctvResults = await Promise.all(dataPromises);
+      
+      // Structure the data by camera ID
+      const structuredData = {};
+      cctvResults.forEach(result => {
+        structuredData[result.cctv_id] = result;
+      });
+      
+      setCctvData(structuredData);
+    } catch (err) {
+      console.error('Error fetching camera data:', err);
+    }
+  };
+
+  // Fetch initial CCTV data on component mount
+  useEffect(() => {
+    fetchInitialCCTVData();
+  }, []);
+
+  // Set up cycling intervals for each camera (2 seconds per timestamp)
+  useEffect(() => {
+    if (cameras.length === 0) return;
+
+    const intervals = {};
+    
+    cameras.forEach(camera => {
+      intervals[camera.id] = setInterval(() => {
+        setCameraTimestampIndexes(prev => {
+          const newIndexes = { ...prev };
+          newIndexes[camera.id] = (prev[camera.id] || 0) + 1;
+          
+          // Immediately fetch new data for this camera
+          apiService.getCCTVFeedData(camera.id, newIndexes[camera.id])
+            .then(result => {
+              setCctvData(prevData => ({
+                ...prevData,
+                [result.cctv_id]: result
+              }));
+            })
+            .catch(err => console.error(`Error updating ${camera.id}:`, err));
+          
+          return newIndexes;
+        });
+      }, 2000); // Update every 2 seconds
+    });
+
+    // Cleanup intervals
+    return () => {
+      Object.values(intervals).forEach(interval => clearInterval(interval));
+    };
+  }, [cameras]);
 
   const handleMenuClick = () => {
     toggle();
@@ -87,84 +198,84 @@ function CommandCenter() {
     >
       <AppShell.Header>
         <AppBar 
-          userName="Admin User" 
+          userName="Admin User"
+          opened={opened} 
           onMenuClick={handleMenuClick}
-          opened={opened}
         />
       </AppShell.Header>
 
-      <Sidebar opened={opened} />
+      <AppShell.Navbar>
+        <Sidebar onNavigate={() => {}} />
+      </AppShell.Navbar>
 
       <AppShell.Main>
-        <Container size="100%" py="xl" px="xl">
-          <Stack spacing="xl">
-            {/* Header Section */}
-            <Stack spacing="xs">
-              <Group gap="xs">
-                <IconVideo size={32} style={{ color: '#667eea' }} />
-                <Title 
-                  order={1}
+        <Container size="100%" py="xl" px="xl" style={{ position: 'relative' }}>
+        <Stack gap="xl">
+          <Paper 
+            shadow="xl" 
+            p="md" 
+            radius="lg"
+            mb="xl"
+            style={{
+              background: 'rgba(255, 255, 255, 0.95)',
+              backdropFilter: 'blur(10px)',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              position: 'relative',
+              overflow: 'hidden',
+              margin: '0 auto',
+              maxWidth: '100%'
+            }}
+          >
+            {/* Gradient top border accent */}
+            <div style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              height: '4px',
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              borderRadius: `${rem(12)} ${rem(12)} 0 0`
+            }} />
+            
+            <Group justify="space-between" align="center">
+              <Group gap="md">
+                <div style={{
+                  padding: rem(12),
+                  borderRadius: rem(12),
+                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}>
+                  <IconActivity size={24} style={{ color: 'white' }} />
+                </div>
+                <Stack gap="xs">
+                  <Title order={3} style={{ fontWeight: 600 }}>
+                    Operations Center
+                  </Title>
+                  <Text size="sm" c="dimmed">
+                    Real-time CCTV monitoring with AI analytics
+                  </Text>
+                </Stack>
+              </Group>
+              
+              <Group gap="sm">
+                <Button 
+                  size="md"
+                  radius="md"
+                  variant="light"
+                  color="blue"
+                  leftSection={<IconActivity size={16} />} 
+                  onClick={fetchInitialCCTVData}
+                  loading={loading}
                   style={{
-                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                    fontWeight: 700
+                    background: 'rgba(102, 126, 234, 0.1)',
+                    color: '#667eea',
+                    border: '1px solid rgba(102, 126, 234, 0.2)'
                   }}
                 >
-                  Command Center
-                </Title>
-              </Group>
-              <Text c="dimmed" size="sm">
-                Real-time surveillance and crowd monitoring operations
-              </Text>
-            </Stack>
-
-            {/* Operations Header */}
-            <Paper 
-              shadow="xl" 
-              p="xl" 
-              radius="lg" 
-              style={{
-                background: 'rgba(255, 255, 255, 0.95)',
-                backdropFilter: 'blur(10px)',
-                border: '1px solid rgba(255, 255, 255, 0.2)',
-                position: 'relative',
-                overflow: 'hidden'
-              }}
-            >
-              {/* Background gradient accent */}
-              <div style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                height: '4px',
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                borderRadius: `${rem(12)} ${rem(12)} 0 0`
-              }} />
-
-              <Group justify="space-between" align="center">
-                <Group gap="md">
-                  <div style={{
-                    padding: rem(12),
-                    borderRadius: rem(12),
-                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                  }}>
-                    <IconActivity size={24} style={{ color: 'white' }} />
-                  </div>
-                  <Stack gap="xs">
-                    <Title order={3} style={{ fontWeight: 600 }}>
-                      Operations
-                    </Title>
-                    <Text size="sm" c="dimmed">
-                      Live camera feeds and detection monitoring
-                    </Text>
-                  </Stack>
-                </Group>
-                
+                  Refresh Data
+                </Button>
                 <Button 
                   size="md"
                   radius="md"
@@ -173,50 +284,130 @@ function CommandCenter() {
                   style={{
                     background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                     border: 'none',
-                    fontWeight: 600
+                    fontWeight: 600,
+                    transition: 'all 0.2s ease'
                   }}
-                  styles={{
-                    root: {
-                      '&:hover': {
-                        transform: 'translateY(-1px)',
-                        boxShadow: '0 8px 25px rgba(102, 126, 234, 0.3)'
-                      },
-                      transition: 'all 0.2s ease'
-                    }
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-1px)';
+                    e.currentTarget.style.boxShadow = '0 8px 25px rgba(102, 126, 234, 0.3)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0px)';
+                    e.currentTarget.style.boxShadow = '';
                   }}
                 >
                   Add Camera
                 </Button>
               </Group>
-            </Paper>
+            </Group>
+          </Paper>
+
+          <FloatingAssistant onQuerySubmit={() => {
+            // Handle query submission logic here
+            console.log('Query submitted to FloatingAssistant');
+          }} />
+
+            {/* Loading and Error States */}
+            {loading && (
+              <Paper 
+                shadow="lg" 
+                p="xl" 
+                radius="lg" 
+                style={{
+                  background: 'rgba(255, 255, 255, 0.95)',
+                  backdropFilter: 'blur(10px)',
+                  textAlign: 'center'
+                }}
+              >
+                <Text size="lg" c="dimmed">Loading CCTV feeds...</Text>
+              </Paper>
+            )}
+
+            {error && (
+              <Paper 
+                shadow="lg" 
+                p="xl" 
+                radius="lg" 
+                style={{
+                  background: 'rgba(255, 240, 240, 0.95)',
+                  backdropFilter: 'blur(10px)',
+                  border: '1px solid rgba(239, 68, 68, 0.2)'
+                }}
+              >
+                <Text size="lg" c="red">Error loading CCTV data: {error}</Text>
+                <Text size="sm" c="dimmed" mt="xs">Using fallback data for demonstration</Text>
+              </Paper>
+            )}
 
             {/* Camera Grid */}
-            <Grid gutter="lg">
+            <Grid gutter="xl" align="stretch">
               {cameras.map((cam, idx) => {
-                // Simulate data for demo
-                const density = Math.random();
-                const faces = Math.floor(Math.random() * 10) + 1;
-                const quality = Math.floor(Math.random() * 100) + 1;
-                const alert = density > 0.8;
-                const getDensityColor = (d) => {
-                  if (d < 0.3) return 'teal';
-                  if (d < 0.5) return 'blue';
-                  if (d < 0.7) return 'yellow';
-                  if (d < 0.9) return 'orange';
-                  return 'red';
+                // Get real CCTV data for this camera
+                const cameraData = cctvData[cam.id] || {};
+                const currentAnalysis = cameraData.current_analysis || {};
+                const summaryStats = cameraData.summary_stats || {};
+                const timestampInfo = currentAnalysis.timestamp_info || {};
+                const currentTimestampIndex = cameraTimestampIndexes[cam.id] || 0;
+                
+                // Extract real data
+                const peopleCount = currentAnalysis.people_count || 0;
+                const crowdDensity = currentAnalysis.crowd_density || 'low';
+                const demographics = currentAnalysis.demographics || {};
+                const sentiment = currentAnalysis.sentiment_analysis || {};
+                
+                // Security alerts
+                const violenceAlert = currentAnalysis.violence_flag || false;
+                const weaponAlert = currentAnalysis.weapon_detected || false;
+                const fireAlert = currentAnalysis.fire_flag || false;
+                const smokeAlert = currentAnalysis.smoke_flag || false;
+                const hasAlert = violenceAlert || weaponAlert || fireAlert || smokeAlert;
+                
+                // Calculate faces count from demographics
+                const faces = (demographics.male_count || 0) + (demographics.female_count || 0);
+                
+                // Quality metric based on data availability and analysis confidence
+                const quality = currentAnalysis.timestamp ? 
+                  Math.min(95, 70 + (peopleCount > 0 ? 15 : 0) + (Object.keys(demographics).length > 0 ? 10 : 0)) 
+                  : 50;
+                
+                // Density color mapping
+                const getDensityColor = (density) => {
+                  switch(density) {
+                    case 'low': return 'teal';
+                    case 'medium': return 'blue';
+                    case 'high': return 'orange';
+                    case 'very_high': return 'red';
+                    default: return 'gray';
+                  }
                 };
-                const densityLevel = (d) => {
-                  if (d < 0.3) return 'Low';
-                  if (d < 0.5) return 'Moderate';
-                  if (d < 0.7) return 'High';
-                  if (d < 0.9) return 'Very High';
-                  return 'Critical';
+                
+                // Density level mapping
+                const densityLevel = (density) => {
+                  switch(density) {
+                    case 'low': return 'Low';
+                    case 'medium': return 'Moderate';
+                    case 'high': return 'High';
+                    case 'very_high': return 'Critical';
+                    default: return 'Unknown';
+                  }
                 };
+                
+                // Density value for progress bar (0-1)
+                const densityValue = {
+                  'low': 0.2,
+                  'medium': 0.5,
+                  'high': 0.8,
+                  'very_high': 1.0
+                }[crowdDensity] || 0;
                 return (
-                  <Grid.Col span={{ base: 12, sm: 6, md: 4 }} key={cam.id}>
+                  <Grid.Col 
+                    span={{ base: 12, sm: 6, lg: 6 }} 
+                    key={cam.id}
+                    style={{ display: 'flex' }}
+                  >
                     <Card 
                       shadow="xl" 
-                      padding="lg" 
+                      padding={0}
                       radius="lg" 
                       withBorder
                       style={{
@@ -224,10 +415,19 @@ function CommandCenter() {
                         backdropFilter: 'blur(10px)',
                         border: '1px solid rgba(255, 255, 255, 0.2)',
                         transition: 'all 0.3s ease',
-                        '&:hover': {
-                          transform: 'translateY(-4px)',
-                          boxShadow: '0 20px 40px rgba(0,0,0,0.1)'
-                        }
+                        height: '580px',
+                        width: '100%',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        margin: '0 auto'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.transform = 'translateY(-4px)';
+                        e.currentTarget.style.boxShadow = '0 20px 40px rgba(0,0,0,0.15)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = 'translateY(0px)';
+                        e.currentTarget.style.boxShadow = '';
                       }}
                     >
                       <Card.Section>
@@ -235,14 +435,23 @@ function CommandCenter() {
                         <div style={{ 
                           position: 'relative', 
                           width: '100%', 
+                          height: '250px',
                           borderRadius: `${rem(12)} ${rem(12)} 0 0`, 
                           background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
-                          overflow: 'hidden', 
-                          minHeight: 200,
+                          overflow: 'hidden',
                           border: '1px solid rgba(255, 255, 255, 0.3)'
                         }}>
+                          {/* CCTV Heatmap Overlay */}
+                          <CCTVHeatMapOverlay 
+                            heatmapPoints={currentAnalysis.heatmap_points || []}
+                            width={1200}
+                            height={1600}
+                            maxOpacity={0.8}
+                            minOpacity={0.1}
+                          />
+                          
                           {/* ALERT DETECTED overlay animation */}
-                          {alert && densityLevel(density) === 'Critical' && (
+                          {hasAlert && (densityLevel(crowdDensity) === 'Critical' || hasAlert) && (
                             <div
                               style={{
                                 position: 'absolute',
@@ -279,15 +488,59 @@ function CommandCenter() {
                             </div>
                           )}
                           
+                          {/* Timestamp Progress Indicator */}
+                          {timestampInfo.total_timestamps && (
+                            <div
+                              style={{
+                                position: 'absolute',
+                                top: 8,
+                                left: 8,
+                                right: 8,
+                                height: 4,
+                                background: 'rgba(255, 255, 255, 0.2)',
+                                borderRadius: 2,
+                                zIndex: 15
+                              }}
+                            >
+                              <div
+                                style={{
+                                  height: '100%',
+                                  width: `${timestampInfo.progress_percentage || 0}%`,
+                                  background: 'linear-gradient(90deg, #667eea 0%, #764ba2 100%)',
+                                  borderRadius: 2,
+                                  transition: 'width 0.5s ease'
+                                }}
+                              />
+                            </div>
+                          )}
+
+                          {/* Timestamp Info Badge */}
+                          {timestampInfo.total_timestamps && (
+                            <div
+                              style={{
+                                position: 'absolute',
+                                top: 18,
+                                left: 8,
+                                background: 'rgba(0, 0, 0, 0.7)',
+                                color: 'white',
+                                padding: '4px 8px',
+                                borderRadius: 12,
+                                fontSize: '0.75rem',
+                                fontWeight: 600,
+                                zIndex: 16
+                              }}
+                            >
+                              {timestampInfo.current_index + 1}/{timestampInfo.total_timestamps}
+                            </div>
+                          )}
+                          
                           {/* Top controls row: volume, expand, live */}
                           <Group style={{ 
                             position: 'absolute', 
                             top: 8, 
-                            left: 8, 
                             right: 8, 
-                            zIndex: 3, 
-                            justifyContent: 'space-between' 
-                          }} gap={4}>
+                            zIndex: 17 
+                          }}>
                             <Group gap={4}>
                               <ActionIcon 
                                 size="sm" 
@@ -337,7 +590,8 @@ function CommandCenter() {
                                   height: 8, 
                                   borderRadius: '50%', 
                                   background: 'white', 
-                                  marginRight: 4 
+                                  marginRight: 4,
+                                  animation: 'blink 1s infinite'
                                 }} />
                               }
                             >
@@ -345,219 +599,320 @@ function CommandCenter() {
                             </Badge>
                           </Group>
 
-                          {/* Simulated detection boxes */}
-                          {Array.from({ length: Math.floor(Math.random() * 2) + 1 }).map((_, i) => (
-                            <div
-                              key={`face-${i}`}
-                              style={{
-                                position: 'absolute',
-                                border: BOX_COLORS.face,
-                                left: `${10 + Math.random() * 60}%`,
-                                top: `${10 + Math.random() * 60}%`,
-                                width: '12%',
-                                height: '16%',
-                                borderRadius: 4,
-                                pointerEvents: 'none',
-                                zIndex: 2,
-                                background: 'transparent',
-                              }}
-                              title="Face"
-                            >
-                              <div style={{
-                                position: 'absolute',
-                                top: -18,
-                                left: '50%',
-                                transform: 'translateX(-50%)',
-                                background: '#fff',
-                                borderRadius: '50%',
-                                boxShadow: '0 1px 4px rgba(0,0,0,0.08)',
-                                padding: 2,
-                                zIndex: 3,
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                              }}>
-                                <IconUserCircle size={18} color="#228be6" />
-                              </div>
-                            </div>
-                          ))}
-                          {Array.from({ length: Math.floor(Math.random() * 2) }).map((_, i) => (
-                            <div
-                              key={`group-${i}`}
-                              style={{
-                                position: 'absolute',
-                                border: BOX_COLORS.group,
-                                left: `${20 + Math.random() * 50}%`,
-                                top: `${20 + Math.random() * 50}%`,
-                                width: '22%',
-                                height: '22%',
-                                borderRadius: 6,
-                                pointerEvents: 'none',
-                                zIndex: 2,
-                                background: 'transparent',
-                              }}
-                              title="Group"
-                            >
-                              <div style={{
-                                position: 'absolute',
-                                top: -18,
-                                left: '50%',
-                                transform: 'translateX(-50%)',
-                                background: '#fff',
-                                borderRadius: '50%',
-                                boxShadow: '0 1px 4px rgba(0,0,0,0.08)',
-                                padding: 2,
-                                zIndex: 3,
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                              }}>
-                                <IconUsersGroup size={18} color="#40c057" />
-                              </div>
-                            </div>
-                          ))}
-                          {Array.from({ length: Math.floor(Math.random() * 2) + 1 }).map((_, i) => (
-                            <div
-                              key={`person-${i}`}
-                              style={{
-                                position: 'absolute',
-                                border: BOX_COLORS.person,
-                                left: `${5 + Math.random() * 70}%`,
-                                top: `${5 + Math.random() * 70}%`,
-                                width: '10%',
-                                height: '22%',
-                                borderRadius: 8,
-                                pointerEvents: 'none',
-                                zIndex: 2,
-                                background: 'transparent',
-                              }}
-                              title="Person"
-                            >
-                              <div style={{
-                                position: 'absolute',
-                                top: -18,
-                                left: '50%',
-                                transform: 'translateX(-50%)',
-                                background: '#fff',
-                                borderRadius: '50%',
-                                boxShadow: '0 1px 4px rgba(0,0,0,0.08)',
-                                padding: 2,
-                                zIndex: 3,
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                              }}>
-                                <IconUser size={18} color="#fd7e14" />
-                              </div>
-                            </div>
-                          ))}
+                          {/* Camera Title Overlay */}
+                          <div
+                            style={{
+                              position: 'absolute',
+                              bottom: 8,
+                              left: 8,
+                              background: 'rgba(0, 0, 0, 0.7)',
+                              color: 'white',
+                              padding: '6px 12px',
+                              borderRadius: 16,
+                              fontSize: '0.875rem',
+                              fontWeight: 600,
+                              zIndex: 16
+                            }}
+                          >
+                            {cam.name}
+                          </div>
                         </div>
                       </Card.Section>
 
-                      <Group justify="space-between" mt="md" mb="xs">
-                        <Text fw={500} size="sm">{cam.name}</Text>
-                        <Group gap="xs">
-                          <Badge
-                            variant="light"
-                            size="sm"
-                            style={{
-                              background: 'rgba(102, 126, 234, 0.1)',
-                              color: '#667eea',
-                              border: '1px solid rgba(102, 126, 234, 0.2)',
-                              fontWeight: 500,
-                              fontSize: 12,
-                              letterSpacing: 1
-                            }}
-                          >
-                            CAM-{String(idx + 1).padStart(2, '0')}
-                          </Badge>
-                          <ActionIcon 
-                            size="sm" 
-                            variant="light" 
-                            color="blue" 
-                            onClick={() => handleEditClick(cam)}
-                            style={{
-                              background: 'rgba(102, 126, 234, 0.1)',
-                              color: '#667eea',
-                              border: '1px solid rgba(102, 126, 234, 0.2)',
-                              '&:hover': {
-                                background: 'rgba(102, 126, 234, 0.2)'
-                              }
-                            }}
-                          >
-                            <IconPencil size={16} />
-                          </ActionIcon>
-                          <ActionIcon 
-                            size="sm" 
-                            variant="light" 
-                            color="red" 
-                            onClick={() => handleDeleteCamera(cam.id)}
-                            style={{
-                              background: 'rgba(239, 68, 68, 0.1)',
-                              color: '#ef4444',
-                              border: '1px solid rgba(239, 68, 68, 0.2)',
-                              '&:hover': {
-                                background: 'rgba(239, 68, 68, 0.2)'
-                              }
-                            }}
-                          >
-                            <IconTrash size={16} />
-                          </ActionIcon>
-                        </Group>
-                      </Group>
+                      {/* Tabbed Interface */}
+                      <div style={{ padding: rem(16), flex: 1, display: 'flex', flexDirection: 'column' }}>
+                        <Tabs defaultValue="overview" variant="pills" radius="md">
+                          <Tabs.List grow mb="md">
+                            <Tabs.Tab value="overview" leftSection={<IconChartBar size={14} />}>
+                              Overview
+                            </Tabs.Tab>
+                            <Tabs.Tab value="demographics" leftSection={<IconUsersGroup size={14} />}>
+                              People
+                            </Tabs.Tab>
+                            <Tabs.Tab value="security" leftSection={<IconShield size={14} />}>
+                              Security
+                            </Tabs.Tab>
+                            <Tabs.Tab value="sentiment" leftSection={<IconMoodSmile size={14} />}>
+                              Mood
+                            </Tabs.Tab>
+                          </Tabs.List>
 
-                      <Stack gap="sm" mb="md">
-                        <Group gap="xs" align="center">
-                          <Badge 
-                            color={getDensityColor(density)} 
-                            variant="light"
-                            style={{
-                              background: `rgba(${getDensityColor(density) === 'blue' ? '102, 126, 234' : 
-                                                   getDensityColor(density) === 'green' ? '34, 197, 94' :
-                                                   getDensityColor(density) === 'yellow' ? '245, 158, 11' :
-                                                   getDensityColor(density) === 'orange' ? '251, 146, 60' : '239, 68, 68'}, 0.1)`,
-                              color: `rgb(${getDensityColor(density) === 'blue' ? '102, 126, 234' : 
-                                           getDensityColor(density) === 'green' ? '34, 197, 94' :
-                                           getDensityColor(density) === 'yellow' ? '245, 158, 11' :
-                                           getDensityColor(density) === 'orange' ? '251, 146, 60' : '239, 68, 68'})`,
-                              border: `1px solid rgba(${getDensityColor(density) === 'blue' ? '102, 126, 234' : 
-                                                       getDensityColor(density) === 'green' ? '34, 197, 94' :
-                                                       getDensityColor(density) === 'yellow' ? '245, 158, 11' :
-                                                       getDensityColor(density) === 'orange' ? '251, 146, 60' : '239, 68, 68'}, 0.2)`
-                            }}
-                          >
-                            Density: {densityLevel(density)}
-                          </Badge>
-                          <Badge 
-                            leftSection={<IconUser size={14} />} 
-                            variant="light"
-                            style={{
-                              background: 'rgba(102, 126, 234, 0.1)',
-                              color: '#667eea',
-                              border: '1px solid rgba(102, 126, 234, 0.2)'
-                            }}
-                          >
-                            Faces: {faces}
-                          </Badge>
-                        </Group>
-                        
-                        <Progress 
-                          value={density * 100} 
-                          color={getDensityColor(density)} 
-                          size="sm" 
-                          radius="md"
-                          style={{
-                            height: rem(6)
-                          }}
-                        />
-                      </Stack>
+                          {/* Fixed height container for all tab content */}
+                          <div style={{ 
+                            minHeight: '280px', 
+                            maxHeight: '280px', 
+                            overflow: 'auto',
+                            padding: '0 4px' // Add small padding to prevent content touching edges
+                          }}>
+                            <Tabs.Panel value="overview">
+                              <Stack gap="sm">
+                                {/* Current Status */}
+                                <div>
+                                  <Text size="sm" fw={600} c="blue" mb="xs">📊 Current Status</Text>
+                                  <Stack gap="xs">
+                                    <Group justify="space-between">
+                                      <Text size="sm">People Count:</Text>
+                                      <Text size="sm" fw={600}>{peopleCount}</Text>
+                                    </Group>
+                                    <Group justify="space-between">
+                                      <Text size="sm">Crowd Density:</Text>
+                                      <Badge 
+                                        color={getDensityColor(crowdDensity)} 
+                                        variant="light"
+                                        size="sm"
+                                      >
+                                        {densityLevel(crowdDensity)}
+                                      </Badge>
+                                    </Group>
+                                  </Stack>
+                                </div>
 
+                                {/* Progress Bar */}
+                                <Progress 
+                                  value={densityValue * 100} 
+                                  color={getDensityColor(crowdDensity)} 
+                                  size="sm" 
+                                  radius="md"
+                                />
 
+                                {/* Emergency Alerts */}
+                                <div>
+                                  <Text size="sm" fw={600} c="red" mb="xs">🚨 Emergency Alerts</Text>
+                                  <Stack gap="xs">
+                                    <Group justify="space-between">
+                                      <Text size="sm">Violence:</Text>
+                                      <Badge 
+                                        color={violenceAlert ? 'red' : 'green'} 
+                                        variant="filled" 
+                                        size="sm"
+                                      >
+                                        {violenceAlert ? 'YES' : 'NO'}
+                                      </Badge>
+                                    </Group>
+                                    <Group justify="space-between">
+                                      <Text size="sm">Fire:</Text>
+                                      <Badge 
+                                        color={fireAlert ? 'orange' : 'green'} 
+                                        variant="filled" 
+                                        size="sm"
+                                      >
+                                        {fireAlert ? 'YES' : 'NO'}
+                                      </Badge>
+                                    </Group>
+                                    <Group justify="space-between">
+                                      <Text size="sm">Smoke:</Text>
+                                      <Badge 
+                                        color={smokeAlert ? 'gray' : 'green'} 
+                                        variant="filled" 
+                                        size="sm"
+                                      >
+                                        {smokeAlert ? 'YES' : 'NO'}
+                                      </Badge>
+                                    </Group>
+                                  </Stack>
+                                </div>
+                              </Stack>
+                            </Tabs.Panel>
+
+                            <Tabs.Panel value="demographics">
+                              <Stack gap="sm">
+                                <Text size="sm" fw={600} c="blue" mb="xs">👥 People Breakdown</Text>
+                                <div style={{
+                                  display: 'grid',
+                                  gridTemplateColumns: '1fr 1fr',
+                                  gap: rem(8)
+                                }}>
+                                  <div style={{
+                                    background: '#f8fafc',
+                                    padding: rem(8),
+                                    borderRadius: rem(6),
+                                    textAlign: 'center'
+                                  }}>
+                                    <Text size="lg" fw={700} c="blue">{demographics.male_count || 0}</Text>
+                                    <Text size="xs" c="dimmed">Males</Text>
+                                  </div>
+                                  <div style={{
+                                    background: '#fdf2f8',
+                                    padding: rem(8),
+                                    borderRadius: rem(6),
+                                    textAlign: 'center'
+                                  }}>
+                                    <Text size="lg" fw={700} c="pink">{demographics.female_count || 0}</Text>
+                                    <Text size="xs" c="dimmed">Females</Text>
+                                  </div>
+                                  <div style={{
+                                    background: '#f0fdf4',
+                                    padding: rem(8),
+                                    borderRadius: rem(6),
+                                    textAlign: 'center'
+                                  }}>
+                                    <Text size="lg" fw={700} c="green">{demographics.child_count || 0}</Text>
+                                    <Text size="xs" c="dimmed">Children</Text>
+                                  </div>
+                                  <div style={{
+                                    background: '#faf5ff',
+                                    padding: rem(8),
+                                    borderRadius: rem(6),
+                                    textAlign: 'center'
+                                  }}>
+                                    <Text size="lg" fw={700} c="violet">{demographics.elder_count || 0}</Text>
+                                    <Text size="xs" c="dimmed">Elders</Text>
+                                  </div>
+                                </div>
+                              </Stack>
+                            </Tabs.Panel>
+
+                            <Tabs.Panel value="security">
+                              <Stack gap="sm">
+                                <Text size="sm" fw={600} c="red" mb="xs">🔒 Security Analysis</Text>
+                                <Stack gap="xs">
+                                  <Group justify="space-between">
+                                    <Text size="sm">Weapons Detected:</Text>
+                                    <Badge 
+                                      color={weaponAlert ? 'red' : 'green'} 
+                                      variant="filled" 
+                                      size="sm"
+                                    >
+                                      {weaponAlert ? 'YES' : 'NO'}
+                                    </Badge>
+                                  </Group>
+                                  <Group justify="space-between">
+                                    <Text size="sm">Suspicious Behavior:</Text>
+                                    <Badge 
+                                      color={currentAnalysis.suspicious_behavior ? 'orange' : 'green'} 
+                                      variant="filled" 
+                                      size="sm"
+                                    >
+                                      {currentAnalysis.suspicious_behavior ? 'YES' : 'NO'}
+                                    </Badge>
+                                  </Group>
+                                  <Group justify="space-between">
+                                    <Text size="sm">Emergency Evacuation:</Text>
+                                    <Badge 
+                                      color={currentAnalysis.emergency_evacuation ? 'red' : 'green'} 
+                                      variant="filled" 
+                                      size="sm"
+                                    >
+                                      {currentAnalysis.emergency_evacuation ? 'YES' : 'NO'}
+                                    </Badge>
+                                  </Group>
+                                </Stack>
+
+                                {/* Environment */}
+                                <div>
+                                  <Text size="sm" fw={600} c="teal" mb="xs" mt="md">🌍 Environment</Text>
+                                  <div style={{
+                                    display: 'grid',
+                                    gridTemplateColumns: '1fr 1fr 1fr',
+                                    gap: rem(6)
+                                  }}>
+                                    <div style={{
+                                      background: '#f8fafc',
+                                      padding: rem(6),
+                                      borderRadius: rem(4),
+                                      textAlign: 'center'
+                                    }}>
+                                      <Text size="xs" fw={600}>Lighting</Text>
+                                      <Text size="xs" c="dimmed">{currentAnalysis.environmental?.lighting_condition || 'Unknown'}</Text>
+                                    </div>
+                                    <div style={{
+                                      background: '#f8fafc',
+                                      padding: rem(6),
+                                      borderRadius: rem(4),
+                                      textAlign: 'center'
+                                    }}>
+                                      <Text size="xs" fw={600}>Weather</Text>
+                                      <Text size="xs" c="dimmed">{currentAnalysis.environmental?.weather_condition || 'Unknown'}</Text>
+                                    </div>
+                                    <div style={{
+                                      background: '#f8fafc',
+                                      padding: rem(6),
+                                      borderRadius: rem(4),
+                                      textAlign: 'center'
+                                    }}>
+                                      <Text size="xs" fw={600}>Vehicles</Text>
+                                      <Text size="xs" c="dimmed">{currentAnalysis.environmental?.vehicles_present ? 'Yes' : 'No'}</Text>
+                                    </div>
+                                  </div>
+                                </div>
+                              </Stack>
+                            </Tabs.Panel>
+
+                            <Tabs.Panel value="sentiment">
+                              <Stack gap="sm">
+                                <Text size="sm" fw={600} c="blue" mb="xs">😊 Crowd Sentiment</Text>
+                                <Stack gap="xs">
+                                  <Group justify="space-between">
+                                    <Text size="sm">Overall Mood:</Text>
+                                    <Badge 
+                                      color={sentiment.crowd_mood === 'agitated' ? 'red' : 
+                                             sentiment.crowd_mood === 'calm' ? 'green' : 'blue'} 
+                                      variant="light" 
+                                      size="sm"
+                                    >
+                                      {sentiment.crowd_mood || 'Neutral'}
+                                    </Badge>
+                                  </Group>
+                                  <Group justify="space-between">
+                                    <Text size="sm">Energy Level:</Text>
+                                    <Badge 
+                                      color="teal" 
+                                      variant="light" 
+                                      size="sm"
+                                    >
+                                      {(sentiment.energy_level || 'low').charAt(0).toUpperCase() + (sentiment.energy_level || 'low').slice(1)}
+                                    </Badge>
+                                  </Group>
+                                </Stack>
+
+                                {/* Dominant Emotions */}
+                                {sentiment.dominant_emotions && sentiment.dominant_emotions.length > 0 && (
+                                  <div>
+                                    <Text size="sm" fw={600} c="blue" mb="xs" mt="md">Dominant Emotions:</Text>
+                                    <Group gap="xs">
+                                      {sentiment.dominant_emotions.map((emotion, idx) => (
+                                        <Badge 
+                                          key={idx}
+                                          variant="light" 
+                                          color="grape" 
+                                          size="sm"
+                                        >
+                                          {emotion.charAt(0).toUpperCase() + emotion.slice(1)}
+                                        </Badge>
+                                      ))}
+                                    </Group>
+                                  </div>
+                                )}
+
+                                {/* Timeline Info */}
+                                {timestampInfo.total_timestamps && (
+                                  <div>
+                                    <Text size="sm" fw={600} c="gray" mb="xs" mt="md">Timeline:</Text>
+                                    <Group gap="xs">
+                                      <Badge variant="light" color="gray" size="sm">
+                                        Frame {timestampInfo.current_index + 1} / {timestampInfo.total_timestamps}
+                                      </Badge>
+                                      <Badge variant="light" color="cyan" size="sm">
+                                        {Math.round(timestampInfo.progress_percentage || 0)}% Complete
+                                      </Badge>
+                                    </Group>
+                                  </div>
+                                )}
+                              </Stack>
+                            </Tabs.Panel>
+                          </div>
+                        </Tabs>
+                      </div>
                     </Card>
                   </Grid.Col>
                 );
               })}
             </Grid>
+        </Stack>
+        </Container>
+      </AppShell.Main>
+
+      <FloatingAssistant />
 
             {/* Edit Camera Modal */}
             <Modal 
@@ -583,17 +938,16 @@ function CommandCenter() {
               <Stack gap="md">
                 <TextInput
                   label="Camera Name"
+                  placeholder="Enter camera name"
                   value={editCameraName}
-                  onChange={e => setEditCameraName(e.target.value)}
-                  autoFocus
+                  onChange={(e) => setEditCameraName(e.currentTarget.value)}
                   size="md"
                   radius="md"
                   styles={{
                     input: {
-                      borderColor: '#e9ecef',
+                      border: '2px solid #e9ecef',
                       '&:focus': {
-                        borderColor: '#667eea',
-                        boxShadow: '0 0 0 1px #667eea'
+                        borderColor: '#667eea'
                       }
                     }
                   }}
@@ -618,7 +972,7 @@ function CommandCenter() {
                       fontWeight: 600
                     }}
                   >
-                    Save
+                    Save Changes
                   </Button>
                 </Group>
               </Stack>
@@ -631,7 +985,7 @@ function CommandCenter() {
               title={
                 <Group gap="xs">
                   <IconPlus size={20} style={{ color: '#667eea' }} />
-                  <Text fw={600}>Add Camera</Text>
+                  <Text fw={600}>Add New Camera</Text>
                 </Group>
               }
               centered
@@ -648,17 +1002,16 @@ function CommandCenter() {
               <Stack gap="md">
                 <TextInput
                   label="Camera Name"
+                  placeholder="Enter camera name"
                   value={newCameraName}
-                  onChange={e => setNewCameraName(e.target.value)}
-                  autoFocus
+                  onChange={(e) => setNewCameraName(e.currentTarget.value)}
                   size="md"
                   radius="md"
                   styles={{
                     input: {
-                      borderColor: '#e9ecef',
+                      border: '2px solid #e9ecef',
                       '&:focus': {
-                        borderColor: '#667eea',
-                        boxShadow: '0 0 0 1px #667eea'
+                        borderColor: '#667eea'
                       }
                     }
                   }}
@@ -683,18 +1036,14 @@ function CommandCenter() {
                       fontWeight: 600
                     }}
                   >
-                    Add
+                    Add Camera
                   </Button>
                 </Group>
               </Stack>
             </Modal>
-          </Stack>
-        </Container>
-        <FloatingAssistant />
-      </AppShell.Main>
 
-      {/* Add CSS animations */}
-      <style jsx>{`
+      {/* Custom CSS for animations */}
+      <style>{`
         @keyframes criticalAlert {
           0%, 100% { background: rgba(239, 68, 68, 0.15); }
           50% { background: rgba(239, 68, 68, 0.25); }
@@ -723,6 +1072,11 @@ function CommandCenter() {
         @keyframes pulse {
           0%, 100% { opacity: 1; }
           50% { opacity: 0.5; }
+        }
+
+        @keyframes blink {
+          0%, 50% { opacity: 1; }
+          51%, 100% { opacity: 0.3; }
         }
       `}</style>
     </AppShell>
