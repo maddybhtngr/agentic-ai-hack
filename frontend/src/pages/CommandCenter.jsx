@@ -213,7 +213,7 @@ function CommandCenter() {
         <Stack gap="xl">
           <Paper 
             shadow="xl" 
-            p="md" 
+            p="xl" 
             radius="lg"
             mb="xl"
             style={{
@@ -221,9 +221,7 @@ function CommandCenter() {
               backdropFilter: 'blur(10px)',
               border: '1px solid rgba(255, 255, 255, 0.2)',
               position: 'relative',
-              overflow: 'hidden',
-              margin: '0 auto',
-              maxWidth: '100%'
+              overflow: 'hidden'
             }}
           >
             {/* Gradient top border accent */}
