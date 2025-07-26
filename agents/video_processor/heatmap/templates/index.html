@@ -3,77 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Multi-CCTV Real-Time Heatmaps</title>
+    <title>Multi-CCTV AI Intelligence Dashboard - Powered by Gemini 2.5 Pro</title>
     <style>
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #121212;
-            color: #e0e0e0;
-            margin: 0;
-            padding: 20px;
-        }
-        h1 {
-            text-align: center;
-            margin-bottom: 20px;
-            font-weight: 400;
-            letter-spacing: 1px;
-        }
-        #main-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 20px;
-            width: 100%;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-        .heatmap-wrapper {
-            position: relative;
-            border: 1px solid #333;
-            background-color: #1e1e1e;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            border-radius: 8px;
-            overflow: hidden;
-        }
-        .heatmap-container {
-            width: 100%;
-            padding-top: 75%; /* 4:3 Aspect Ratio */
-            position: relative;
-        }
-        .heatmap-canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-        }
-        .heatmap-title {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background-color: rgba(0, 0, 0, 0.6);
-            color: white;
-            padding: 5px 10px;
-            border-radius: 4px;
-            font-size: 1em;
-            font-weight: 500;
-        }
-        .status-light {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background-color: #ff4d4d; /* Red by default */
-            transition: background-color 0.3s;
-        }
-        .status-light.connected {
-            background-color: #4dff4d; /* Green when connected */
-        }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%); color: #e0e0e0; margin: 0; padding: 20px; min-height: 100vh; }
+        h1 { text-align: center; margin-bottom: 30px; font-weight: 300; letter-spacing: 2px; font-size: 2.2em; background: linear-gradient(45deg, #00d2ff, #3a7bd5); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .subtitle { text-align: center; margin-bottom: 30px; color: #888; font-size: 1.1em; }
+        #main-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(500px, 1fr)); gap: 30px; width: 100%; max-width: 1800px; margin: 0 auto; }
+        .cctv-card { display: flex; flex-direction: column; border: 1px solid #333; background: linear-gradient(145deg, #1e1e1e, #2a2a2a); box-shadow: 0 8px 25px rgba(0,0,0,0.4); border-radius: 12px; overflow: hidden; transition: transform 0.3s ease; }
+        .cctv-card:hover { transform: translateY(-5px); }
+        .heatmap-wrapper { position: relative; }
+        .heatmap-container { width: 100%; padding-top: 60%; position: relative; background: #000; }
+        .heatmap-title { position: absolute; top: 15px; left: 15px; background: linear-gradient(45deg, #667eea 0%, #764ba2 100%); color: white; padding: 8px 15px; border-radius: 20px; font-size: 1.1em; font-weight: 600; z-index: 10; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3); }
+        .status-light { position: absolute; top: 20px; right: 20px; width: 15px; height: 15px; border-radius: 50%; background-color: #ff4d4d; transition: all 0.3s; z-index: 10; box-shadow: 0 0 10px rgba(255, 77, 77, 0.5); }
+        .status-light.connected { background-color: #4dff4d; box-shadow: 0 0 15px rgba(77, 255, 77, 0.7); }
+        .info-panel { padding: 20px; background: linear-gradient(145deg, #2a2a2a, #1e1e1e); border-top: 1px solid #444; }
+        .info-tabs { display: flex; margin-bottom: 15px; border-bottom: 2px solid #333; }
+        .tab-button { background: none; border: none; color: #888; padding: 10px 20px; cursor: pointer; font-size: 0.9em; font-weight: 500; transition: all 0.3s; border-bottom: 2px solid transparent; }
+        .tab-button.active { color: #00d2ff; border-bottom-color: #00d2ff; }
+        .tab-button:hover { color: #fff; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .info-section { margin-bottom: 20px; }
+        .section-title { font-size: 1em; font-weight: 600; color: #00d2ff; margin-bottom: 10px; border-bottom: 1px solid #333; padding-bottom: 5px; }
+        .info-item { display: flex; justify-content: space-between; align-items: center; font-size: 0.9em; margin-bottom: 8px; padding: 5px 0; }
+        .info-item:last-child { margin-bottom: 0; }
+        .info-label { color: #aaa; font-weight: 400; }
+        .info-value { font-weight: 600; }
+        .flag { padding: 4px 12px; border-radius: 15px; font-size: 0.75em; font-weight: bold; color: #fff; text-transform: uppercase; }
+        .flag.true { background: linear-gradient(45deg, #e63946, #dc2626); box-shadow: 0 2px 8px rgba(230, 57, 70, 0.3); }
+        .flag.false { background: linear-gradient(45deg, #10b981, #059669); box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3); }
+        .demographic-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .demographic-item { background: #333; padding: 8px; border-radius: 6px; text-align: center; }
+        .demographic-count { font-size: 1.2em; font-weight: bold; color: #00d2ff; }
+        .demographic-label { font-size: 0.8em; color: #aaa; margin-top: 2px; }
+        .weapons-list { background: #2a1f1f; padding: 10px; border-radius: 6px; border-left: 4px solid #e63946; }
+        .emotion-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+        .emotion-tag { background: linear-gradient(45deg, #667eea, #764ba2); padding: 4px 10px; border-radius: 12px; font-size: 0.7em; font-weight: 500; }
+        .crowd-density { padding: 8px 15px; border-radius: 20px; font-weight: bold; text-align: center; font-size: 0.9em; }
+        .crowd-density.low { background: linear-gradient(45deg, #10b981, #059669); }
+        .crowd-density.medium { background: linear-gradient(45deg, #f59e0b, #d97706); }
+        .crowd-density.high { background: linear-gradient(45deg, #ef4444, #dc2626); }
+        .crowd-density.very_high { background: linear-gradient(45deg, #7c2d12, #991b1b); }
+        .environmental-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+        .env-item { background: #333; padding: 6px; border-radius: 4px; text-align: center; font-size: 0.8em; }
     </style>
 </head>
 <body>
-    <h1>Multi-CCTV Real-Time Heatmaps</h1>
+    <h1>Multi-CCTV AI Intelligence Dashboard</h1>
+    <div class="subtitle">🤖 Powered by Vertex AI Gemini 2.5 Pro | Real-time Video Analysis & Threat Detection</div>
     <div id="main-container"></div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/heatmap.js/2.0.2/heatmap.min.js"></script>
@@ -84,108 +61,290 @@
             async function fetchCctvFeeds() {
                 try {
                     const response = await fetch('/api/cctv-feeds');
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                     return await response.json();
                 } catch (error) {
                     console.error('Error fetching CCTV feeds:', error);
-                    mainContainer.innerHTML = '<p style="color: #ff4d4d;">Could not fetch CCTV feed list. Please ensure the server is running and data has been processed.</p>';
+                    mainContainer.innerHTML = '<p style="color: #ff4d4d;">Could not fetch CCTV feed list.</p>';
                     return [];
                 }
             }
 
-            function setupHeatmap(cctvId) {
-                // Create the DOM structure for the heatmap
-                const wrapper = document.createElement('div');
-                wrapper.className = 'heatmap-wrapper';
+            function createCCTVCard(cctvId) {
+                const card = document.createElement('div');
+                card.className = 'cctv-card';
+                card.id = `card-${cctvId}`;
 
+                const heatmapWrapper = document.createElement('div');
+                heatmapWrapper.className = 'heatmap-wrapper';
                 const title = document.createElement('div');
                 title.className = 'heatmap-title';
-                title.textContent = cctvId.replace('_', ' ').toUpperCase();
-
+                title.textContent = cctvId.replace(/_/g, ' ').toUpperCase();
                 const statusLight = document.createElement('div');
                 statusLight.className = 'status-light';
-
                 const container = document.createElement('div');
                 container.className = 'heatmap-container';
-                container.id = `heatmap-container-${cctvId}`;
+                heatmapWrapper.append(title, statusLight, container);
 
-                wrapper.appendChild(title);
-                wrapper.appendChild(statusLight);
-                wrapper.appendChild(container);
-                mainContainer.appendChild(wrapper);
+                const infoPanel = document.createElement('div');
+                infoPanel.className = 'info-panel';
+                infoPanel.innerHTML = `
+                    <div class="info-tabs">
+                        <button class="tab-button active" onclick="showTab('overview', '${cctvId}')">Overview</button>
+                        <button class="tab-button" onclick="showTab('demographics', '${cctvId}')">Demographics</button>
+                        <button class="tab-button" onclick="showTab('security', '${cctvId}')">Security</button>
+                        <button class="tab-button" onclick="showTab('sentiment', '${cctvId}')">Sentiment</button>
+                    </div>
+                    
+                    <div id="overview-${cctvId}" class="tab-content active">
+                        <div class="info-section">
+                            <div class="section-title">📊 Current Status</div>
+                            <div class="info-item">
+                                <span class="info-label">People Count:</span>
+                                <span class="info-value" id="people-count-${cctvId}">0</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Crowd Density:</span>
+                                <span class="crowd-density low" id="crowd-density-${cctvId}">LOW</span>
+                            </div>
+                        </div>
+                        <div class="info-section">
+                            <div class="section-title">🚨 Emergency Alerts</div>
+                            <div class="info-item">
+                                <span class="info-label">Violence:</span>
+                                <span class="flag false" id="violence-flag-${cctvId}">NO</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Fire:</span>
+                                <span class="flag false" id="fire-flag-${cctvId}">NO</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Smoke:</span>
+                                <span class="flag false" id="smoke-flag-${cctvId}">NO</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="demographics-${cctvId}" class="tab-content">
+                        <div class="info-section">
+                            <div class="section-title">👥 People Breakdown</div>
+                            <div class="demographic-grid">
+                                <div class="demographic-item">
+                                    <div class="demographic-count" id="male-count-${cctvId}">0</div>
+                                    <div class="demographic-label">Males</div>
+                                </div>
+                                <div class="demographic-item">
+                                    <div class="demographic-count" id="female-count-${cctvId}">0</div>
+                                    <div class="demographic-label">Females</div>
+                                </div>
+                                <div class="demographic-item">
+                                    <div class="demographic-count" id="child-count-${cctvId}">0</div>
+                                    <div class="demographic-label">Children</div>
+                                </div>
+                                <div class="demographic-item">
+                                    <div class="demographic-count" id="elder-count-${cctvId}">0</div>
+                                    <div class="demographic-label">Elders</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="security-${cctvId}" class="tab-content">
+                        <div class="info-section">
+                            <div class="section-title">🔒 Security Analysis</div>
+                            <div class="info-item">
+                                <span class="info-label">Weapons Detected:</span>
+                                <span class="flag false" id="weapon-flag-${cctvId}">NO</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Suspicious Behavior:</span>
+                                <span class="flag false" id="suspicious-flag-${cctvId}">NO</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Emergency Evacuation:</span>
+                                <span class="flag false" id="evacuation-flag-${cctvId}">NO</span>
+                            </div>
+                            <div id="weapons-container-${cctvId}" class="weapons-list" style="display: none;">
+                                <div style="font-weight: bold; color: #e63946; margin-bottom: 5px;">⚠️ Detected Weapons:</div>
+                                <div id="weapons-list-${cctvId}"></div>
+                            </div>
+                        </div>
+                        <div class="info-section">
+                            <div class="section-title">🌍 Environment</div>
+                            <div class="environmental-grid">
+                                <div class="env-item">
+                                    <div style="font-weight: bold;">Lighting</div>
+                                    <div id="lighting-${cctvId}">Unknown</div>
+                                </div>
+                                <div class="env-item">
+                                    <div style="font-weight: bold;">Weather</div>
+                                    <div id="weather-${cctvId}">Unknown</div>
+                                </div>
+                                <div class="env-item">
+                                    <div style="font-weight: bold;">Vehicles</div>
+                                    <div id="vehicles-${cctvId}">No</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="sentiment-${cctvId}" class="tab-content">
+                        <div class="info-section">
+                            <div class="section-title">😊 Crowd Sentiment</div>
+                            <div class="info-item">
+                                <span class="info-label">Overall Mood:</span>
+                                <span class="info-value" id="crowd-mood-${cctvId}">Neutral</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Energy Level:</span>
+                                <span class="info-value" id="energy-level-${cctvId}">Low</span>
+                            </div>
+                            <div style="margin-top: 15px;">
+                                <div style="font-weight: bold; color: #00d2ff; margin-bottom: 8px;">Dominant Emotions:</div>
+                                <div class="emotion-tags" id="emotions-${cctvId}"></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
 
-                // Create a heatmap instance
-                const heatmapInstance = h337.create({
-                    container: container,
-                    radius: 25,
-                    maxOpacity: 0.8,
-                    minOpacity: 0.1,
-                    blur: .95,
-                    gradient: { '.2': 'blue', '.5': 'lime', '.8': 'yellow', '.95': 'red' }
-                });
+                card.append(heatmapWrapper, infoPanel);
+                mainContainer.appendChild(card);
 
-                // Force a resize to ensure the canvas is sized correctly
+                return { container, statusLight, infoPanel };
+            }
+
+            window.showTab = function(tabName, cctvId) {
+                // Hide all tab contents for this CCTV
+                const allTabs = document.querySelectorAll(`#${cctvId.replace('cctv_', 'card-cctv_')} .tab-content`);
+                allTabs.forEach(tab => tab.classList.remove('active'));
+                
+                // Remove active class from all tab buttons
+                const allButtons = document.querySelectorAll(`#${cctvId.replace('cctv_', 'card-cctv_')} .tab-button`);
+                allButtons.forEach(btn => btn.classList.remove('active'));
+                
+                // Show selected tab and activate button
+                document.getElementById(`${tabName}-${cctvId}`).classList.add('active');
+                event.target.classList.add('active');
+            }
+            
+            function updateInfoPanel(cctvId, data) {
+                // Overview Tab Updates
+                document.getElementById(`people-count-${cctvId}`).textContent = data.people_count || 0;
+                
+                // Update crowd density
+                const crowdDensity = document.getElementById(`crowd-density-${cctvId}`);
+                const density = data.crowd_density || 'low';
+                crowdDensity.className = `crowd-density ${density}`;
+                crowdDensity.textContent = density.toUpperCase().replace('_', ' ');
+                
+                // Emergency flags
+                const violenceFlag = document.getElementById(`violence-flag-${cctvId}`);
+                violenceFlag.className = `flag ${data.violence_flag}`;
+                violenceFlag.textContent = data.violence_flag ? 'YES' : 'NO';
+                
+                const fireFlag = document.getElementById(`fire-flag-${cctvId}`);
+                fireFlag.className = `flag ${data.fire_flag}`;
+                fireFlag.textContent = data.fire_flag ? 'YES' : 'NO';
+                
+                const smokeFlag = document.getElementById(`smoke-flag-${cctvId}`);
+                smokeFlag.className = `flag ${data.smoke_flag}`;
+                smokeFlag.textContent = data.smoke_flag ? 'YES' : 'NO';
+                
+                // Demographics Tab Updates
+                const demographics = data.demographics || {};
+                document.getElementById(`male-count-${cctvId}`).textContent = demographics.male_count || 0;
+                document.getElementById(`female-count-${cctvId}`).textContent = demographics.female_count || 0;
+                document.getElementById(`child-count-${cctvId}`).textContent = demographics.child_count || 0;
+                document.getElementById(`elder-count-${cctvId}`).textContent = demographics.elder_count || 0;
+                
+                // Security Tab Updates
+                const weaponFlag = document.getElementById(`weapon-flag-${cctvId}`);
+                weaponFlag.className = `flag ${data.weapon_detected}`;
+                weaponFlag.textContent = data.weapon_detected ? 'YES' : 'NO';
+                
+                const suspiciousFlag = document.getElementById(`suspicious-flag-${cctvId}`);
+                suspiciousFlag.className = `flag ${data.suspicious_behavior}`;
+                suspiciousFlag.textContent = data.suspicious_behavior ? 'YES' : 'NO';
+                
+                const evacuationFlag = document.getElementById(`evacuation-flag-${cctvId}`);
+                evacuationFlag.className = `flag ${data.emergency_evacuation}`;
+                evacuationFlag.textContent = data.emergency_evacuation ? 'YES' : 'NO';
+                
+                // Weapons list
+                const weaponsContainer = document.getElementById(`weapons-container-${cctvId}`);
+                const weaponsList = document.getElementById(`weapons-list-${cctvId}`);
+                if (data.weapon_names && data.weapon_names.length > 0) {
+                    weaponsContainer.style.display = 'block';
+                    weaponsList.textContent = data.weapon_names.join(', ');
+                } else {
+                    weaponsContainer.style.display = 'none';
+                }
+                
+                // Environmental updates
+                const environmental = data.environmental || {};
+                document.getElementById(`lighting-${cctvId}`).textContent = environmental.lighting_condition || 'Unknown';
+                document.getElementById(`weather-${cctvId}`).textContent = environmental.weather_condition || 'Unknown';
+                document.getElementById(`vehicles-${cctvId}`).textContent = environmental.vehicles_present ? 'Yes' : 'No';
+                
+                // Sentiment Tab Updates
+                const sentiment = data.sentiment_analysis || {};
+                document.getElementById(`crowd-mood-${cctvId}`).textContent = sentiment.crowd_mood || 'Neutral';
+                document.getElementById(`energy-level-${cctvId}`).textContent = (sentiment.energy_level || 'low').charAt(0).toUpperCase() + (sentiment.energy_level || 'low').slice(1);
+                
+                // Emotion tags
+                const emotionsContainer = document.getElementById(`emotions-${cctvId}`);
+                emotionsContainer.innerHTML = '';
+                if (sentiment.dominant_emotions && sentiment.dominant_emotions.length > 0) {
+                    sentiment.dominant_emotions.forEach(emotion => {
+                        const tag = document.createElement('span');
+                        tag.className = 'emotion-tag';
+                        tag.textContent = emotion.charAt(0).toUpperCase() + emotion.slice(1);
+                        emotionsContainer.appendChild(tag);
+                    });
+                } else {
+                    const tag = document.createElement('span');
+                    tag.className = 'emotion-tag';
+                    tag.textContent = 'Neutral';
+                    emotionsContainer.appendChild(tag);
+                }
+            }
+
+            function setupWebSocket(cctvId, { container, statusLight, infoPanel }) {
+                const heatmapInstance = h337.create({ container, radius: 25, maxOpacity: 0.8, minOpacity: 0.1, blur: .95 });
+                
                 function resizeHeatmap() {
-                    heatmapInstance.setData({ max: 0, data: [] }); // Clear data before resize
                     const width = container.offsetWidth;
                     const height = container.offsetHeight;
                     heatmapInstance._renderer.setDimensions(width, height);
                 }
-
-                // Use a ResizeObserver for better performance and reliability
                 new ResizeObserver(resizeHeatmap).observe(container);
-                resizeHeatmap(); // Initial size check
+                resizeHeatmap();
 
-                // Establish WebSocket connection
                 const ws = new WebSocket(`ws://${window.location.host}/ws/${cctvId}`);
-
-                ws.onopen = function() {
-                    console.log(`WebSocket for ${cctvId} opened.`);
-                    statusLight.classList.add('connected');
-                };
-
-                ws.onmessage = function(event) {
-                    const dataPoints = JSON.parse(event.data);
-                    if (dataPoints.error) {
-                        console.error(`Error for ${cctvId}:`, dataPoints.error);
-                        return;
-                    }
+                ws.onopen = () => statusLight.classList.add('connected');
+                ws.onclose = () => statusLight.classList.remove('connected');
+                ws.onerror = () => statusLight.classList.remove('connected');
+                ws.onmessage = (event) => {
+                    const data = JSON.parse(event.data);
+                    if (data.error) return;
 
                     requestAnimationFrame(() => {
-                        const containerWidth = container.offsetWidth;
-                        const containerHeight = container.offsetHeight;
-
-                        if (containerWidth === 0 || containerHeight === 0) {
-                            return;
-                        }
-
-                        const transformedData = dataPoints.map(p => ({
-                            x: Math.round(p.x * containerWidth),
-                            y: Math.round(p.y * containerHeight),
-                            value: p.value
-                        }));
-
-                        heatmapInstance.setData({ max: 100, data: transformedData });
+                        updateInfoPanel(cctvId, data);
+                        const w = container.offsetWidth, h = container.offsetHeight;
+                        if (w === 0 || h === 0) return;
+                        const transformed = (data.heatmap_points || []).map(p => ({ x: Math.round(p.x * w), y: Math.round(p.y * h), value: p.value }));
+                        heatmapInstance.setData({ max: 100, data: transformed });
                     });
-                };
-
-                ws.onclose = function() {
-                    console.log(`WebSocket for ${cctvId} closed.`);
-                    statusLight.classList.remove('connected');
-                };
-
-                ws.onerror = function(error) {
-                    console.error(`WebSocket error for ${cctvId}:`, error);
-                    statusLight.classList.remove('connected');
                 };
             }
 
             const cctvFeeds = await fetchCctvFeeds();
             if (cctvFeeds.length > 0) {
-                cctvFeeds.forEach(setupHeatmap);
-            } else if (!mainContainer.innerHTML) {
+                cctvFeeds.forEach(cctvId => {
+                    const uiElements = createCCTVCard(cctvId);
+                    setupWebSocket(cctvId, uiElements);
+                });
+            } else {
                  mainContainer.innerHTML = '<p>No processed CCTV feeds found. Run the preprocessor script first.</p>';
             }
         });
