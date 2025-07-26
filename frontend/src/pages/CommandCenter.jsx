@@ -25,6 +25,13 @@ function CommandCenter() {
   const [editCameraId, setEditCameraId] = useState(null);
   const [editCameraName, setEditCameraName] = useState('');
   const [newCameraName, setNewCameraName] = useState('');
+  const [heatMapsEnabled, setHeatMapsEnabled] = useState(true);
+
+  // Video endpoint mapping for each camera
+  const getVideoUrl = (cameraId) => {
+    const backendUrl = 'http://localhost:8000'; // Backend API URL
+    return `${backendUrl}/cctv/videos/${cameraId}`;
+  };
 
   // Fetch initial CCTV feeds data
   const fetchInitialCCTVData = async () => {
@@ -277,6 +284,33 @@ function CommandCenter() {
                 <Button 
                   size="md"
                   radius="md"
+                  variant={heatMapsEnabled ? "filled" : "light"}
+                  color="teal"
+                  leftSection={<IconLivePhoto size={16} />} 
+                  onClick={() => setHeatMapsEnabled(!heatMapsEnabled)}
+                  style={{
+                    background: heatMapsEnabled 
+                      ? 'linear-gradient(135deg, #12b886 0%, #20c997 100%)'
+                      : 'rgba(18, 184, 134, 0.1)',
+                    color: heatMapsEnabled ? 'white' : '#12b886',
+                    border: `1px solid ${heatMapsEnabled ? 'transparent' : 'rgba(18, 184, 134, 0.2)'}`,
+                    fontWeight: 600,
+                    transition: 'all 0.2s ease'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-1px)';
+                    e.currentTarget.style.boxShadow = '0 8px 25px rgba(18, 184, 134, 0.3)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0px)';
+                    e.currentTarget.style.boxShadow = '';
+                  }}
+                >
+                  {heatMapsEnabled ? 'Show Videos' : 'Show Heat Maps'}
+                </Button>
+                <Button 
+                  size="md"
+                  radius="md"
                   leftSection={<IconPlus size={16} />} 
                   onClick={handleAddCamera}
                   style={{
@@ -439,14 +473,52 @@ function CommandCenter() {
                           overflow: 'hidden',
                           border: '1px solid rgba(255, 255, 255, 0.3)'
                         }}>
-                          {/* CCTV Heatmap Overlay */}
-                          <CCTVHeatMapOverlay 
-                            heatmapPoints={currentAnalysis.heatmap_points || []}
-                            width={1200}
-                            height={1600}
-                            maxOpacity={0.8}
-                            minOpacity={0.1}
-                          />
+                          {/* CCTV Content - Heatmap or Video */}
+                          {heatMapsEnabled ? (
+                            <CCTVHeatMapOverlay 
+                              heatmapPoints={currentAnalysis.heatmap_points || []}
+                              width={400}
+                              height={500}
+                              maxOpacity={0.8}
+                              minOpacity={0.1}
+                            />
+                          ) : (
+                            <video
+                              key={cam.id}
+                              autoPlay
+                              loop
+                              muted
+                              playsInline
+                              style={{
+                                width: '100%',
+                                height: '100%',
+                                objectFit: 'cover',
+                                position: 'absolute',
+                                top: 0,
+                                left: 0,
+                                zIndex: 1
+                              }}
+                              onError={(e) => {
+                                console.error(`Error loading video for ${cam.id}:`, e);
+                              }}
+                                                         >
+                               <source 
+                                 src={getVideoUrl(cam.id)} 
+                                 type="video/mp4" 
+                               />
+                              <div style={{
+                                position: 'absolute',
+                                top: '50%',
+                                left: '50%',
+                                transform: 'translate(-50%, -50%)',
+                                color: '#666',
+                                textAlign: 'center',
+                                fontSize: '14px'
+                              }}>
+                                Video not available for {cam.name}
+                              </div>
+                            </video>
+                          )}
                           
                           {/* ALERT DETECTED overlay animation */}
                           {hasAlert && (densityLevel(crowdDensity) === 'Critical' || hasAlert) && (
