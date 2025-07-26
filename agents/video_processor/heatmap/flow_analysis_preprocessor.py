@@ -12,6 +12,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from flow_predictor import FlowPredictor
 
 
+
 def analyze_flow_for_cctv(cctv_id: int, predictor: FlowPredictor):
     """Analyze flow patterns and predict incidents for a single CCTV"""
     print(f"\n=== Flow Analysis for CCTV {cctv_id} ===")
