@@ -1,9 +1,10 @@
 from fastapi import APIRouter, HTTPException
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, FileResponse
 import os
 import json
 import glob
 from typing import Dict, List, Any, Optional
+from pathlib import Path
 
 router = APIRouter(prefix="/cctv", tags=["cctv"])
 
@@ -276,3 +277,42 @@ async def get_analytics_overview():
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error generating analytics overview: {str(e)}") 
+
+@router.get("/videos/{cctv_id}")
+async def get_cctv_video(cctv_id: str):
+    """Serve video file for a specific CCTV camera"""
+    try:
+        # Map CCTV IDs to their video files
+        video_map = {
+            'cctv_1': 'event_entry_stempede.mp4',
+            'cctv_2': 'event_area_gun.mp4',
+            'cctv_3': 'event_normal.mp4',
+            'cctv_4': 'event_area_fire.mp4',
+            'cctv_5': 'event_normal.mp4',
+            'cctv_6': 'event_cafeteria.mp4',
+        }
+        
+        if cctv_id not in video_map:
+            raise HTTPException(status_code=404, detail=f"Video not found for camera {cctv_id}")
+        
+        # Construct path to video file
+        # From backend/app/routers/ -> ../../../agents/video_processor/videos/static_video/{cctv_id}/
+        video_file = video_map[cctv_id]
+        base_path = Path(__file__).parent.parent.parent.parent
+        video_path = base_path / "agents" / "video_processor" / "videos" / "static_video" / cctv_id / video_file
+        
+        if not video_path.exists():
+            raise HTTPException(status_code=404, detail=f"Video file not found: {video_file}")
+        
+        return FileResponse(
+            path=str(video_path),
+            media_type="video/mp4",
+            headers={
+                "Accept-Ranges": "bytes",
+                "Content-Type": "video/mp4"
+            }
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error serving video for {cctv_id}: {str(e)}")
