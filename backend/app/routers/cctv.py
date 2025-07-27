@@ -282,24 +282,24 @@ async def get_analytics_overview():
 async def get_cctv_video(cctv_id: str):
     """Serve video file for a specific CCTV camera"""
     try:
-        # Map CCTV IDs to their video files
+        # Map CCTV IDs to their video files (using actual file names)
         video_map = {
-            'cctv_1': 'event_entry_stempede.mp4',
-            'cctv_2': 'event_area_gun.mp4',
-            'cctv_3': 'event_normal.mp4',
-            'cctv_4': 'event_area_fire.mp4',
-            'cctv_5': 'event_normal.mp4',
-            'cctv_6': 'event_cafeteria.mp4',
+            'cctv_1': 'cctv_1.mp4',
+            'cctv_2': 'cctv_2.mp4',
+            'cctv_3': 'cctv_3.mp4',
+            'cctv_4': 'cctv_4.mp4',
+            'cctv_5': 'cctv_5.mp4',
+            'cctv_6': 'cctv_6.mp4',
         }
         
         if cctv_id not in video_map:
             raise HTTPException(status_code=404, detail=f"Video not found for camera {cctv_id}")
         
         # Construct path to video file
-        # From backend/app/routers/ -> ../../../agents/video_processor/videos/static_video/{cctv_id}/
+        # From backend/app/routers/ -> ../data/videos/{cctv_id}/
         video_file = video_map[cctv_id]
-        base_path = Path(__file__).parent.parent.parent.parent
-        video_path = base_path / "agents" / "video_processor" / "videos" / "static_video" / cctv_id / video_file
+        base_path = Path(__file__).parent.parent  # backend/app/
+        video_path = base_path / "data" / "videos" / cctv_id / video_file
         
         if not video_path.exists():
             raise HTTPException(status_code=404, detail=f"Video file not found: {video_file}")
