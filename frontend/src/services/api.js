@@ -193,7 +193,7 @@ export const apiService = {
 
   // Zone Management API calls
   async getAllZones() {
-    const response = await fetch(`${API_BASE_URL}/zones`)
+    const response = await fetch(`${API_BASE_URL}/zones/`)
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`)
     }
@@ -233,7 +233,7 @@ export const apiService = {
   },
 
   async createZone(zoneData) {
-    const response = await fetch(`${API_BASE_URL}/zones`, {
+    const response = await fetch(`${API_BASE_URL}/zones/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
