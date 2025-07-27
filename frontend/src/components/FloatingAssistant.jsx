@@ -1,6 +1,7 @@
-import { Affix, Button, Paper, Stack, TextInput, Group, Text, ScrollArea, ActionIcon, Avatar, Badge } from '@mantine/core'
+import { Affix, Button, Paper, Stack, TextInput, Group, Text, ScrollArea, ActionIcon, Avatar, Badge, Loader } from '@mantine/core'
 import { IconMessageCircle, IconSend, IconX, IconRobot, IconUser } from '@tabler/icons-react'
 import { useState } from 'react'
+import { apiService } from '../services/api'
 
 function FloatingAssistant({ onClick }) {
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -8,11 +9,12 @@ function FloatingAssistant({ onClick }) {
     {
       id: 1,
       type: 'assistant',
-      content: 'Hello! I\'m your AI assistant. How can I help you today?',
+      content: 'Hello! I\'m your AI assistant. I can help you with event details, incidents, zones, staff information, and emergency contacts. How can I help you today?',
       timestamp: new Date().toLocaleTimeString()
     }
   ]);
   const [newMessage, setNewMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleAssistantClick = () => {
     setIsChatOpen(!isChatOpen);
@@ -21,8 +23,18 @@ function FloatingAssistant({ onClick }) {
     }
   };
 
-  const handleSendMessage = () => {
-    if (newMessage.trim()) {
+  const callAssistantAPI = async (query) => {
+    try {
+      const data = await apiService.queryAssistant(query);
+      return data.response;
+    } catch (error) {
+      console.error('Error calling assistant API:', error);
+      return 'Sorry, I\'m having trouble connecting to the server right now. Please try again later.';
+    }
+  };
+
+  const handleSendMessage = async () => {
+    if (newMessage.trim() && !isLoading) {
       // Add user message
       const userMessage = {
         id: messages.length + 1,
@@ -31,46 +43,37 @@ function FloatingAssistant({ onClick }) {
         timestamp: new Date().toLocaleTimeString()
       };
       
-      setMessages([...messages, userMessage]);
+      setMessages(prev => [...prev, userMessage]);
+      const currentMessage = newMessage;
       setNewMessage('');
+      setIsLoading(true);
 
-      // Simulate AI response (you can replace this with actual AI integration)
-      setTimeout(() => {
-        const aiResponse = {
+      try {
+        // Call the Assistant API
+        const aiResponse = await callAssistantAPI(currentMessage);
+        
+        const assistantMessage = {
           id: messages.length + 2,
           type: 'assistant',
-          content: getAIResponse(newMessage),
+          content: aiResponse,
           timestamp: new Date().toLocaleTimeString()
         };
-        setMessages(prev => [...prev, aiResponse]);
-      }, 1000);
+        
+        setMessages(prev => [...prev, assistantMessage]);
+      } catch (error) {
+        // Add error message
+        const errorMessage = {
+          id: messages.length + 2,
+          type: 'assistant',
+          content: 'Sorry, I encountered an error while processing your request. Please try again.',
+          timestamp: new Date().toLocaleTimeString()
+        };
+        
+        setMessages(prev => [...prev, errorMessage]);
+      } finally {
+        setIsLoading(false);
+      }
     }
-  };
-
-  const getAIResponse = (userMessage) => {
-    const lowerMessage = userMessage.toLowerCase();
-    
-    if (lowerMessage.includes('incident') || lowerMessage.includes('report')) {
-      return 'I can help you report an incident. You can use the "Report Incident" feature in the Incident Management section. Would you like me to guide you through the process?';
-    }
-    
-    if (lowerMessage.includes('emergency') || lowerMessage.includes('help')) {
-      return 'For emergencies, please use the Emergency Services section to contact nearby emergency locations or staff members. Your safety is our priority.';
-    }
-    
-    if (lowerMessage.includes('crowd') || lowerMessage.includes('capacity')) {
-      return 'You can check real-time crowd monitoring in the Overview section. It shows current capacity, crowd flow rates, and zone analytics.';
-    }
-    
-    if (lowerMessage.includes('zone') || lowerMessage.includes('location')) {
-      return 'Zone information is available in the AI Insights section. You can see zone analytics, crowd density, and get personalized recommendations.';
-    }
-    
-    if (lowerMessage.includes('staff') || lowerMessage.includes('contact')) {
-      return 'You can find staff members and their contact information in the Emergency Services section. They\'re organized by zones for easy access.';
-    }
-    
-    return 'I\'m here to help! You can ask me about incidents, emergencies, crowd monitoring, zones, staff contacts, or any other event-related questions.';
   };
 
   const handleKeyPress = (e) => {
@@ -219,25 +222,56 @@ function FloatingAssistant({ onClick }) {
                     </Paper>
                   </Group>
                 ))}
+                
+                {/* Loading indicator */}
+                {isLoading && (
+                  <Group gap="sm" align="flex-start">
+                    <Avatar 
+                      size="sm" 
+                      radius="xl"
+                      style={{ background: '#f1f3f4' }}
+                    >
+                      <IconRobot size={14} style={{ color: '#667eea' }} />
+                    </Avatar>
+                    <Paper
+                      p="sm"
+                      radius="md"
+                      style={{
+                        background: '#f8f9fa',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px'
+                      }}
+                    >
+                      <Loader size="xs" color="#667eea" />
+                      <Text size="sm" c="dimmed">AI is thinking...</Text>
+                    </Paper>
+                  </Group>
+                )}
               </Stack>
             </ScrollArea>
 
             {/* Message Input */}
             <Group gap="sm">
               <TextInput
-                placeholder="Type your message..."
+                placeholder="Ask about events, incidents, zones, staff, or emergency contacts..."
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
                 onKeyPress={handleKeyPress}
                 style={{ flex: 1 }}
                 size="sm"
                 radius="md"
+                disabled={isLoading}
                 styles={{
                   input: {
                     borderColor: '#e9ecef',
                     '&:focus': {
                       borderColor: '#667eea',
                       boxShadow: '0 0 0 1px #667eea'
+                    },
+                    '&:disabled': {
+                      background: '#f8f9fa',
+                      color: '#adb5bd'
                     }
                   }
                 }}
@@ -246,7 +280,7 @@ function FloatingAssistant({ onClick }) {
                 size="md"
                 radius="md"
                 onClick={handleSendMessage}
-                disabled={!newMessage.trim()}
+                disabled={!newMessage.trim() || isLoading}
                 style={{
                   background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                   color: 'white',
@@ -256,7 +290,11 @@ function FloatingAssistant({ onClick }) {
                   }
                 }}
               >
-                <IconSend size={16} />
+                {isLoading ? (
+                  <Loader size="xs" color="white" />
+                ) : (
+                  <IconSend size={16} />
+                )}
               </ActionIcon>
             </Group>
           </Paper>

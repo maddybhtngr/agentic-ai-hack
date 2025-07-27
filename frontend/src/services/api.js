@@ -725,6 +725,31 @@ export const apiService = {
       throw new Error(`HTTP error! status: ${response.status}`)
     }
     return await response.json()
+  },
+
+  // Assistant API calls
+  async queryAssistant(query) {
+    const response = await fetch(`${API_BASE_URL}/assistant`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ query })
+    })
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+
+    return await response.json()
+  },
+
+  async getAssistantTools() {
+    const response = await fetch(`${API_BASE_URL}/assistant/tools`)
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    return await response.json()
   }
 }
 
