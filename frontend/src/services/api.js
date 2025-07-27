@@ -1,5 +1,5 @@
 // API Configuration
-const API_BASE_URL = 'http://localhost:8000'
+const API_BASE_URL = 'https://backend-service-178028895966.us-central1.run.app'
 
 // API Service functions
 export const apiService = {
@@ -700,7 +700,7 @@ export const apiService = {
 
   // Crowd Monitoring AI API calls
   async getCrowdMonitoringAnalysis() {
-    const response = await fetch('http://localhost:8002/api/v1/monitor-crowd')
+    const response = await fetch('https://backend-service-2-178028895966.us-central1.run.app/api/v1/monitor-crowd')
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`)
     }

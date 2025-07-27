@@ -1141,7 +1141,7 @@ function StaffManagement() {
                     <Avatar 
                       size={120} 
                       radius="xl" 
-                      src={`http://localhost:8000/static/${selectedStaff.profile_photo.replace('data/', '')}`}
+                      src={`https://backend-service-178028895966.us-central1.run.app/static/${selectedStaff.profile_photo.replace('data/', '')}`}
                       color={getRoleColor(selectedStaff.role)}
                       onError={(e) => {
                         console.log('Image failed to load:', selectedStaff.profile_photo);

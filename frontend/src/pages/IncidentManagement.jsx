@@ -1325,7 +1325,7 @@ function IncidentManagement() {
                 {selectedIncident?.additional_image && (
                   <div style={{ textAlign: 'center' }}>
                     <img 
-                      src={`http://localhost:8000${selectedIncident.additional_image}`}
+                                              src={`https://backend-service-178028895966.us-central1.run.app${selectedIncident.additional_image}`}
                       alt="Incident Image"
                       style={{
                         maxWidth: '100%',

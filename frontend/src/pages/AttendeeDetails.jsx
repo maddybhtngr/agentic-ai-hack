@@ -299,7 +299,7 @@ function AttendeeDetails() {
                       <Avatar 
                         size={240} 
                         radius="xl"
-                        src={userDetails.profile_photo ? `http://localhost:8000/static/${userDetails.profile_photo.replace('data/', '')}` : undefined}
+                        src={userDetails.profile_photo ? `https://backend-service-178028895966.us-central1.run.app/static/${userDetails.profile_photo.replace('data/', '')}` : undefined}
                         style={{
                           border: '4px solid rgba(255, 255, 255, 0.3)',
                           boxShadow: '0 8px 32px rgba(102, 126, 234, 0.3)'
@@ -529,7 +529,7 @@ function AttendeeDetails() {
                             <Avatar 
                               size={240} 
                               radius="xl"
-                              src={member.photo_path ? `http://localhost:8000/static/${member.photo_path.replace('data/', '')}` : undefined}
+                              src={member.photo_path ? `https://backend-service-178028895966.us-central1.run.app/static/${member.photo_path.replace('data/', '')}` : undefined}
                               style={{
                                 border: '4px solid rgba(255, 255, 255, 0.3)',
                                 boxShadow: '0 8px 32px rgba(102, 126, 234, 0.3)'

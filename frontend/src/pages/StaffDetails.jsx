@@ -176,7 +176,7 @@ function StaffDetails() {
                       <Avatar 
                         size={240} 
                         radius="xl"
-                        src={staffMember.profile_photo ? `http://localhost:8000/static/${staffMember.profile_photo.replace('data/', '')}` : undefined}
+                        src={staffMember.profile_photo ? `https://backend-service-178028895966.us-central1.run.app/static/${staffMember.profile_photo.replace('data/', '')}` : undefined}
                         color={staffMember.role?.toLowerCase() === 'security' ? 'blue' : 'green'}
                         style={{
                           border: '4px solid rgba(255, 255, 255, 0.3)',

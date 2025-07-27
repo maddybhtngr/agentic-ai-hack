@@ -29,7 +29,7 @@ function CommandCenter() {
 
   // Video endpoint mapping for each camera
   const getVideoUrl = (cameraId) => {
-    const backendUrl = 'http://localhost:8000'; // Backend API URL
+    const backendUrl = 'https://backend-service-178028895966.us-central1.run.app'; // Backend API URL
     return `${backendUrl}/cctv/videos/${cameraId}`;
   };
 
