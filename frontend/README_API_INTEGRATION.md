@@ -30,7 +30,7 @@ The frontend Login component has been integrated with the FastAPI backend authen
 ## API Endpoints
 
 ### Login
-- **URL**: `POST http://localhost:8000/auth/login`
+- **URL**: `POST https://backend-service-178028895966.us-central1.run.app/auth/login`
 - **Request**:
   ```json
   {
@@ -69,6 +69,7 @@ The frontend Login component has been integrated with the FastAPI backend authen
 - User-friendly error messages
 
 ## Usage
-1. Start the backend: `cd backend && python app/main.py`
-2. Start the frontend: `cd frontend && npm run dev`
-3. Navigate to login page and use credentials above 
+1. Backend is deployed at: https://backend-service-178028895966.us-central1.run.app
+2. Workflow API is deployed at: https://backend-service-2-178028895966.us-central1.run.app
+3. Start the frontend: `cd frontend && npm run dev`
+4. Navigate to login page and use credentials above 
