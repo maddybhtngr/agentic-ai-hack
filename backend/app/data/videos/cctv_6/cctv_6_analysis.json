@@ -1,253 +1,292 @@
 {
-    "0": {
+    "cctv_id": "6",
+    "analysis_metadata": {
+      "total_timestamps": 15,
+      "high_risk_periods": 0,
+      "analysis_complete": true,
+      "merge_timestamp": "2025-07-27T14:09:07+05:30"
+    },
+    "timestamps": {
+      "0": {
+        "timestamp": 0,
+        "flow_metrics": {
+          "timestamp": 0,
+          "inflow_count": 0,
+          "outflow_count": 0,
+          "net_flow": 0,
+          "total_people": 30,
+          "density_level": "medium",
+          "average_velocity": 0.08,
+          "movement_vectors": [
+            [
+              -0.05,
+              0.0
+            ]
+          ],
+          "congestion_points": [
+            [
+              0.55,
+              0.5
+            ]
+          ],
+          "fire_detected": false,
+          "smoke_detected": false,
+          "violence_detected": false,
+          "weapon_detected": false,
+          "weapon_types": [],
+          "suspicious_behavior": false,
+          "emergency_evacuation": false
+        },
+        "safety_metrics": {},
+        "risk_assessment": {},
         "heatmap_points": [
-            {
-                "x": 0.41,
-                "y": 0.78,
-                "value": 98
-            },
-            {
-                "x": 0.58,
-                "y": 0.8,
-                "value": 98
-            },
-            {
-                "x": 0.78,
-                "y": 0.85,
-                "value": 98
-            },
-            {
-                "x": 0.5,
-                "y": 0.5,
-                "value": 95
-            },
-            {
-                "x": 0.2,
-                "y": 0.22,
-                "value": 92
-            },
-            {
-                "x": 0.28,
-                "y": 0.25,
-                "value": 92
-            },
-            {
-                "x": 0.33,
-                "y": 0.28,
-                "value": 92
-            },
-            {
-                "x": 0.3,
-                "y": 0.35,
-                "value": 92
-            },
-            {
-                "x": 0.4,
-                "y": 0.38,
-                "value": 92
-            },
-            {
-                "x": 0.48,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.55,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.6,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.68,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.75,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.8,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.85,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.9,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.95,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.98,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.92,
-                "y": 0.5,
-                "value": 92
-            },
-            {
-                "x": 0.88,
-                "y": 0.55,
-                "value": 92
-            },
-            {
-                "x": 0.83,
-                "y": 0.6,
-                "value": 92
-            },
-            {
-                "x": 0.78,
-                "y": 0.65,
-                "value": 92
-            },
-            {
-                "x": 0.7,
-                "y": 0.6,
-                "value": 92
-            },
-            {
-                "x": 0.65,
-                "y": 0.55,
-                "value": 92
-            },
-            {
-                "x": 0.5,
-                "y": 0.35,
-                "value": 92
-            },
-            {
-                "x": 0.45,
-                "y": 0.35,
-                "value": 92
-            },
-            {
-                "x": 0.35,
-                "y": 0.35,
-                "value": 92
-            },
-            {
-                "x": 0.25,
-                "y": 0.35,
-                "value": 92
-            },
-            {
-                "x": 0.15,
-                "y": 0.35,
-                "value": 92
-            },
-            {
-                "x": 0.1,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.05,
-                "y": 0.45,
-                "value": 92
-            },
-            {
-                "x": 0.08,
-                "y": 0.5,
-                "value": 92
-            },
-            {
-                "x": 0.12,
-                "y": 0.55,
-                "value": 92
-            },
-            {
-                "x": 0.18,
-                "y": 0.6,
-                "value": 92
-            },
-            {
-                "x": 0.25,
-                "y": 0.65,
-                "value": 92
-            },
-            {
-                "x": 0.3,
-                "y": 0.7,
-                "value": 92
-            },
-            {
-                "x": 0.35,
-                "y": 0.75,
-                "value": 92
-            },
-            {
-                "x": 0.2,
-                "y": 0.8,
-                "value": 92
-            },
-            {
-                "x": 0.1,
-                "y": 0.85,
-                "value": 92
-            },
-            {
-                "x": 0.05,
-                "y": 0.9,
-                "value": 92
-            },
-            {
-                "x": 0.15,
-                "y": 0.95,
-                "value": 92
-            },
-            {
-                "x": 0.25,
-                "y": 0.9,
-                "value": 92
-            },
-            {
-                "x": 0.35,
-                "y": 0.85,
-                "value": 92
-            },
-            {
-                "x": 0.45,
-                "y": 0.8,
-                "value": 92
-            },
-            {
-                "x": 0.55,
-                "y": 0.75,
-                "value": 92
-            },
-            {
-                "x": 0.65,
-                "y": 0.7,
-                "value": 92
-            },
-            {
-                "x": 0.75,
-                "y": 0.65,
-                "value": 92
-            }
+          {
+            "x": 0.41,
+            "y": 0.78,
+            "value": 98
+          },
+          {
+            "x": 0.58,
+            "y": 0.8,
+            "value": 98
+          },
+          {
+            "x": 0.78,
+            "y": 0.85,
+            "value": 98
+          },
+          {
+            "x": 0.5,
+            "y": 0.5,
+            "value": 95
+          },
+          {
+            "x": 0.2,
+            "y": 0.22,
+            "value": 92
+          },
+          {
+            "x": 0.28,
+            "y": 0.25,
+            "value": 92
+          },
+          {
+            "x": 0.33,
+            "y": 0.28,
+            "value": 92
+          },
+          {
+            "x": 0.3,
+            "y": 0.35,
+            "value": 92
+          },
+          {
+            "x": 0.4,
+            "y": 0.38,
+            "value": 92
+          },
+          {
+            "x": 0.48,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.55,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.6,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.68,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.75,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.8,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.85,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.9,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.95,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.98,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.92,
+            "y": 0.5,
+            "value": 92
+          },
+          {
+            "x": 0.88,
+            "y": 0.55,
+            "value": 92
+          },
+          {
+            "x": 0.83,
+            "y": 0.6,
+            "value": 92
+          },
+          {
+            "x": 0.78,
+            "y": 0.65,
+            "value": 92
+          },
+          {
+            "x": 0.7,
+            "y": 0.6,
+            "value": 92
+          },
+          {
+            "x": 0.65,
+            "y": 0.55,
+            "value": 92
+          },
+          {
+            "x": 0.5,
+            "y": 0.35,
+            "value": 92
+          },
+          {
+            "x": 0.45,
+            "y": 0.35,
+            "value": 92
+          },
+          {
+            "x": 0.35,
+            "y": 0.35,
+            "value": 92
+          },
+          {
+            "x": 0.25,
+            "y": 0.35,
+            "value": 92
+          },
+          {
+            "x": 0.15,
+            "y": 0.35,
+            "value": 92
+          },
+          {
+            "x": 0.1,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.05,
+            "y": 0.45,
+            "value": 92
+          },
+          {
+            "x": 0.08,
+            "y": 0.5,
+            "value": 92
+          },
+          {
+            "x": 0.12,
+            "y": 0.55,
+            "value": 92
+          },
+          {
+            "x": 0.18,
+            "y": 0.6,
+            "value": 92
+          },
+          {
+            "x": 0.25,
+            "y": 0.65,
+            "value": 92
+          },
+          {
+            "x": 0.3,
+            "y": 0.7,
+            "value": 92
+          },
+          {
+            "x": 0.35,
+            "y": 0.75,
+            "value": 92
+          },
+          {
+            "x": 0.2,
+            "y": 0.8,
+            "value": 92
+          },
+          {
+            "x": 0.1,
+            "y": 0.85,
+            "value": 92
+          },
+          {
+            "x": 0.05,
+            "y": 0.9,
+            "value": 92
+          },
+          {
+            "x": 0.15,
+            "y": 0.95,
+            "value": 92
+          },
+          {
+            "x": 0.25,
+            "y": 0.9,
+            "value": 92
+          },
+          {
+            "x": 0.35,
+            "y": 0.85,
+            "value": 92
+          },
+          {
+            "x": 0.45,
+            "y": 0.8,
+            "value": 92
+          },
+          {
+            "x": 0.55,
+            "y": 0.75,
+            "value": 92
+          },
+          {
+            "x": 0.65,
+            "y": 0.7,
+            "value": 92
+          },
+          {
+            "x": 0.75,
+            "y": 0.65,
+            "value": 92
+          }
         ],
         "people_count": 48,
         "demographics": {
-            "male_count": 28,
-            "female_count": 20,
-            "child_count": 0,
-            "elder_count": 0
+          "male_count": 28,
+          "female_count": 20,
+          "child_count": 0,
+          "elder_count": 0
         },
         "violence_flag": false,
         "fire_flag": false,
@@ -258,273 +297,308 @@
         "crowd_density": "high",
         "emergency_evacuation": false,
         "sentiment_analysis": {
-            "dominant_emotions": [
-                "neutral",
-                "calm"
-            ],
-            "crowd_mood": "normal",
-            "energy_level": "medium"
+          "dominant_emotions": [
+            "neutral",
+            "calm"
+          ],
+          "crowd_mood": "normal",
+          "energy_level": "medium"
         },
         "environmental": {
-            "lighting_condition": "well-lit_indoor",
-            "weather_condition": "not_applicable",
-            "vehicles_present": false
+          "lighting_condition": "well-lit_indoor",
+          "weather_condition": "not_applicable",
+          "vehicles_present": false
         }
-    },
-    "1": {
+      },
+      "1": {
+        "timestamp": 1,
+        "flow_metrics": {
+          "timestamp": 1,
+          "inflow_count": 3,
+          "outflow_count": 1,
+          "net_flow": 2,
+          "total_people": 32,
+          "density_level": "high",
+          "average_velocity": 0.1,
+          "movement_vectors": [
+            [
+              -0.1,
+              0.0
+            ],
+            [
+              -0.06,
+              0.0
+            ]
+          ],
+          "congestion_points": [
+            [
+              0.55,
+              0.5
+            ]
+          ],
+          "fire_detected": false,
+          "smoke_detected": false,
+          "violence_detected": false,
+          "weapon_detected": false,
+          "weapon_types": [],
+          "suspicious_behavior": false,
+          "emergency_evacuation": false
+        },
+        "safety_metrics": {},
+        "risk_assessment": {},
         "heatmap_points": [
-            {
-                "x": 0.41,
-                "y": 0.78,
-                "value": 98
-            },
-            {
-                "x": 0.58,
-                "y": 0.8,
-                "value": 98
-            },
-            {
-                "x": 0.78,
-                "y": 0.85,
-                "value": 98
-            },
-            {
-                "x": 0.25,
-                "y": 0.6,
-                "value": 95
-            },
-            {
-                "x": 0.3,
-                "y": 0.4,
-                "value": 95
-            },
-            {
-                "x": 0.48,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.55,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.6,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.68,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.75,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.8,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.85,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.9,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.95,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.98,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.92,
-                "y": 0.5,
-                "value": 92
-            },
-            {
-                "x": 0.88,
-                "y": 0.55,
-                "value": 92
-            },
-            {
-                "x": 0.83,
-                "y": 0.6,
-                "value": 92
-            },
-            {
-                "x": 0.78,
-                "y": 0.65,
-                "value": 92
-            },
-            {
-                "x": 0.7,
-                "y": 0.6,
-                "value": 92
-            },
-            {
-                "x": 0.65,
-                "y": 0.55,
-                "value": 92
-            },
-            {
-                "x": 0.5,
-                "y": 0.35,
-                "value": 92
-            },
-            {
-                "x": 0.45,
-                "y": 0.35,
-                "value": 92
-            },
-            {
-                "x": 0.35,
-                "y": 0.35,
-                "value": 92
-            },
-            {
-                "x": 0.25,
-                "y": 0.35,
-                "value": 92
-            },
-            {
-                "x": 0.15,
-                "y": 0.35,
-                "value": 92
-            },
-            {
-                "x": 0.1,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.05,
-                "y": 0.45,
-                "value": 92
-            },
-            {
-                "x": 0.08,
-                "y": 0.5,
-                "value": 92
-            },
-            {
-                "x": 0.12,
-                "y": 0.55,
-                "value": 92
-            },
-            {
-                "x": 0.18,
-                "y": 0.6,
-                "value": 92
-            },
-            {
-                "x": 0.3,
-                "y": 0.7,
-                "value": 92
-            },
-            {
-                "x": 0.35,
-                "y": 0.75,
-                "value": 92
-            },
-            {
-                "x": 0.2,
-                "y": 0.8,
-                "value": 92
-            },
-            {
-                "x": 0.1,
-                "y": 0.85,
-                "value": 92
-            },
-            {
-                "x": 0.05,
-                "y": 0.9,
-                "value": 92
-            },
-            {
-                "x": 0.15,
-                "y": 0.95,
-                "value": 92
-            },
-            {
-                "x": 0.25,
-                "y": 0.9,
-                "value": 92
-            },
-            {
-                "x": 0.35,
-                "y": 0.85,
-                "value": 92
-            },
-            {
-                "x": 0.45,
-                "y": 0.8,
-                "value": 92
-            },
-            {
-                "x": 0.55,
-                "y": 0.75,
-                "value": 92
-            },
-            {
-                "x": 0.65,
-                "y": 0.7,
-                "value": 92
-            },
-            {
-                "x": 0.75,
-                "y": 0.65,
-                "value": 92
-            },
-            {
-                "x": 0.6,
-                "y": 0.65,
-                "value": 95
-            },
-            {
-                "x": 0.3,
-                "y": 0.28,
-                "value": 92
-            },
-            {
-                "x": 0.35,
-                "y": 0.25,
-                "value": 92
-            },
-            {
-                "x": 0.4,
-                "y": 0.22,
-                "value": 92
-            },
-            {
-                "x": 0.45,
-                "y": 0.2,
-                "value": 92
-            },
-            {
-                "x": 0.5,
-                "y": 0.2,
-                "value": 92
-            }
+          {
+            "x": 0.41,
+            "y": 0.78,
+            "value": 98
+          },
+          {
+            "x": 0.58,
+            "y": 0.8,
+            "value": 98
+          },
+          {
+            "x": 0.78,
+            "y": 0.85,
+            "value": 98
+          },
+          {
+            "x": 0.25,
+            "y": 0.6,
+            "value": 95
+          },
+          {
+            "x": 0.3,
+            "y": 0.4,
+            "value": 95
+          },
+          {
+            "x": 0.48,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.55,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.6,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.68,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.75,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.8,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.85,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.9,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.95,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.98,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.92,
+            "y": 0.5,
+            "value": 92
+          },
+          {
+            "x": 0.88,
+            "y": 0.55,
+            "value": 92
+          },
+          {
+            "x": 0.83,
+            "y": 0.6,
+            "value": 92
+          },
+          {
+            "x": 0.78,
+            "y": 0.65,
+            "value": 92
+          },
+          {
+            "x": 0.7,
+            "y": 0.6,
+            "value": 92
+          },
+          {
+            "x": 0.65,
+            "y": 0.55,
+            "value": 92
+          },
+          {
+            "x": 0.5,
+            "y": 0.35,
+            "value": 92
+          },
+          {
+            "x": 0.45,
+            "y": 0.35,
+            "value": 92
+          },
+          {
+            "x": 0.35,
+            "y": 0.35,
+            "value": 92
+          },
+          {
+            "x": 0.25,
+            "y": 0.35,
+            "value": 92
+          },
+          {
+            "x": 0.15,
+            "y": 0.35,
+            "value": 92
+          },
+          {
+            "x": 0.1,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.05,
+            "y": 0.45,
+            "value": 92
+          },
+          {
+            "x": 0.08,
+            "y": 0.5,
+            "value": 92
+          },
+          {
+            "x": 0.12,
+            "y": 0.55,
+            "value": 92
+          },
+          {
+            "x": 0.18,
+            "y": 0.6,
+            "value": 92
+          },
+          {
+            "x": 0.3,
+            "y": 0.7,
+            "value": 92
+          },
+          {
+            "x": 0.35,
+            "y": 0.75,
+            "value": 92
+          },
+          {
+            "x": 0.2,
+            "y": 0.8,
+            "value": 92
+          },
+          {
+            "x": 0.1,
+            "y": 0.85,
+            "value": 92
+          },
+          {
+            "x": 0.05,
+            "y": 0.9,
+            "value": 92
+          },
+          {
+            "x": 0.15,
+            "y": 0.95,
+            "value": 92
+          },
+          {
+            "x": 0.25,
+            "y": 0.9,
+            "value": 92
+          },
+          {
+            "x": 0.35,
+            "y": 0.85,
+            "value": 92
+          },
+          {
+            "x": 0.45,
+            "y": 0.8,
+            "value": 92
+          },
+          {
+            "x": 0.55,
+            "y": 0.75,
+            "value": 92
+          },
+          {
+            "x": 0.65,
+            "y": 0.7,
+            "value": 92
+          },
+          {
+            "x": 0.75,
+            "y": 0.65,
+            "value": 92
+          },
+          {
+            "x": 0.6,
+            "y": 0.65,
+            "value": 95
+          },
+          {
+            "x": 0.3,
+            "y": 0.28,
+            "value": 92
+          },
+          {
+            "x": 0.35,
+            "y": 0.25,
+            "value": 92
+          },
+          {
+            "x": 0.4,
+            "y": 0.22,
+            "value": 92
+          },
+          {
+            "x": 0.45,
+            "y": 0.2,
+            "value": 92
+          },
+          {
+            "x": 0.5,
+            "y": 0.2,
+            "value": 92
+          }
         ],
         "people_count": 49,
         "demographics": {
-            "male_count": 29,
-            "female_count": 20,
-            "child_count": 0,
-            "elder_count": 0
+          "male_count": 29,
+          "female_count": 20,
+          "child_count": 0,
+          "elder_count": 0
         },
         "violence_flag": false,
         "fire_flag": false,
@@ -535,278 +609,313 @@
         "crowd_density": "high",
         "emergency_evacuation": false,
         "sentiment_analysis": {
-            "dominant_emotions": [
-                "neutral",
-                "calm"
-            ],
-            "crowd_mood": "normal",
-            "energy_level": "medium"
+          "dominant_emotions": [
+            "neutral",
+            "calm"
+          ],
+          "crowd_mood": "normal",
+          "energy_level": "medium"
         },
         "environmental": {
-            "lighting_condition": "well-lit_indoor",
-            "weather_condition": "not_applicable",
-            "vehicles_present": false
+          "lighting_condition": "well-lit_indoor",
+          "weather_condition": "not_applicable",
+          "vehicles_present": false
         }
-    },
-    "2": {
+      },
+      "2": {
+        "timestamp": 2,
+        "flow_metrics": {
+          "timestamp": 2,
+          "inflow_count": 2,
+          "outflow_count": 0,
+          "net_flow": 2,
+          "total_people": 34,
+          "density_level": "high",
+          "average_velocity": 0.1,
+          "movement_vectors": [
+            [
+              -0.05,
+              0.0
+            ],
+            [
+              0.0,
+              0.08
+            ]
+          ],
+          "congestion_points": [
+            [
+              0.55,
+              0.5
+            ]
+          ],
+          "fire_detected": false,
+          "smoke_detected": false,
+          "violence_detected": false,
+          "weapon_detected": false,
+          "weapon_types": [],
+          "suspicious_behavior": false,
+          "emergency_evacuation": false
+        },
+        "safety_metrics": {},
+        "risk_assessment": {},
         "heatmap_points": [
-            {
-                "x": 0.41,
-                "y": 0.78,
-                "value": 98
-            },
-            {
-                "x": 0.58,
-                "y": 0.8,
-                "value": 98
-            },
-            {
-                "x": 0.78,
-                "y": 0.85,
-                "value": 98
-            },
-            {
-                "x": 0.3,
-                "y": 0.65,
-                "value": 95
-            },
-            {
-                "x": 0.4,
-                "y": 0.5,
-                "value": 95
-            },
-            {
-                "x": 0.48,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.55,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.6,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.68,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.75,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.8,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.85,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.9,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.95,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.98,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.92,
-                "y": 0.5,
-                "value": 92
-            },
-            {
-                "x": 0.88,
-                "y": 0.55,
-                "value": 92
-            },
-            {
-                "x": 0.83,
-                "y": 0.6,
-                "value": 92
-            },
-            {
-                "x": 0.78,
-                "y": 0.65,
-                "value": 92
-            },
-            {
-                "x": 0.7,
-                "y": 0.6,
-                "value": 92
-            },
-            {
-                "x": 0.65,
-                "y": 0.55,
-                "value": 92
-            },
-            {
-                "x": 0.5,
-                "y": 0.35,
-                "value": 92
-            },
-            {
-                "x": 0.45,
-                "y": 0.35,
-                "value": 92
-            },
-            {
-                "x": 0.35,
-                "y": 0.35,
-                "value": 92
-            },
-            {
-                "x": 0.25,
-                "y": 0.35,
-                "value": 92
-            },
-            {
-                "x": 0.15,
-                "y": 0.35,
-                "value": 92
-            },
-            {
-                "x": 0.1,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.05,
-                "y": 0.45,
-                "value": 92
-            },
-            {
-                "x": 0.08,
-                "y": 0.5,
-                "value": 92
-            },
-            {
-                "x": 0.12,
-                "y": 0.55,
-                "value": 92
-            },
-            {
-                "x": 0.18,
-                "y": 0.6,
-                "value": 92
-            },
-            {
-                "x": 0.3,
-                "y": 0.7,
-                "value": 92
-            },
-            {
-                "x": 0.35,
-                "y": 0.75,
-                "value": 92
-            },
-            {
-                "x": 0.2,
-                "y": 0.8,
-                "value": 92
-            },
-            {
-                "x": 0.1,
-                "y": 0.85,
-                "value": 92
-            },
-            {
-                "x": 0.05,
-                "y": 0.9,
-                "value": 92
-            },
-            {
-                "x": 0.15,
-                "y": 0.95,
-                "value": 92
-            },
-            {
-                "x": 0.25,
-                "y": 0.9,
-                "value": 92
-            },
-            {
-                "x": 0.35,
-                "y": 0.85,
-                "value": 92
-            },
-            {
-                "x": 0.45,
-                "y": 0.8,
-                "value": 92
-            },
-            {
-                "x": 0.55,
-                "y": 0.75,
-                "value": 92
-            },
-            {
-                "x": 0.65,
-                "y": 0.7,
-                "value": 92
-            },
-            {
-                "x": 0.75,
-                "y": 0.65,
-                "value": 92
-            },
-            {
-                "x": 0.6,
-                "y": 0.65,
-                "value": 95
-            },
-            {
-                "x": 0.3,
-                "y": 0.28,
-                "value": 92
-            },
-            {
-                "x": 0.35,
-                "y": 0.25,
-                "value": 92
-            },
-            {
-                "x": 0.4,
-                "y": 0.22,
-                "value": 92
-            },
-            {
-                "x": 0.45,
-                "y": 0.2,
-                "value": 92
-            },
-            {
-                "x": 0.5,
-                "y": 0.2,
-                "value": 92
-            },
-            {
-                "x": 0.55,
-                "y": 0.2,
-                "value": 92
-            }
+          {
+            "x": 0.41,
+            "y": 0.78,
+            "value": 98
+          },
+          {
+            "x": 0.58,
+            "y": 0.8,
+            "value": 98
+          },
+          {
+            "x": 0.78,
+            "y": 0.85,
+            "value": 98
+          },
+          {
+            "x": 0.3,
+            "y": 0.65,
+            "value": 95
+          },
+          {
+            "x": 0.4,
+            "y": 0.5,
+            "value": 95
+          },
+          {
+            "x": 0.48,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.55,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.6,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.68,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.75,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.8,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.85,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.9,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.95,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.98,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.92,
+            "y": 0.5,
+            "value": 92
+          },
+          {
+            "x": 0.88,
+            "y": 0.55,
+            "value": 92
+          },
+          {
+            "x": 0.83,
+            "y": 0.6,
+            "value": 92
+          },
+          {
+            "x": 0.78,
+            "y": 0.65,
+            "value": 92
+          },
+          {
+            "x": 0.7,
+            "y": 0.6,
+            "value": 92
+          },
+          {
+            "x": 0.65,
+            "y": 0.55,
+            "value": 92
+          },
+          {
+            "x": 0.5,
+            "y": 0.35,
+            "value": 92
+          },
+          {
+            "x": 0.45,
+            "y": 0.35,
+            "value": 92
+          },
+          {
+            "x": 0.35,
+            "y": 0.35,
+            "value": 92
+          },
+          {
+            "x": 0.25,
+            "y": 0.35,
+            "value": 92
+          },
+          {
+            "x": 0.15,
+            "y": 0.35,
+            "value": 92
+          },
+          {
+            "x": 0.1,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.05,
+            "y": 0.45,
+            "value": 92
+          },
+          {
+            "x": 0.08,
+            "y": 0.5,
+            "value": 92
+          },
+          {
+            "x": 0.12,
+            "y": 0.55,
+            "value": 92
+          },
+          {
+            "x": 0.18,
+            "y": 0.6,
+            "value": 92
+          },
+          {
+            "x": 0.3,
+            "y": 0.7,
+            "value": 92
+          },
+          {
+            "x": 0.35,
+            "y": 0.75,
+            "value": 92
+          },
+          {
+            "x": 0.2,
+            "y": 0.8,
+            "value": 92
+          },
+          {
+            "x": 0.1,
+            "y": 0.85,
+            "value": 92
+          },
+          {
+            "x": 0.05,
+            "y": 0.9,
+            "value": 92
+          },
+          {
+            "x": 0.15,
+            "y": 0.95,
+            "value": 92
+          },
+          {
+            "x": 0.25,
+            "y": 0.9,
+            "value": 92
+          },
+          {
+            "x": 0.35,
+            "y": 0.85,
+            "value": 92
+          },
+          {
+            "x": 0.45,
+            "y": 0.8,
+            "value": 92
+          },
+          {
+            "x": 0.55,
+            "y": 0.75,
+            "value": 92
+          },
+          {
+            "x": 0.65,
+            "y": 0.7,
+            "value": 92
+          },
+          {
+            "x": 0.75,
+            "y": 0.65,
+            "value": 92
+          },
+          {
+            "x": 0.6,
+            "y": 0.65,
+            "value": 95
+          },
+          {
+            "x": 0.3,
+            "y": 0.28,
+            "value": 92
+          },
+          {
+            "x": 0.35,
+            "y": 0.25,
+            "value": 92
+          },
+          {
+            "x": 0.4,
+            "y": 0.22,
+            "value": 92
+          },
+          {
+            "x": 0.45,
+            "y": 0.2,
+            "value": 92
+          },
+          {
+            "x": 0.5,
+            "y": 0.2,
+            "value": 92
+          },
+          {
+            "x": 0.55,
+            "y": 0.2,
+            "value": 92
+          }
         ],
         "people_count": 50,
         "demographics": {
-            "male_count": 30,
-            "female_count": 20,
-            "child_count": 0,
-            "elder_count": 0
+          "male_count": 30,
+          "female_count": 20,
+          "child_count": 0,
+          "elder_count": 0
         },
         "violence_flag": false,
         "fire_flag": false,
@@ -817,283 +926,318 @@
         "crowd_density": "very_high",
         "emergency_evacuation": false,
         "sentiment_analysis": {
-            "dominant_emotions": [
-                "neutral",
-                "calm"
-            ],
-            "crowd_mood": "normal",
-            "energy_level": "medium"
+          "dominant_emotions": [
+            "neutral",
+            "calm"
+          ],
+          "crowd_mood": "normal",
+          "energy_level": "medium"
         },
         "environmental": {
-            "lighting_condition": "well-lit_indoor",
-            "weather_condition": "not_applicable",
-            "vehicles_present": false
+          "lighting_condition": "well-lit_indoor",
+          "weather_condition": "not_applicable",
+          "vehicles_present": false
         }
-    },
-    "3": {
+      },
+      "3": {
+        "timestamp": 3,
+        "flow_metrics": {
+          "timestamp": 3,
+          "inflow_count": 2,
+          "outflow_count": 1,
+          "net_flow": 1,
+          "total_people": 35,
+          "density_level": "high",
+          "average_velocity": 0.11,
+          "movement_vectors": [
+            [
+              -0.07,
+              0.0
+            ],
+            [
+              0.0,
+              0.05
+            ]
+          ],
+          "congestion_points": [
+            [
+              0.55,
+              0.5
+            ]
+          ],
+          "fire_detected": false,
+          "smoke_detected": false,
+          "violence_detected": false,
+          "weapon_detected": false,
+          "weapon_types": [],
+          "suspicious_behavior": false,
+          "emergency_evacuation": false
+        },
+        "safety_metrics": {},
+        "risk_assessment": {},
         "heatmap_points": [
-            {
-                "x": 0.41,
-                "y": 0.78,
-                "value": 98
-            },
-            {
-                "x": 0.58,
-                "y": 0.8,
-                "value": 98
-            },
-            {
-                "x": 0.78,
-                "y": 0.85,
-                "value": 98
-            },
-            {
-                "x": 0.35,
-                "y": 0.7,
-                "value": 95
-            },
-            {
-                "x": 0.5,
-                "y": 0.55,
-                "value": 95
-            },
-            {
-                "x": 0.65,
-                "y": 0.65,
-                "value": 95
-            },
-            {
-                "x": 0.48,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.55,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.6,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.68,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.75,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.8,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.85,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.9,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.95,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.98,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.92,
-                "y": 0.5,
-                "value": 92
-            },
-            {
-                "x": 0.88,
-                "y": 0.55,
-                "value": 92
-            },
-            {
-                "x": 0.83,
-                "y": 0.6,
-                "value": 92
-            },
-            {
-                "x": 0.78,
-                "y": 0.65,
-                "value": 92
-            },
-            {
-                "x": 0.7,
-                "y": 0.6,
-                "value": 92
-            },
-            {
-                "x": 0.65,
-                "y": 0.55,
-                "value": 92
-            },
-            {
-                "x": 0.5,
-                "y": 0.35,
-                "value": 92
-            },
-            {
-                "x": 0.45,
-                "y": 0.35,
-                "value": 92
-            },
-            {
-                "x": 0.35,
-                "y": 0.35,
-                "value": 92
-            },
-            {
-                "x": 0.25,
-                "y": 0.35,
-                "value": 92
-            },
-            {
-                "x": 0.15,
-                "y": 0.35,
-                "value": 92
-            },
-            {
-                "x": 0.1,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.05,
-                "y": 0.45,
-                "value": 92
-            },
-            {
-                "x": 0.08,
-                "y": 0.5,
-                "value": 92
-            },
-            {
-                "x": 0.12,
-                "y": 0.55,
-                "value": 92
-            },
-            {
-                "x": 0.18,
-                "y": 0.6,
-                "value": 92
-            },
-            {
-                "x": 0.3,
-                "y": 0.7,
-                "value": 92
-            },
-            {
-                "x": 0.35,
-                "y": 0.75,
-                "value": 92
-            },
-            {
-                "x": 0.2,
-                "y": 0.8,
-                "value": 92
-            },
-            {
-                "x": 0.1,
-                "y": 0.85,
-                "value": 92
-            },
-            {
-                "x": 0.05,
-                "y": 0.9,
-                "value": 92
-            },
-            {
-                "x": 0.15,
-                "y": 0.95,
-                "value": 92
-            },
-            {
-                "x": 0.25,
-                "y": 0.9,
-                "value": 92
-            },
-            {
-                "x": 0.35,
-                "y": 0.85,
-                "value": 92
-            },
-            {
-                "x": 0.45,
-                "y": 0.8,
-                "value": 92
-            },
-            {
-                "x": 0.55,
-                "y": 0.75,
-                "value": 92
-            },
-            {
-                "x": 0.65,
-                "y": 0.7,
-                "value": 92
-            },
-            {
-                "x": 0.75,
-                "y": 0.65,
-                "value": 92
-            },
-            {
-                "x": 0.3,
-                "y": 0.28,
-                "value": 92
-            },
-            {
-                "x": 0.35,
-                "y": 0.25,
-                "value": 92
-            },
-            {
-                "x": 0.4,
-                "y": 0.22,
-                "value": 92
-            },
-            {
-                "x": 0.45,
-                "y": 0.2,
-                "value": 92
-            },
-            {
-                "x": 0.5,
-                "y": 0.2,
-                "value": 92
-            },
-            {
-                "x": 0.55,
-                "y": 0.2,
-                "value": 92
-            },
-            {
-                "x": 0.6,
-                "y": 0.2,
-                "value": 92
-            }
+          {
+            "x": 0.41,
+            "y": 0.78,
+            "value": 98
+          },
+          {
+            "x": 0.58,
+            "y": 0.8,
+            "value": 98
+          },
+          {
+            "x": 0.78,
+            "y": 0.85,
+            "value": 98
+          },
+          {
+            "x": 0.35,
+            "y": 0.7,
+            "value": 95
+          },
+          {
+            "x": 0.5,
+            "y": 0.55,
+            "value": 95
+          },
+          {
+            "x": 0.65,
+            "y": 0.65,
+            "value": 95
+          },
+          {
+            "x": 0.48,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.55,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.6,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.68,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.75,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.8,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.85,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.9,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.95,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.98,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.92,
+            "y": 0.5,
+            "value": 92
+          },
+          {
+            "x": 0.88,
+            "y": 0.55,
+            "value": 92
+          },
+          {
+            "x": 0.83,
+            "y": 0.6,
+            "value": 92
+          },
+          {
+            "x": 0.78,
+            "y": 0.65,
+            "value": 92
+          },
+          {
+            "x": 0.7,
+            "y": 0.6,
+            "value": 92
+          },
+          {
+            "x": 0.65,
+            "y": 0.55,
+            "value": 92
+          },
+          {
+            "x": 0.5,
+            "y": 0.35,
+            "value": 92
+          },
+          {
+            "x": 0.45,
+            "y": 0.35,
+            "value": 92
+          },
+          {
+            "x": 0.35,
+            "y": 0.35,
+            "value": 92
+          },
+          {
+            "x": 0.25,
+            "y": 0.35,
+            "value": 92
+          },
+          {
+            "x": 0.15,
+            "y": 0.35,
+            "value": 92
+          },
+          {
+            "x": 0.1,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.05,
+            "y": 0.45,
+            "value": 92
+          },
+          {
+            "x": 0.08,
+            "y": 0.5,
+            "value": 92
+          },
+          {
+            "x": 0.12,
+            "y": 0.55,
+            "value": 92
+          },
+          {
+            "x": 0.18,
+            "y": 0.6,
+            "value": 92
+          },
+          {
+            "x": 0.3,
+            "y": 0.7,
+            "value": 92
+          },
+          {
+            "x": 0.35,
+            "y": 0.75,
+            "value": 92
+          },
+          {
+            "x": 0.2,
+            "y": 0.8,
+            "value": 92
+          },
+          {
+            "x": 0.1,
+            "y": 0.85,
+            "value": 92
+          },
+          {
+            "x": 0.05,
+            "y": 0.9,
+            "value": 92
+          },
+          {
+            "x": 0.15,
+            "y": 0.95,
+            "value": 92
+          },
+          {
+            "x": 0.25,
+            "y": 0.9,
+            "value": 92
+          },
+          {
+            "x": 0.35,
+            "y": 0.85,
+            "value": 92
+          },
+          {
+            "x": 0.45,
+            "y": 0.8,
+            "value": 92
+          },
+          {
+            "x": 0.55,
+            "y": 0.75,
+            "value": 92
+          },
+          {
+            "x": 0.65,
+            "y": 0.7,
+            "value": 92
+          },
+          {
+            "x": 0.75,
+            "y": 0.65,
+            "value": 92
+          },
+          {
+            "x": 0.3,
+            "y": 0.28,
+            "value": 92
+          },
+          {
+            "x": 0.35,
+            "y": 0.25,
+            "value": 92
+          },
+          {
+            "x": 0.4,
+            "y": 0.22,
+            "value": 92
+          },
+          {
+            "x": 0.45,
+            "y": 0.2,
+            "value": 92
+          },
+          {
+            "x": 0.5,
+            "y": 0.2,
+            "value": 92
+          },
+          {
+            "x": 0.55,
+            "y": 0.2,
+            "value": 92
+          },
+          {
+            "x": 0.6,
+            "y": 0.2,
+            "value": 92
+          }
         ],
         "people_count": 51,
         "demographics": {
-            "male_count": 31,
-            "female_count": 20,
-            "child_count": 0,
-            "elder_count": 0
+          "male_count": 31,
+          "female_count": 20,
+          "child_count": 0,
+          "elder_count": 0
         },
         "violence_flag": false,
         "fire_flag": false,
@@ -1104,288 +1248,323 @@
         "crowd_density": "very_high",
         "emergency_evacuation": false,
         "sentiment_analysis": {
-            "dominant_emotions": [
-                "neutral",
-                "calm"
-            ],
-            "crowd_mood": "normal",
-            "energy_level": "medium"
+          "dominant_emotions": [
+            "neutral",
+            "calm"
+          ],
+          "crowd_mood": "normal",
+          "energy_level": "medium"
         },
         "environmental": {
-            "lighting_condition": "well-lit_indoor",
-            "weather_condition": "not_applicable",
-            "vehicles_present": false
+          "lighting_condition": "well-lit_indoor",
+          "weather_condition": "not_applicable",
+          "vehicles_present": false
         }
-    },
-    "4": {
+      },
+      "4": {
+        "timestamp": 4,
+        "flow_metrics": {
+          "timestamp": 4,
+          "inflow_count": 2,
+          "outflow_count": 1,
+          "net_flow": 1,
+          "total_people": 36,
+          "density_level": "high",
+          "average_velocity": 0.12,
+          "movement_vectors": [
+            [
+              -0.05,
+              0.1
+            ],
+            [
+              -0.08,
+              0.0
+            ]
+          ],
+          "congestion_points": [
+            [
+              0.55,
+              0.5
+            ]
+          ],
+          "fire_detected": false,
+          "smoke_detected": false,
+          "violence_detected": false,
+          "weapon_detected": false,
+          "weapon_types": [],
+          "suspicious_behavior": false,
+          "emergency_evacuation": false
+        },
+        "safety_metrics": {},
+        "risk_assessment": {},
         "heatmap_points": [
-            {
-                "x": 0.41,
-                "y": 0.78,
-                "value": 98
-            },
-            {
-                "x": 0.58,
-                "y": 0.8,
-                "value": 98
-            },
-            {
-                "x": 0.78,
-                "y": 0.85,
-                "value": 98
-            },
-            {
-                "x": 0.25,
-                "y": 0.25,
-                "value": 95
-            },
-            {
-                "x": 0.3,
-                "y": 0.3,
-                "value": 95
-            },
-            {
-                "x": 0.6,
-                "y": 0.6,
-                "value": 95
-            },
-            {
-                "x": 0.7,
-                "y": 0.7,
-                "value": 95
-            },
-            {
-                "x": 0.48,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.55,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.6,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.68,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.75,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.8,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.85,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.9,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.95,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.98,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.92,
-                "y": 0.5,
-                "value": 92
-            },
-            {
-                "x": 0.88,
-                "y": 0.55,
-                "value": 92
-            },
-            {
-                "x": 0.83,
-                "y": 0.6,
-                "value": 92
-            },
-            {
-                "x": 0.78,
-                "y": 0.65,
-                "value": 92
-            },
-            {
-                "x": 0.7,
-                "y": 0.6,
-                "value": 92
-            },
-            {
-                "x": 0.65,
-                "y": 0.55,
-                "value": 92
-            },
-            {
-                "x": 0.5,
-                "y": 0.35,
-                "value": 92
-            },
-            {
-                "x": 0.45,
-                "y": 0.35,
-                "value": 92
-            },
-            {
-                "x": 0.35,
-                "y": 0.35,
-                "value": 92
-            },
-            {
-                "x": 0.25,
-                "y": 0.35,
-                "value": 92
-            },
-            {
-                "x": 0.15,
-                "y": 0.35,
-                "value": 92
-            },
-            {
-                "x": 0.1,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.05,
-                "y": 0.45,
-                "value": 92
-            },
-            {
-                "x": 0.08,
-                "y": 0.5,
-                "value": 92
-            },
-            {
-                "x": 0.12,
-                "y": 0.55,
-                "value": 92
-            },
-            {
-                "x": 0.18,
-                "y": 0.6,
-                "value": 92
-            },
-            {
-                "x": 0.3,
-                "y": 0.7,
-                "value": 92
-            },
-            {
-                "x": 0.35,
-                "y": 0.75,
-                "value": 92
-            },
-            {
-                "x": 0.2,
-                "y": 0.8,
-                "value": 92
-            },
-            {
-                "x": 0.1,
-                "y": 0.85,
-                "value": 92
-            },
-            {
-                "x": 0.05,
-                "y": 0.9,
-                "value": 92
-            },
-            {
-                "x": 0.15,
-                "y": 0.95,
-                "value": 92
-            },
-            {
-                "x": 0.25,
-                "y": 0.9,
-                "value": 92
-            },
-            {
-                "x": 0.35,
-                "y": 0.85,
-                "value": 92
-            },
-            {
-                "x": 0.45,
-                "y": 0.8,
-                "value": 92
-            },
-            {
-                "x": 0.55,
-                "y": 0.75,
-                "value": 92
-            },
-            {
-                "x": 0.65,
-                "y": 0.7,
-                "value": 92
-            },
-            {
-                "x": 0.75,
-                "y": 0.65,
-                "value": 92
-            },
-            {
-                "x": 0.3,
-                "y": 0.28,
-                "value": 92
-            },
-            {
-                "x": 0.35,
-                "y": 0.25,
-                "value": 92
-            },
-            {
-                "x": 0.4,
-                "y": 0.22,
-                "value": 92
-            },
-            {
-                "x": 0.45,
-                "y": 0.2,
-                "value": 92
-            },
-            {
-                "x": 0.5,
-                "y": 0.2,
-                "value": 92
-            },
-            {
-                "x": 0.55,
-                "y": 0.2,
-                "value": 92
-            },
-            {
-                "x": 0.6,
-                "y": 0.2,
-                "value": 92
-            }
+          {
+            "x": 0.41,
+            "y": 0.78,
+            "value": 98
+          },
+          {
+            "x": 0.58,
+            "y": 0.8,
+            "value": 98
+          },
+          {
+            "x": 0.78,
+            "y": 0.85,
+            "value": 98
+          },
+          {
+            "x": 0.25,
+            "y": 0.25,
+            "value": 95
+          },
+          {
+            "x": 0.3,
+            "y": 0.3,
+            "value": 95
+          },
+          {
+            "x": 0.6,
+            "y": 0.6,
+            "value": 95
+          },
+          {
+            "x": 0.7,
+            "y": 0.7,
+            "value": 95
+          },
+          {
+            "x": 0.48,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.55,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.6,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.68,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.75,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.8,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.85,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.9,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.95,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.98,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.92,
+            "y": 0.5,
+            "value": 92
+          },
+          {
+            "x": 0.88,
+            "y": 0.55,
+            "value": 92
+          },
+          {
+            "x": 0.83,
+            "y": 0.6,
+            "value": 92
+          },
+          {
+            "x": 0.78,
+            "y": 0.65,
+            "value": 92
+          },
+          {
+            "x": 0.7,
+            "y": 0.6,
+            "value": 92
+          },
+          {
+            "x": 0.65,
+            "y": 0.55,
+            "value": 92
+          },
+          {
+            "x": 0.5,
+            "y": 0.35,
+            "value": 92
+          },
+          {
+            "x": 0.45,
+            "y": 0.35,
+            "value": 92
+          },
+          {
+            "x": 0.35,
+            "y": 0.35,
+            "value": 92
+          },
+          {
+            "x": 0.25,
+            "y": 0.35,
+            "value": 92
+          },
+          {
+            "x": 0.15,
+            "y": 0.35,
+            "value": 92
+          },
+          {
+            "x": 0.1,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.05,
+            "y": 0.45,
+            "value": 92
+          },
+          {
+            "x": 0.08,
+            "y": 0.5,
+            "value": 92
+          },
+          {
+            "x": 0.12,
+            "y": 0.55,
+            "value": 92
+          },
+          {
+            "x": 0.18,
+            "y": 0.6,
+            "value": 92
+          },
+          {
+            "x": 0.3,
+            "y": 0.7,
+            "value": 92
+          },
+          {
+            "x": 0.35,
+            "y": 0.75,
+            "value": 92
+          },
+          {
+            "x": 0.2,
+            "y": 0.8,
+            "value": 92
+          },
+          {
+            "x": 0.1,
+            "y": 0.85,
+            "value": 92
+          },
+          {
+            "x": 0.05,
+            "y": 0.9,
+            "value": 92
+          },
+          {
+            "x": 0.15,
+            "y": 0.95,
+            "value": 92
+          },
+          {
+            "x": 0.25,
+            "y": 0.9,
+            "value": 92
+          },
+          {
+            "x": 0.35,
+            "y": 0.85,
+            "value": 92
+          },
+          {
+            "x": 0.45,
+            "y": 0.8,
+            "value": 92
+          },
+          {
+            "x": 0.55,
+            "y": 0.75,
+            "value": 92
+          },
+          {
+            "x": 0.65,
+            "y": 0.7,
+            "value": 92
+          },
+          {
+            "x": 0.75,
+            "y": 0.65,
+            "value": 92
+          },
+          {
+            "x": 0.3,
+            "y": 0.28,
+            "value": 92
+          },
+          {
+            "x": 0.35,
+            "y": 0.25,
+            "value": 92
+          },
+          {
+            "x": 0.4,
+            "y": 0.22,
+            "value": 92
+          },
+          {
+            "x": 0.45,
+            "y": 0.2,
+            "value": 92
+          },
+          {
+            "x": 0.5,
+            "y": 0.2,
+            "value": 92
+          },
+          {
+            "x": 0.55,
+            "y": 0.2,
+            "value": 92
+          },
+          {
+            "x": 0.6,
+            "y": 0.2,
+            "value": 92
+          }
         ],
         "people_count": 52,
         "demographics": {
-            "male_count": 31,
-            "female_count": 21,
-            "child_count": 0,
-            "elder_count": 0
+          "male_count": 31,
+          "female_count": 21,
+          "child_count": 0,
+          "elder_count": 0
         },
         "violence_flag": false,
         "fire_flag": false,
@@ -1396,288 +1575,323 @@
         "crowd_density": "very_high",
         "emergency_evacuation": false,
         "sentiment_analysis": {
-            "dominant_emotions": [
-                "neutral",
-                "calm"
-            ],
-            "crowd_mood": "normal",
-            "energy_level": "medium"
+          "dominant_emotions": [
+            "neutral",
+            "calm"
+          ],
+          "crowd_mood": "normal",
+          "energy_level": "medium"
         },
         "environmental": {
-            "lighting_condition": "well-lit_indoor",
-            "weather_condition": "not_applicable",
-            "vehicles_present": false
+          "lighting_condition": "well-lit_indoor",
+          "weather_condition": "not_applicable",
+          "vehicles_present": false
         }
-    },
-    "5": {
+      },
+      "5": {
+        "timestamp": 5,
+        "flow_metrics": {
+          "timestamp": 5,
+          "inflow_count": 1,
+          "outflow_count": 2,
+          "net_flow": -1,
+          "total_people": 35,
+          "density_level": "high",
+          "average_velocity": 0.12,
+          "movement_vectors": [
+            [
+              -0.05,
+              0.1
+            ],
+            [
+              -0.06,
+              0.0
+            ]
+          ],
+          "congestion_points": [
+            [
+              0.55,
+              0.5
+            ]
+          ],
+          "fire_detected": false,
+          "smoke_detected": false,
+          "violence_detected": false,
+          "weapon_detected": false,
+          "weapon_types": [],
+          "suspicious_behavior": false,
+          "emergency_evacuation": false
+        },
+        "safety_metrics": {},
+        "risk_assessment": {},
         "heatmap_points": [
-            {
-                "x": 0.41,
-                "y": 0.78,
-                "value": 98
-            },
-            {
-                "x": 0.58,
-                "y": 0.8,
-                "value": 98
-            },
-            {
-                "x": 0.78,
-                "y": 0.85,
-                "value": 98
-            },
-            {
-                "x": 0.4,
-                "y": 0.4,
-                "value": 95
-            },
-            {
-                "x": 0.5,
-                "y": 0.5,
-                "value": 95
-            },
-            {
-                "x": 0.6,
-                "y": 0.6,
-                "value": 95
-            },
-            {
-                "x": 0.7,
-                "y": 0.7,
-                "value": 95
-            },
-            {
-                "x": 0.48,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.55,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.6,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.68,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.75,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.8,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.85,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.9,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.95,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.98,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.92,
-                "y": 0.5,
-                "value": 92
-            },
-            {
-                "x": 0.88,
-                "y": 0.55,
-                "value": 92
-            },
-            {
-                "x": 0.83,
-                "y": 0.6,
-                "value": 92
-            },
-            {
-                "x": 0.78,
-                "y": 0.65,
-                "value": 92
-            },
-            {
-                "x": 0.7,
-                "y": 0.6,
-                "value": 92
-            },
-            {
-                "x": 0.65,
-                "y": 0.55,
-                "value": 92
-            },
-            {
-                "x": 0.5,
-                "y": 0.35,
-                "value": 92
-            },
-            {
-                "x": 0.45,
-                "y": 0.35,
-                "value": 92
-            },
-            {
-                "x": 0.35,
-                "y": 0.35,
-                "value": 92
-            },
-            {
-                "x": 0.25,
-                "y": 0.35,
-                "value": 92
-            },
-            {
-                "x": 0.15,
-                "y": 0.35,
-                "value": 92
-            },
-            {
-                "x": 0.1,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.05,
-                "y": 0.45,
-                "value": 92
-            },
-            {
-                "x": 0.08,
-                "y": 0.5,
-                "value": 92
-            },
-            {
-                "x": 0.12,
-                "y": 0.55,
-                "value": 92
-            },
-            {
-                "x": 0.18,
-                "y": 0.6,
-                "value": 92
-            },
-            {
-                "x": 0.3,
-                "y": 0.7,
-                "value": 92
-            },
-            {
-                "x": 0.35,
-                "y": 0.75,
-                "value": 92
-            },
-            {
-                "x": 0.2,
-                "y": 0.8,
-                "value": 92
-            },
-            {
-                "x": 0.1,
-                "y": 0.85,
-                "value": 92
-            },
-            {
-                "x": 0.05,
-                "y": 0.9,
-                "value": 92
-            },
-            {
-                "x": 0.15,
-                "y": 0.95,
-                "value": 92
-            },
-            {
-                "x": 0.25,
-                "y": 0.9,
-                "value": 92
-            },
-            {
-                "x": 0.35,
-                "y": 0.85,
-                "value": 92
-            },
-            {
-                "x": 0.45,
-                "y": 0.8,
-                "value": 92
-            },
-            {
-                "x": 0.55,
-                "y": 0.75,
-                "value": 92
-            },
-            {
-                "x": 0.65,
-                "y": 0.7,
-                "value": 92
-            },
-            {
-                "x": 0.75,
-                "y": 0.65,
-                "value": 92
-            },
-            {
-                "x": 0.3,
-                "y": 0.28,
-                "value": 92
-            },
-            {
-                "x": 0.35,
-                "y": 0.25,
-                "value": 92
-            },
-            {
-                "x": 0.4,
-                "y": 0.22,
-                "value": 92
-            },
-            {
-                "x": 0.45,
-                "y": 0.2,
-                "value": 92
-            },
-            {
-                "x": 0.5,
-                "y": 0.2,
-                "value": 92
-            },
-            {
-                "x": 0.55,
-                "y": 0.2,
-                "value": 92
-            },
-            {
-                "x": 0.6,
-                "y": 0.2,
-                "value": 92
-            }
+          {
+            "x": 0.41,
+            "y": 0.78,
+            "value": 98
+          },
+          {
+            "x": 0.58,
+            "y": 0.8,
+            "value": 98
+          },
+          {
+            "x": 0.78,
+            "y": 0.85,
+            "value": 98
+          },
+          {
+            "x": 0.4,
+            "y": 0.4,
+            "value": 95
+          },
+          {
+            "x": 0.5,
+            "y": 0.5,
+            "value": 95
+          },
+          {
+            "x": 0.6,
+            "y": 0.6,
+            "value": 95
+          },
+          {
+            "x": 0.7,
+            "y": 0.7,
+            "value": 95
+          },
+          {
+            "x": 0.48,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.55,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.6,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.68,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.75,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.8,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.85,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.9,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.95,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.98,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.92,
+            "y": 0.5,
+            "value": 92
+          },
+          {
+            "x": 0.88,
+            "y": 0.55,
+            "value": 92
+          },
+          {
+            "x": 0.83,
+            "y": 0.6,
+            "value": 92
+          },
+          {
+            "x": 0.78,
+            "y": 0.65,
+            "value": 92
+          },
+          {
+            "x": 0.7,
+            "y": 0.6,
+            "value": 92
+          },
+          {
+            "x": 0.65,
+            "y": 0.55,
+            "value": 92
+          },
+          {
+            "x": 0.5,
+            "y": 0.35,
+            "value": 92
+          },
+          {
+            "x": 0.45,
+            "y": 0.35,
+            "value": 92
+          },
+          {
+            "x": 0.35,
+            "y": 0.35,
+            "value": 92
+          },
+          {
+            "x": 0.25,
+            "y": 0.35,
+            "value": 92
+          },
+          {
+            "x": 0.15,
+            "y": 0.35,
+            "value": 92
+          },
+          {
+            "x": 0.1,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.05,
+            "y": 0.45,
+            "value": 92
+          },
+          {
+            "x": 0.08,
+            "y": 0.5,
+            "value": 92
+          },
+          {
+            "x": 0.12,
+            "y": 0.55,
+            "value": 92
+          },
+          {
+            "x": 0.18,
+            "y": 0.6,
+            "value": 92
+          },
+          {
+            "x": 0.3,
+            "y": 0.7,
+            "value": 92
+          },
+          {
+            "x": 0.35,
+            "y": 0.75,
+            "value": 92
+          },
+          {
+            "x": 0.2,
+            "y": 0.8,
+            "value": 92
+          },
+          {
+            "x": 0.1,
+            "y": 0.85,
+            "value": 92
+          },
+          {
+            "x": 0.05,
+            "y": 0.9,
+            "value": 92
+          },
+          {
+            "x": 0.15,
+            "y": 0.95,
+            "value": 92
+          },
+          {
+            "x": 0.25,
+            "y": 0.9,
+            "value": 92
+          },
+          {
+            "x": 0.35,
+            "y": 0.85,
+            "value": 92
+          },
+          {
+            "x": 0.45,
+            "y": 0.8,
+            "value": 92
+          },
+          {
+            "x": 0.55,
+            "y": 0.75,
+            "value": 92
+          },
+          {
+            "x": 0.65,
+            "y": 0.7,
+            "value": 92
+          },
+          {
+            "x": 0.75,
+            "y": 0.65,
+            "value": 92
+          },
+          {
+            "x": 0.3,
+            "y": 0.28,
+            "value": 92
+          },
+          {
+            "x": 0.35,
+            "y": 0.25,
+            "value": 92
+          },
+          {
+            "x": 0.4,
+            "y": 0.22,
+            "value": 92
+          },
+          {
+            "x": 0.45,
+            "y": 0.2,
+            "value": 92
+          },
+          {
+            "x": 0.5,
+            "y": 0.2,
+            "value": 92
+          },
+          {
+            "x": 0.55,
+            "y": 0.2,
+            "value": 92
+          },
+          {
+            "x": 0.6,
+            "y": 0.2,
+            "value": 92
+          }
         ],
         "people_count": 52,
         "demographics": {
-            "male_count": 31,
-            "female_count": 21,
-            "child_count": 0,
-            "elder_count": 0
+          "male_count": 31,
+          "female_count": 21,
+          "child_count": 0,
+          "elder_count": 0
         },
         "violence_flag": false,
         "fire_flag": false,
@@ -1688,288 +1902,323 @@
         "crowd_density": "very_high",
         "emergency_evacuation": false,
         "sentiment_analysis": {
-            "dominant_emotions": [
-                "neutral",
-                "calm"
-            ],
-            "crowd_mood": "normal",
-            "energy_level": "medium"
+          "dominant_emotions": [
+            "neutral",
+            "calm"
+          ],
+          "crowd_mood": "normal",
+          "energy_level": "medium"
         },
         "environmental": {
-            "lighting_condition": "well-lit_indoor",
-            "weather_condition": "not_applicable",
-            "vehicles_present": false
+          "lighting_condition": "well-lit_indoor",
+          "weather_condition": "not_applicable",
+          "vehicles_present": false
         }
-    },
-    "6": {
+      },
+      "6": {
+        "timestamp": 6,
+        "flow_metrics": {
+          "timestamp": 6,
+          "inflow_count": 2,
+          "outflow_count": 1,
+          "net_flow": 1,
+          "total_people": 36,
+          "density_level": "high",
+          "average_velocity": 0.14,
+          "movement_vectors": [
+            [
+              0.15,
+              0.0
+            ],
+            [
+              0.0,
+              0.1
+            ]
+          ],
+          "congestion_points": [
+            [
+              0.55,
+              0.5
+            ]
+          ],
+          "fire_detected": false,
+          "smoke_detected": false,
+          "violence_detected": false,
+          "weapon_detected": false,
+          "weapon_types": [],
+          "suspicious_behavior": false,
+          "emergency_evacuation": false
+        },
+        "safety_metrics": {},
+        "risk_assessment": {},
         "heatmap_points": [
-            {
-                "x": 0.41,
-                "y": 0.78,
-                "value": 98
-            },
-            {
-                "x": 0.58,
-                "y": 0.8,
-                "value": 98
-            },
-            {
-                "x": 0.78,
-                "y": 0.85,
-                "value": 98
-            },
-            {
-                "x": 0.4,
-                "y": 0.4,
-                "value": 95
-            },
-            {
-                "x": 0.5,
-                "y": 0.5,
-                "value": 95
-            },
-            {
-                "x": 0.6,
-                "y": 0.6,
-                "value": 95
-            },
-            {
-                "x": 0.7,
-                "y": 0.7,
-                "value": 95
-            },
-            {
-                "x": 0.48,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.55,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.6,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.68,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.75,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.8,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.85,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.9,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.95,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.98,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.92,
-                "y": 0.5,
-                "value": 92
-            },
-            {
-                "x": 0.88,
-                "y": 0.55,
-                "value": 92
-            },
-            {
-                "x": 0.83,
-                "y": 0.6,
-                "value": 92
-            },
-            {
-                "x": 0.78,
-                "y": 0.65,
-                "value": 92
-            },
-            {
-                "x": 0.7,
-                "y": 0.6,
-                "value": 92
-            },
-            {
-                "x": 0.65,
-                "y": 0.55,
-                "value": 92
-            },
-            {
-                "x": 0.5,
-                "y": 0.35,
-                "value": 92
-            },
-            {
-                "x": 0.45,
-                "y": 0.35,
-                "value": 92
-            },
-            {
-                "x": 0.35,
-                "y": 0.35,
-                "value": 92
-            },
-            {
-                "x": 0.25,
-                "y": 0.35,
-                "value": 92
-            },
-            {
-                "x": 0.15,
-                "y": 0.35,
-                "value": 92
-            },
-            {
-                "x": 0.1,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.05,
-                "y": 0.45,
-                "value": 92
-            },
-            {
-                "x": 0.08,
-                "y": 0.5,
-                "value": 92
-            },
-            {
-                "x": 0.12,
-                "y": 0.55,
-                "value": 92
-            },
-            {
-                "x": 0.18,
-                "y": 0.6,
-                "value": 92
-            },
-            {
-                "x": 0.3,
-                "y": 0.7,
-                "value": 92
-            },
-            {
-                "x": 0.35,
-                "y": 0.75,
-                "value": 92
-            },
-            {
-                "x": 0.2,
-                "y": 0.8,
-                "value": 92
-            },
-            {
-                "x": 0.1,
-                "y": 0.85,
-                "value": 92
-            },
-            {
-                "x": 0.05,
-                "y": 0.9,
-                "value": 92
-            },
-            {
-                "x": 0.15,
-                "y": 0.95,
-                "value": 92
-            },
-            {
-                "x": 0.25,
-                "y": 0.9,
-                "value": 92
-            },
-            {
-                "x": 0.35,
-                "y": 0.85,
-                "value": 92
-            },
-            {
-                "x": 0.45,
-                "y": 0.8,
-                "value": 92
-            },
-            {
-                "x": 0.55,
-                "y": 0.75,
-                "value": 92
-            },
-            {
-                "x": 0.65,
-                "y": 0.7,
-                "value": 92
-            },
-            {
-                "x": 0.75,
-                "y": 0.65,
-                "value": 92
-            },
-            {
-                "x": 0.3,
-                "y": 0.28,
-                "value": 92
-            },
-            {
-                "x": 0.35,
-                "y": 0.25,
-                "value": 92
-            },
-            {
-                "x": 0.4,
-                "y": 0.22,
-                "value": 92
-            },
-            {
-                "x": 0.45,
-                "y": 0.2,
-                "value": 92
-            },
-            {
-                "x": 0.5,
-                "y": 0.2,
-                "value": 92
-            },
-            {
-                "x": 0.55,
-                "y": 0.2,
-                "value": 92
-            },
-            {
-                "x": 0.6,
-                "y": 0.2,
-                "value": 92
-            }
+          {
+            "x": 0.41,
+            "y": 0.78,
+            "value": 98
+          },
+          {
+            "x": 0.58,
+            "y": 0.8,
+            "value": 98
+          },
+          {
+            "x": 0.78,
+            "y": 0.85,
+            "value": 98
+          },
+          {
+            "x": 0.4,
+            "y": 0.4,
+            "value": 95
+          },
+          {
+            "x": 0.5,
+            "y": 0.5,
+            "value": 95
+          },
+          {
+            "x": 0.6,
+            "y": 0.6,
+            "value": 95
+          },
+          {
+            "x": 0.7,
+            "y": 0.7,
+            "value": 95
+          },
+          {
+            "x": 0.48,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.55,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.6,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.68,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.75,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.8,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.85,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.9,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.95,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.98,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.92,
+            "y": 0.5,
+            "value": 92
+          },
+          {
+            "x": 0.88,
+            "y": 0.55,
+            "value": 92
+          },
+          {
+            "x": 0.83,
+            "y": 0.6,
+            "value": 92
+          },
+          {
+            "x": 0.78,
+            "y": 0.65,
+            "value": 92
+          },
+          {
+            "x": 0.7,
+            "y": 0.6,
+            "value": 92
+          },
+          {
+            "x": 0.65,
+            "y": 0.55,
+            "value": 92
+          },
+          {
+            "x": 0.5,
+            "y": 0.35,
+            "value": 92
+          },
+          {
+            "x": 0.45,
+            "y": 0.35,
+            "value": 92
+          },
+          {
+            "x": 0.35,
+            "y": 0.35,
+            "value": 92
+          },
+          {
+            "x": 0.25,
+            "y": 0.35,
+            "value": 92
+          },
+          {
+            "x": 0.15,
+            "y": 0.35,
+            "value": 92
+          },
+          {
+            "x": 0.1,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.05,
+            "y": 0.45,
+            "value": 92
+          },
+          {
+            "x": 0.08,
+            "y": 0.5,
+            "value": 92
+          },
+          {
+            "x": 0.12,
+            "y": 0.55,
+            "value": 92
+          },
+          {
+            "x": 0.18,
+            "y": 0.6,
+            "value": 92
+          },
+          {
+            "x": 0.3,
+            "y": 0.7,
+            "value": 92
+          },
+          {
+            "x": 0.35,
+            "y": 0.75,
+            "value": 92
+          },
+          {
+            "x": 0.2,
+            "y": 0.8,
+            "value": 92
+          },
+          {
+            "x": 0.1,
+            "y": 0.85,
+            "value": 92
+          },
+          {
+            "x": 0.05,
+            "y": 0.9,
+            "value": 92
+          },
+          {
+            "x": 0.15,
+            "y": 0.95,
+            "value": 92
+          },
+          {
+            "x": 0.25,
+            "y": 0.9,
+            "value": 92
+          },
+          {
+            "x": 0.35,
+            "y": 0.85,
+            "value": 92
+          },
+          {
+            "x": 0.45,
+            "y": 0.8,
+            "value": 92
+          },
+          {
+            "x": 0.55,
+            "y": 0.75,
+            "value": 92
+          },
+          {
+            "x": 0.65,
+            "y": 0.7,
+            "value": 92
+          },
+          {
+            "x": 0.75,
+            "y": 0.65,
+            "value": 92
+          },
+          {
+            "x": 0.3,
+            "y": 0.28,
+            "value": 92
+          },
+          {
+            "x": 0.35,
+            "y": 0.25,
+            "value": 92
+          },
+          {
+            "x": 0.4,
+            "y": 0.22,
+            "value": 92
+          },
+          {
+            "x": 0.45,
+            "y": 0.2,
+            "value": 92
+          },
+          {
+            "x": 0.5,
+            "y": 0.2,
+            "value": 92
+          },
+          {
+            "x": 0.55,
+            "y": 0.2,
+            "value": 92
+          },
+          {
+            "x": 0.6,
+            "y": 0.2,
+            "value": 92
+          }
         ],
         "people_count": 52,
         "demographics": {
-            "male_count": 31,
-            "female_count": 21,
-            "child_count": 0,
-            "elder_count": 0
+          "male_count": 31,
+          "female_count": 21,
+          "child_count": 0,
+          "elder_count": 0
         },
         "violence_flag": false,
         "fire_flag": false,
@@ -1980,288 +2229,323 @@
         "crowd_density": "very_high",
         "emergency_evacuation": false,
         "sentiment_analysis": {
-            "dominant_emotions": [
-                "neutral",
-                "calm"
-            ],
-            "crowd_mood": "normal",
-            "energy_level": "medium"
+          "dominant_emotions": [
+            "neutral",
+            "calm"
+          ],
+          "crowd_mood": "normal",
+          "energy_level": "medium"
         },
         "environmental": {
-            "lighting_condition": "well-lit_indoor",
-            "weather_condition": "not_applicable",
-            "vehicles_present": false
+          "lighting_condition": "well-lit_indoor",
+          "weather_condition": "not_applicable",
+          "vehicles_present": false
         }
-    },
-    "7": {
+      },
+      "7": {
+        "timestamp": 7,
+        "flow_metrics": {
+          "timestamp": 7,
+          "inflow_count": 1,
+          "outflow_count": 2,
+          "net_flow": -1,
+          "total_people": 35,
+          "density_level": "high",
+          "average_velocity": 0.15,
+          "movement_vectors": [
+            [
+              0.15,
+              0.05
+            ],
+            [
+              0.0,
+              0.12
+            ]
+          ],
+          "congestion_points": [
+            [
+              0.55,
+              0.5
+            ]
+          ],
+          "fire_detected": false,
+          "smoke_detected": false,
+          "violence_detected": false,
+          "weapon_detected": false,
+          "weapon_types": [],
+          "suspicious_behavior": false,
+          "emergency_evacuation": false
+        },
+        "safety_metrics": {},
+        "risk_assessment": {},
         "heatmap_points": [
-            {
-                "x": 0.41,
-                "y": 0.78,
-                "value": 98
-            },
-            {
-                "x": 0.58,
-                "y": 0.8,
-                "value": 98
-            },
-            {
-                "x": 0.78,
-                "y": 0.85,
-                "value": 98
-            },
-            {
-                "x": 0.2,
-                "y": 0.6,
-                "value": 95
-            },
-            {
-                "x": 0.55,
-                "y": 0.55,
-                "value": 95
-            },
-            {
-                "x": 0.7,
-                "y": 0.7,
-                "value": 95
-            },
-            {
-                "x": 0.48,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.55,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.6,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.68,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.75,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.8,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.85,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.9,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.95,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.98,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.92,
-                "y": 0.5,
-                "value": 92
-            },
-            {
-                "x": 0.88,
-                "y": 0.55,
-                "value": 92
-            },
-            {
-                "x": 0.83,
-                "y": 0.6,
-                "value": 92
-            },
-            {
-                "x": 0.78,
-                "y": 0.65,
-                "value": 92
-            },
-            {
-                "x": 0.7,
-                "y": 0.6,
-                "value": 92
-            },
-            {
-                "x": 0.65,
-                "y": 0.55,
-                "value": 92
-            },
-            {
-                "x": 0.5,
-                "y": 0.35,
-                "value": 92
-            },
-            {
-                "x": 0.45,
-                "y": 0.35,
-                "value": 92
-            },
-            {
-                "x": 0.35,
-                "y": 0.35,
-                "value": 92
-            },
-            {
-                "x": 0.25,
-                "y": 0.35,
-                "value": 92
-            },
-            {
-                "x": 0.15,
-                "y": 0.35,
-                "value": 92
-            },
-            {
-                "x": 0.1,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.05,
-                "y": 0.45,
-                "value": 92
-            },
-            {
-                "x": 0.08,
-                "y": 0.5,
-                "value": 92
-            },
-            {
-                "x": 0.12,
-                "y": 0.55,
-                "value": 92
-            },
-            {
-                "x": 0.18,
-                "y": 0.6,
-                "value": 92
-            },
-            {
-                "x": 0.3,
-                "y": 0.7,
-                "value": 92
-            },
-            {
-                "x": 0.35,
-                "y": 0.75,
-                "value": 92
-            },
-            {
-                "x": 0.2,
-                "y": 0.8,
-                "value": 92
-            },
-            {
-                "x": 0.1,
-                "y": 0.85,
-                "value": 92
-            },
-            {
-                "x": 0.05,
-                "y": 0.9,
-                "value": 92
-            },
-            {
-                "x": 0.15,
-                "y": 0.95,
-                "value": 92
-            },
-            {
-                "x": 0.25,
-                "y": 0.9,
-                "value": 92
-            },
-            {
-                "x": 0.35,
-                "y": 0.85,
-                "value": 92
-            },
-            {
-                "x": 0.45,
-                "y": 0.8,
-                "value": 92
-            },
-            {
-                "x": 0.55,
-                "y": 0.75,
-                "value": 92
-            },
-            {
-                "x": 0.65,
-                "y": 0.7,
-                "value": 92
-            },
-            {
-                "x": 0.75,
-                "y": 0.65,
-                "value": 92
-            },
-            {
-                "x": 0.3,
-                "y": 0.28,
-                "value": 92
-            },
-            {
-                "x": 0.35,
-                "y": 0.25,
-                "value": 92
-            },
-            {
-                "x": 0.4,
-                "y": 0.22,
-                "value": 92
-            },
-            {
-                "x": 0.45,
-                "y": 0.2,
-                "value": 92
-            },
-            {
-                "x": 0.5,
-                "y": 0.2,
-                "value": 92
-            },
-            {
-                "x": 0.55,
-                "y": 0.2,
-                "value": 92
-            },
-            {
-                "x": 0.6,
-                "y": 0.2,
-                "value": 92
-            },
-            {
-                "x": 0.3,
-                "y": 0.3,
-                "value": 92
-            }
+          {
+            "x": 0.41,
+            "y": 0.78,
+            "value": 98
+          },
+          {
+            "x": 0.58,
+            "y": 0.8,
+            "value": 98
+          },
+          {
+            "x": 0.78,
+            "y": 0.85,
+            "value": 98
+          },
+          {
+            "x": 0.2,
+            "y": 0.6,
+            "value": 95
+          },
+          {
+            "x": 0.55,
+            "y": 0.55,
+            "value": 95
+          },
+          {
+            "x": 0.7,
+            "y": 0.7,
+            "value": 95
+          },
+          {
+            "x": 0.48,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.55,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.6,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.68,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.75,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.8,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.85,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.9,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.95,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.98,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.92,
+            "y": 0.5,
+            "value": 92
+          },
+          {
+            "x": 0.88,
+            "y": 0.55,
+            "value": 92
+          },
+          {
+            "x": 0.83,
+            "y": 0.6,
+            "value": 92
+          },
+          {
+            "x": 0.78,
+            "y": 0.65,
+            "value": 92
+          },
+          {
+            "x": 0.7,
+            "y": 0.6,
+            "value": 92
+          },
+          {
+            "x": 0.65,
+            "y": 0.55,
+            "value": 92
+          },
+          {
+            "x": 0.5,
+            "y": 0.35,
+            "value": 92
+          },
+          {
+            "x": 0.45,
+            "y": 0.35,
+            "value": 92
+          },
+          {
+            "x": 0.35,
+            "y": 0.35,
+            "value": 92
+          },
+          {
+            "x": 0.25,
+            "y": 0.35,
+            "value": 92
+          },
+          {
+            "x": 0.15,
+            "y": 0.35,
+            "value": 92
+          },
+          {
+            "x": 0.1,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.05,
+            "y": 0.45,
+            "value": 92
+          },
+          {
+            "x": 0.08,
+            "y": 0.5,
+            "value": 92
+          },
+          {
+            "x": 0.12,
+            "y": 0.55,
+            "value": 92
+          },
+          {
+            "x": 0.18,
+            "y": 0.6,
+            "value": 92
+          },
+          {
+            "x": 0.3,
+            "y": 0.7,
+            "value": 92
+          },
+          {
+            "x": 0.35,
+            "y": 0.75,
+            "value": 92
+          },
+          {
+            "x": 0.2,
+            "y": 0.8,
+            "value": 92
+          },
+          {
+            "x": 0.1,
+            "y": 0.85,
+            "value": 92
+          },
+          {
+            "x": 0.05,
+            "y": 0.9,
+            "value": 92
+          },
+          {
+            "x": 0.15,
+            "y": 0.95,
+            "value": 92
+          },
+          {
+            "x": 0.25,
+            "y": 0.9,
+            "value": 92
+          },
+          {
+            "x": 0.35,
+            "y": 0.85,
+            "value": 92
+          },
+          {
+            "x": 0.45,
+            "y": 0.8,
+            "value": 92
+          },
+          {
+            "x": 0.55,
+            "y": 0.75,
+            "value": 92
+          },
+          {
+            "x": 0.65,
+            "y": 0.7,
+            "value": 92
+          },
+          {
+            "x": 0.75,
+            "y": 0.65,
+            "value": 92
+          },
+          {
+            "x": 0.3,
+            "y": 0.28,
+            "value": 92
+          },
+          {
+            "x": 0.35,
+            "y": 0.25,
+            "value": 92
+          },
+          {
+            "x": 0.4,
+            "y": 0.22,
+            "value": 92
+          },
+          {
+            "x": 0.45,
+            "y": 0.2,
+            "value": 92
+          },
+          {
+            "x": 0.5,
+            "y": 0.2,
+            "value": 92
+          },
+          {
+            "x": 0.55,
+            "y": 0.2,
+            "value": 92
+          },
+          {
+            "x": 0.6,
+            "y": 0.2,
+            "value": 92
+          },
+          {
+            "x": 0.3,
+            "y": 0.3,
+            "value": 92
+          }
         ],
         "people_count": 52,
         "demographics": {
-            "male_count": 31,
-            "female_count": 21,
-            "child_count": 0,
-            "elder_count": 0
+          "male_count": 31,
+          "female_count": 21,
+          "child_count": 0,
+          "elder_count": 0
         },
         "violence_flag": false,
         "fire_flag": false,
@@ -2272,288 +2556,323 @@
         "crowd_density": "very_high",
         "emergency_evacuation": false,
         "sentiment_analysis": {
-            "dominant_emotions": [
-                "neutral",
-                "calm"
-            ],
-            "crowd_mood": "normal",
-            "energy_level": "medium"
+          "dominant_emotions": [
+            "neutral",
+            "calm"
+          ],
+          "crowd_mood": "normal",
+          "energy_level": "medium"
         },
         "environmental": {
-            "lighting_condition": "well-lit_indoor",
-            "weather_condition": "not_applicable",
-            "vehicles_present": false
+          "lighting_condition": "well-lit_indoor",
+          "weather_condition": "not_applicable",
+          "vehicles_present": false
         }
-    },
-    "8": {
+      },
+      "8": {
+        "timestamp": 8,
+        "flow_metrics": {
+          "timestamp": 8,
+          "inflow_count": 2,
+          "outflow_count": 1,
+          "net_flow": 1,
+          "total_people": 36,
+          "density_level": "high",
+          "average_velocity": 0.14,
+          "movement_vectors": [
+            [
+              0.1,
+              0.05
+            ],
+            [
+              0.0,
+              0.1
+            ]
+          ],
+          "congestion_points": [
+            [
+              0.55,
+              0.5
+            ]
+          ],
+          "fire_detected": false,
+          "smoke_detected": false,
+          "violence_detected": false,
+          "weapon_detected": false,
+          "weapon_types": [],
+          "suspicious_behavior": false,
+          "emergency_evacuation": false
+        },
+        "safety_metrics": {},
+        "risk_assessment": {},
         "heatmap_points": [
-            {
-                "x": 0.41,
-                "y": 0.78,
-                "value": 98
-            },
-            {
-                "x": 0.58,
-                "y": 0.8,
-                "value": 98
-            },
-            {
-                "x": 0.78,
-                "y": 0.85,
-                "value": 98
-            },
-            {
-                "x": 0.1,
-                "y": 0.6,
-                "value": 95
-            },
-            {
-                "x": 0.35,
-                "y": 0.35,
-                "value": 95
-            },
-            {
-                "x": 0.55,
-                "y": 0.6,
-                "value": 95
-            },
-            {
-                "x": 0.48,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.55,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.6,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.68,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.75,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.8,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.85,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.9,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.95,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.98,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.92,
-                "y": 0.5,
-                "value": 92
-            },
-            {
-                "x": 0.88,
-                "y": 0.55,
-                "value": 92
-            },
-            {
-                "x": 0.83,
-                "y": 0.6,
-                "value": 92
-            },
-            {
-                "x": 0.78,
-                "y": 0.65,
-                "value": 92
-            },
-            {
-                "x": 0.7,
-                "y": 0.6,
-                "value": 92
-            },
-            {
-                "x": 0.65,
-                "y": 0.55,
-                "value": 92
-            },
-            {
-                "x": 0.5,
-                "y": 0.35,
-                "value": 92
-            },
-            {
-                "x": 0.45,
-                "y": 0.35,
-                "value": 92
-            },
-            {
-                "x": 0.25,
-                "y": 0.35,
-                "value": 92
-            },
-            {
-                "x": 0.15,
-                "y": 0.35,
-                "value": 92
-            },
-            {
-                "x": 0.1,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.05,
-                "y": 0.45,
-                "value": 92
-            },
-            {
-                "x": 0.08,
-                "y": 0.5,
-                "value": 92
-            },
-            {
-                "x": 0.12,
-                "y": 0.55,
-                "value": 92
-            },
-            {
-                "x": 0.18,
-                "y": 0.6,
-                "value": 92
-            },
-            {
-                "x": 0.3,
-                "y": 0.7,
-                "value": 92
-            },
-            {
-                "x": 0.35,
-                "y": 0.75,
-                "value": 92
-            },
-            {
-                "x": 0.2,
-                "y": 0.8,
-                "value": 92
-            },
-            {
-                "x": 0.1,
-                "y": 0.85,
-                "value": 92
-            },
-            {
-                "x": 0.05,
-                "y": 0.9,
-                "value": 92
-            },
-            {
-                "x": 0.15,
-                "y": 0.95,
-                "value": 92
-            },
-            {
-                "x": 0.25,
-                "y": 0.9,
-                "value": 92
-            },
-            {
-                "x": 0.35,
-                "y": 0.85,
-                "value": 92
-            },
-            {
-                "x": 0.45,
-                "y": 0.8,
-                "value": 92
-            },
-            {
-                "x": 0.55,
-                "y": 0.75,
-                "value": 92
-            },
-            {
-                "x": 0.65,
-                "y": 0.7,
-                "value": 92
-            },
-            {
-                "x": 0.75,
-                "y": 0.65,
-                "value": 92
-            },
-            {
-                "x": 0.3,
-                "y": 0.28,
-                "value": 92
-            },
-            {
-                "x": 0.35,
-                "y": 0.25,
-                "value": 92
-            },
-            {
-                "x": 0.4,
-                "y": 0.22,
-                "value": 92
-            },
-            {
-                "x": 0.45,
-                "y": 0.2,
-                "value": 92
-            },
-            {
-                "x": 0.5,
-                "y": 0.2,
-                "value": 92
-            },
-            {
-                "x": 0.55,
-                "y": 0.2,
-                "value": 92
-            },
-            {
-                "x": 0.6,
-                "y": 0.2,
-                "value": 92
-            },
-            {
-                "x": 0.3,
-                "y": 0.3,
-                "value": 92
-            },
-            {
-                "x": 0.25,
-                "y": 0.25,
-                "value": 92
-            }
+          {
+            "x": 0.41,
+            "y": 0.78,
+            "value": 98
+          },
+          {
+            "x": 0.58,
+            "y": 0.8,
+            "value": 98
+          },
+          {
+            "x": 0.78,
+            "y": 0.85,
+            "value": 98
+          },
+          {
+            "x": 0.1,
+            "y": 0.6,
+            "value": 95
+          },
+          {
+            "x": 0.35,
+            "y": 0.35,
+            "value": 95
+          },
+          {
+            "x": 0.55,
+            "y": 0.6,
+            "value": 95
+          },
+          {
+            "x": 0.48,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.55,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.6,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.68,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.75,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.8,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.85,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.9,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.95,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.98,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.92,
+            "y": 0.5,
+            "value": 92
+          },
+          {
+            "x": 0.88,
+            "y": 0.55,
+            "value": 92
+          },
+          {
+            "x": 0.83,
+            "y": 0.6,
+            "value": 92
+          },
+          {
+            "x": 0.78,
+            "y": 0.65,
+            "value": 92
+          },
+          {
+            "x": 0.7,
+            "y": 0.6,
+            "value": 92
+          },
+          {
+            "x": 0.65,
+            "y": 0.55,
+            "value": 92
+          },
+          {
+            "x": 0.5,
+            "y": 0.35,
+            "value": 92
+          },
+          {
+            "x": 0.45,
+            "y": 0.35,
+            "value": 92
+          },
+          {
+            "x": 0.25,
+            "y": 0.35,
+            "value": 92
+          },
+          {
+            "x": 0.15,
+            "y": 0.35,
+            "value": 92
+          },
+          {
+            "x": 0.1,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.05,
+            "y": 0.45,
+            "value": 92
+          },
+          {
+            "x": 0.08,
+            "y": 0.5,
+            "value": 92
+          },
+          {
+            "x": 0.12,
+            "y": 0.55,
+            "value": 92
+          },
+          {
+            "x": 0.18,
+            "y": 0.6,
+            "value": 92
+          },
+          {
+            "x": 0.3,
+            "y": 0.7,
+            "value": 92
+          },
+          {
+            "x": 0.35,
+            "y": 0.75,
+            "value": 92
+          },
+          {
+            "x": 0.2,
+            "y": 0.8,
+            "value": 92
+          },
+          {
+            "x": 0.1,
+            "y": 0.85,
+            "value": 92
+          },
+          {
+            "x": 0.05,
+            "y": 0.9,
+            "value": 92
+          },
+          {
+            "x": 0.15,
+            "y": 0.95,
+            "value": 92
+          },
+          {
+            "x": 0.25,
+            "y": 0.9,
+            "value": 92
+          },
+          {
+            "x": 0.35,
+            "y": 0.85,
+            "value": 92
+          },
+          {
+            "x": 0.45,
+            "y": 0.8,
+            "value": 92
+          },
+          {
+            "x": 0.55,
+            "y": 0.75,
+            "value": 92
+          },
+          {
+            "x": 0.65,
+            "y": 0.7,
+            "value": 92
+          },
+          {
+            "x": 0.75,
+            "y": 0.65,
+            "value": 92
+          },
+          {
+            "x": 0.3,
+            "y": 0.28,
+            "value": 92
+          },
+          {
+            "x": 0.35,
+            "y": 0.25,
+            "value": 92
+          },
+          {
+            "x": 0.4,
+            "y": 0.22,
+            "value": 92
+          },
+          {
+            "x": 0.45,
+            "y": 0.2,
+            "value": 92
+          },
+          {
+            "x": 0.5,
+            "y": 0.2,
+            "value": 92
+          },
+          {
+            "x": 0.55,
+            "y": 0.2,
+            "value": 92
+          },
+          {
+            "x": 0.6,
+            "y": 0.2,
+            "value": 92
+          },
+          {
+            "x": 0.3,
+            "y": 0.3,
+            "value": 92
+          },
+          {
+            "x": 0.25,
+            "y": 0.25,
+            "value": 92
+          }
         ],
         "people_count": 52,
         "demographics": {
-            "male_count": 30,
-            "female_count": 22,
-            "child_count": 0,
-            "elder_count": 0
+          "male_count": 30,
+          "female_count": 22,
+          "child_count": 0,
+          "elder_count": 0
         },
         "violence_flag": false,
         "fire_flag": false,
@@ -2564,288 +2883,323 @@
         "crowd_density": "very_high",
         "emergency_evacuation": false,
         "sentiment_analysis": {
-            "dominant_emotions": [
-                "neutral",
-                "calm"
-            ],
-            "crowd_mood": "normal",
-            "energy_level": "medium"
+          "dominant_emotions": [
+            "neutral",
+            "calm"
+          ],
+          "crowd_mood": "normal",
+          "energy_level": "medium"
         },
         "environmental": {
-            "lighting_condition": "well-lit_indoor",
-            "weather_condition": "not_applicable",
-            "vehicles_present": false
+          "lighting_condition": "well-lit_indoor",
+          "weather_condition": "not_applicable",
+          "vehicles_present": false
         }
-    },
-    "9": {
+      },
+      "9": {
+        "timestamp": 9,
+        "flow_metrics": {
+          "timestamp": 9,
+          "inflow_count": 1,
+          "outflow_count": 2,
+          "net_flow": -1,
+          "total_people": 35,
+          "density_level": "high",
+          "average_velocity": 0.1,
+          "movement_vectors": [
+            [
+              0.05,
+              -0.05
+            ],
+            [
+              0.0,
+              0.08
+            ]
+          ],
+          "congestion_points": [
+            [
+              0.55,
+              0.5
+            ]
+          ],
+          "fire_detected": false,
+          "smoke_detected": false,
+          "violence_detected": false,
+          "weapon_detected": false,
+          "weapon_types": [],
+          "suspicious_behavior": false,
+          "emergency_evacuation": false
+        },
+        "safety_metrics": {},
+        "risk_assessment": {},
         "heatmap_points": [
-            {
-                "x": 0.41,
-                "y": 0.78,
-                "value": 98
-            },
-            {
-                "x": 0.58,
-                "y": 0.8,
-                "value": 98
-            },
-            {
-                "x": 0.78,
-                "y": 0.85,
-                "value": 98
-            },
-            {
-                "x": 0.2,
-                "y": 0.65,
-                "value": 95
-            },
-            {
-                "x": 0.3,
-                "y": 0.4,
-                "value": 95
-            },
-            {
-                "x": 0.4,
-                "y": 0.45,
-                "value": 95
-            },
-            {
-                "x": 0.48,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.55,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.6,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.68,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.75,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.8,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.85,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.9,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.95,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.98,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.92,
-                "y": 0.5,
-                "value": 92
-            },
-            {
-                "x": 0.88,
-                "y": 0.55,
-                "value": 92
-            },
-            {
-                "x": 0.83,
-                "y": 0.6,
-                "value": 92
-            },
-            {
-                "x": 0.78,
-                "y": 0.65,
-                "value": 92
-            },
-            {
-                "x": 0.7,
-                "y": 0.6,
-                "value": 92
-            },
-            {
-                "x": 0.65,
-                "y": 0.55,
-                "value": 92
-            },
-            {
-                "x": 0.5,
-                "y": 0.35,
-                "value": 92
-            },
-            {
-                "x": 0.45,
-                "y": 0.35,
-                "value": 92
-            },
-            {
-                "x": 0.25,
-                "y": 0.35,
-                "value": 92
-            },
-            {
-                "x": 0.15,
-                "y": 0.35,
-                "value": 92
-            },
-            {
-                "x": 0.1,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.05,
-                "y": 0.45,
-                "value": 92
-            },
-            {
-                "x": 0.08,
-                "y": 0.5,
-                "value": 92
-            },
-            {
-                "x": 0.12,
-                "y": 0.55,
-                "value": 92
-            },
-            {
-                "x": 0.18,
-                "y": 0.6,
-                "value": 92
-            },
-            {
-                "x": 0.3,
-                "y": 0.7,
-                "value": 92
-            },
-            {
-                "x": 0.35,
-                "y": 0.75,
-                "value": 92
-            },
-            {
-                "x": 0.2,
-                "y": 0.8,
-                "value": 92
-            },
-            {
-                "x": 0.1,
-                "y": 0.85,
-                "value": 92
-            },
-            {
-                "x": 0.05,
-                "y": 0.9,
-                "value": 92
-            },
-            {
-                "x": 0.15,
-                "y": 0.95,
-                "value": 92
-            },
-            {
-                "x": 0.25,
-                "y": 0.9,
-                "value": 92
-            },
-            {
-                "x": 0.35,
-                "y": 0.85,
-                "value": 92
-            },
-            {
-                "x": 0.45,
-                "y": 0.8,
-                "value": 92
-            },
-            {
-                "x": 0.55,
-                "y": 0.75,
-                "value": 92
-            },
-            {
-                "x": 0.65,
-                "y": 0.7,
-                "value": 92
-            },
-            {
-                "x": 0.75,
-                "y": 0.65,
-                "value": 92
-            },
-            {
-                "x": 0.3,
-                "y": 0.28,
-                "value": 92
-            },
-            {
-                "x": 0.35,
-                "y": 0.25,
-                "value": 92
-            },
-            {
-                "x": 0.4,
-                "y": 0.22,
-                "value": 92
-            },
-            {
-                "x": 0.45,
-                "y": 0.2,
-                "value": 92
-            },
-            {
-                "x": 0.5,
-                "y": 0.2,
-                "value": 92
-            },
-            {
-                "x": 0.55,
-                "y": 0.2,
-                "value": 92
-            },
-            {
-                "x": 0.6,
-                "y": 0.2,
-                "value": 92
-            },
-            {
-                "x": 0.3,
-                "y": 0.3,
-                "value": 92
-            },
-            {
-                "x": 0.25,
-                "y": 0.25,
-                "value": 92
-            }
+          {
+            "x": 0.41,
+            "y": 0.78,
+            "value": 98
+          },
+          {
+            "x": 0.58,
+            "y": 0.8,
+            "value": 98
+          },
+          {
+            "x": 0.78,
+            "y": 0.85,
+            "value": 98
+          },
+          {
+            "x": 0.2,
+            "y": 0.65,
+            "value": 95
+          },
+          {
+            "x": 0.3,
+            "y": 0.4,
+            "value": 95
+          },
+          {
+            "x": 0.4,
+            "y": 0.45,
+            "value": 95
+          },
+          {
+            "x": 0.48,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.55,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.6,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.68,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.75,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.8,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.85,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.9,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.95,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.98,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.92,
+            "y": 0.5,
+            "value": 92
+          },
+          {
+            "x": 0.88,
+            "y": 0.55,
+            "value": 92
+          },
+          {
+            "x": 0.83,
+            "y": 0.6,
+            "value": 92
+          },
+          {
+            "x": 0.78,
+            "y": 0.65,
+            "value": 92
+          },
+          {
+            "x": 0.7,
+            "y": 0.6,
+            "value": 92
+          },
+          {
+            "x": 0.65,
+            "y": 0.55,
+            "value": 92
+          },
+          {
+            "x": 0.5,
+            "y": 0.35,
+            "value": 92
+          },
+          {
+            "x": 0.45,
+            "y": 0.35,
+            "value": 92
+          },
+          {
+            "x": 0.25,
+            "y": 0.35,
+            "value": 92
+          },
+          {
+            "x": 0.15,
+            "y": 0.35,
+            "value": 92
+          },
+          {
+            "x": 0.1,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.05,
+            "y": 0.45,
+            "value": 92
+          },
+          {
+            "x": 0.08,
+            "y": 0.5,
+            "value": 92
+          },
+          {
+            "x": 0.12,
+            "y": 0.55,
+            "value": 92
+          },
+          {
+            "x": 0.18,
+            "y": 0.6,
+            "value": 92
+          },
+          {
+            "x": 0.3,
+            "y": 0.7,
+            "value": 92
+          },
+          {
+            "x": 0.35,
+            "y": 0.75,
+            "value": 92
+          },
+          {
+            "x": 0.2,
+            "y": 0.8,
+            "value": 92
+          },
+          {
+            "x": 0.1,
+            "y": 0.85,
+            "value": 92
+          },
+          {
+            "x": 0.05,
+            "y": 0.9,
+            "value": 92
+          },
+          {
+            "x": 0.15,
+            "y": 0.95,
+            "value": 92
+          },
+          {
+            "x": 0.25,
+            "y": 0.9,
+            "value": 92
+          },
+          {
+            "x": 0.35,
+            "y": 0.85,
+            "value": 92
+          },
+          {
+            "x": 0.45,
+            "y": 0.8,
+            "value": 92
+          },
+          {
+            "x": 0.55,
+            "y": 0.75,
+            "value": 92
+          },
+          {
+            "x": 0.65,
+            "y": 0.7,
+            "value": 92
+          },
+          {
+            "x": 0.75,
+            "y": 0.65,
+            "value": 92
+          },
+          {
+            "x": 0.3,
+            "y": 0.28,
+            "value": 92
+          },
+          {
+            "x": 0.35,
+            "y": 0.25,
+            "value": 92
+          },
+          {
+            "x": 0.4,
+            "y": 0.22,
+            "value": 92
+          },
+          {
+            "x": 0.45,
+            "y": 0.2,
+            "value": 92
+          },
+          {
+            "x": 0.5,
+            "y": 0.2,
+            "value": 92
+          },
+          {
+            "x": 0.55,
+            "y": 0.2,
+            "value": 92
+          },
+          {
+            "x": 0.6,
+            "y": 0.2,
+            "value": 92
+          },
+          {
+            "x": 0.3,
+            "y": 0.3,
+            "value": 92
+          },
+          {
+            "x": 0.25,
+            "y": 0.25,
+            "value": 92
+          }
         ],
         "people_count": 52,
         "demographics": {
-            "male_count": 30,
-            "female_count": 22,
-            "child_count": 0,
-            "elder_count": 0
+          "male_count": 30,
+          "female_count": 22,
+          "child_count": 0,
+          "elder_count": 0
         },
         "violence_flag": false,
         "fire_flag": false,
@@ -2856,288 +3210,319 @@
         "crowd_density": "very_high",
         "emergency_evacuation": false,
         "sentiment_analysis": {
-            "dominant_emotions": [
-                "neutral",
-                "calm"
-            ],
-            "crowd_mood": "normal",
-            "energy_level": "medium"
+          "dominant_emotions": [
+            "neutral",
+            "calm"
+          ],
+          "crowd_mood": "normal",
+          "energy_level": "medium"
         },
         "environmental": {
-            "lighting_condition": "well-lit_indoor",
-            "weather_condition": "not_applicable",
-            "vehicles_present": false
+          "lighting_condition": "well-lit_indoor",
+          "weather_condition": "not_applicable",
+          "vehicles_present": false
         }
-    },
-    "10": {
+      },
+      "10": {
+        "timestamp": 10,
+        "flow_metrics": {
+          "timestamp": 10,
+          "inflow_count": 1,
+          "outflow_count": 1,
+          "net_flow": 0,
+          "total_people": 35,
+          "density_level": "high",
+          "average_velocity": 0.08,
+          "movement_vectors": [
+            [
+              -0.05,
+              0.0
+            ]
+          ],
+          "congestion_points": [
+            [
+              0.55,
+              0.5
+            ]
+          ],
+          "fire_detected": false,
+          "smoke_detected": false,
+          "violence_detected": false,
+          "weapon_detected": false,
+          "weapon_types": [],
+          "suspicious_behavior": false,
+          "emergency_evacuation": false
+        },
+        "safety_metrics": {},
+        "risk_assessment": {},
         "heatmap_points": [
-            {
-                "x": 0.41,
-                "y": 0.78,
-                "value": 98
-            },
-            {
-                "x": 0.58,
-                "y": 0.8,
-                "value": 98
-            },
-            {
-                "x": 0.78,
-                "y": 0.85,
-                "value": 98
-            },
-            {
-                "x": 0.3,
-                "y": 0.5,
-                "value": 95
-            },
-            {
-                "x": 0.35,
-                "y": 0.45,
-                "value": 95
-            },
-            {
-                "x": 0.4,
-                "y": 0.4,
-                "value": 95
-            },
-            {
-                "x": 0.48,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.55,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.6,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.68,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.75,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.8,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.85,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.9,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.95,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.98,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.92,
-                "y": 0.5,
-                "value": 92
-            },
-            {
-                "x": 0.88,
-                "y": 0.55,
-                "value": 92
-            },
-            {
-                "x": 0.83,
-                "y": 0.6,
-                "value": 92
-            },
-            {
-                "x": 0.78,
-                "y": 0.65,
-                "value": 92
-            },
-            {
-                "x": 0.7,
-                "y": 0.6,
-                "value": 92
-            },
-            {
-                "x": 0.65,
-                "y": 0.55,
-                "value": 92
-            },
-            {
-                "x": 0.5,
-                "y": 0.35,
-                "value": 92
-            },
-            {
-                "x": 0.45,
-                "y": 0.35,
-                "value": 92
-            },
-            {
-                "x": 0.25,
-                "y": 0.35,
-                "value": 92
-            },
-            {
-                "x": 0.15,
-                "y": 0.35,
-                "value": 92
-            },
-            {
-                "x": 0.1,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.05,
-                "y": 0.45,
-                "value": 92
-            },
-            {
-                "x": 0.08,
-                "y": 0.5,
-                "value": 92
-            },
-            {
-                "x": 0.12,
-                "y": 0.55,
-                "value": 92
-            },
-            {
-                "x": 0.18,
-                "y": 0.6,
-                "value": 92
-            },
-            {
-                "x": 0.3,
-                "y": 0.7,
-                "value": 92
-            },
-            {
-                "x": 0.35,
-                "y": 0.75,
-                "value": 92
-            },
-            {
-                "x": 0.2,
-                "y": 0.8,
-                "value": 92
-            },
-            {
-                "x": 0.1,
-                "y": 0.85,
-                "value": 92
-            },
-            {
-                "x": 0.05,
-                "y": 0.9,
-                "value": 92
-            },
-            {
-                "x": 0.15,
-                "y": 0.95,
-                "value": 92
-            },
-            {
-                "x": 0.25,
-                "y": 0.9,
-                "value": 92
-            },
-            {
-                "x": 0.35,
-                "y": 0.85,
-                "value": 92
-            },
-            {
-                "x": 0.45,
-                "y": 0.8,
-                "value": 92
-            },
-            {
-                "x": 0.55,
-                "y": 0.75,
-                "value": 92
-            },
-            {
-                "x": 0.65,
-                "y": 0.7,
-                "value": 92
-            },
-            {
-                "x": 0.75,
-                "y": 0.65,
-                "value": 92
-            },
-            {
-                "x": 0.3,
-                "y": 0.28,
-                "value": 92
-            },
-            {
-                "x": 0.35,
-                "y": 0.25,
-                "value": 92
-            },
-            {
-                "x": 0.4,
-                "y": 0.22,
-                "value": 92
-            },
-            {
-                "x": 0.45,
-                "y": 0.2,
-                "value": 92
-            },
-            {
-                "x": 0.5,
-                "y": 0.2,
-                "value": 92
-            },
-            {
-                "x": 0.55,
-                "y": 0.2,
-                "value": 92
-            },
-            {
-                "x": 0.6,
-                "y": 0.2,
-                "value": 92
-            },
-            {
-                "x": 0.3,
-                "y": 0.3,
-                "value": 92
-            },
-            {
-                "x": 0.25,
-                "y": 0.25,
-                "value": 92
-            }
+          {
+            "x": 0.41,
+            "y": 0.78,
+            "value": 98
+          },
+          {
+            "x": 0.58,
+            "y": 0.8,
+            "value": 98
+          },
+          {
+            "x": 0.78,
+            "y": 0.85,
+            "value": 98
+          },
+          {
+            "x": 0.3,
+            "y": 0.5,
+            "value": 95
+          },
+          {
+            "x": 0.35,
+            "y": 0.45,
+            "value": 95
+          },
+          {
+            "x": 0.4,
+            "y": 0.4,
+            "value": 95
+          },
+          {
+            "x": 0.48,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.55,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.6,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.68,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.75,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.8,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.85,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.9,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.95,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.98,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.92,
+            "y": 0.5,
+            "value": 92
+          },
+          {
+            "x": 0.88,
+            "y": 0.55,
+            "value": 92
+          },
+          {
+            "x": 0.83,
+            "y": 0.6,
+            "value": 92
+          },
+          {
+            "x": 0.78,
+            "y": 0.65,
+            "value": 92
+          },
+          {
+            "x": 0.7,
+            "y": 0.6,
+            "value": 92
+          },
+          {
+            "x": 0.65,
+            "y": 0.55,
+            "value": 92
+          },
+          {
+            "x": 0.5,
+            "y": 0.35,
+            "value": 92
+          },
+          {
+            "x": 0.45,
+            "y": 0.35,
+            "value": 92
+          },
+          {
+            "x": 0.25,
+            "y": 0.35,
+            "value": 92
+          },
+          {
+            "x": 0.15,
+            "y": 0.35,
+            "value": 92
+          },
+          {
+            "x": 0.1,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.05,
+            "y": 0.45,
+            "value": 92
+          },
+          {
+            "x": 0.08,
+            "y": 0.5,
+            "value": 92
+          },
+          {
+            "x": 0.12,
+            "y": 0.55,
+            "value": 92
+          },
+          {
+            "x": 0.18,
+            "y": 0.6,
+            "value": 92
+          },
+          {
+            "x": 0.3,
+            "y": 0.7,
+            "value": 92
+          },
+          {
+            "x": 0.35,
+            "y": 0.75,
+            "value": 92
+          },
+          {
+            "x": 0.2,
+            "y": 0.8,
+            "value": 92
+          },
+          {
+            "x": 0.1,
+            "y": 0.85,
+            "value": 92
+          },
+          {
+            "x": 0.05,
+            "y": 0.9,
+            "value": 92
+          },
+          {
+            "x": 0.15,
+            "y": 0.95,
+            "value": 92
+          },
+          {
+            "x": 0.25,
+            "y": 0.9,
+            "value": 92
+          },
+          {
+            "x": 0.35,
+            "y": 0.85,
+            "value": 92
+          },
+          {
+            "x": 0.45,
+            "y": 0.8,
+            "value": 92
+          },
+          {
+            "x": 0.55,
+            "y": 0.75,
+            "value": 92
+          },
+          {
+            "x": 0.65,
+            "y": 0.7,
+            "value": 92
+          },
+          {
+            "x": 0.75,
+            "y": 0.65,
+            "value": 92
+          },
+          {
+            "x": 0.3,
+            "y": 0.28,
+            "value": 92
+          },
+          {
+            "x": 0.35,
+            "y": 0.25,
+            "value": 92
+          },
+          {
+            "x": 0.4,
+            "y": 0.22,
+            "value": 92
+          },
+          {
+            "x": 0.45,
+            "y": 0.2,
+            "value": 92
+          },
+          {
+            "x": 0.5,
+            "y": 0.2,
+            "value": 92
+          },
+          {
+            "x": 0.55,
+            "y": 0.2,
+            "value": 92
+          },
+          {
+            "x": 0.6,
+            "y": 0.2,
+            "value": 92
+          },
+          {
+            "x": 0.3,
+            "y": 0.3,
+            "value": 92
+          },
+          {
+            "x": 0.25,
+            "y": 0.25,
+            "value": 92
+          }
         ],
         "people_count": 52,
         "demographics": {
-            "male_count": 30,
-            "female_count": 22,
-            "child_count": 0,
-            "elder_count": 0
+          "male_count": 30,
+          "female_count": 22,
+          "child_count": 0,
+          "elder_count": 0
         },
         "violence_flag": false,
         "fire_flag": false,
@@ -3148,283 +3533,314 @@
         "crowd_density": "very_high",
         "emergency_evacuation": false,
         "sentiment_analysis": {
-            "dominant_emotions": [
-                "neutral",
-                "calm"
-            ],
-            "crowd_mood": "normal",
-            "energy_level": "medium"
+          "dominant_emotions": [
+            "neutral",
+            "calm"
+          ],
+          "crowd_mood": "normal",
+          "energy_level": "medium"
         },
         "environmental": {
-            "lighting_condition": "well-lit_indoor",
-            "weather_condition": "not_applicable",
-            "vehicles_present": false
+          "lighting_condition": "well-lit_indoor",
+          "weather_condition": "not_applicable",
+          "vehicles_present": false
         }
-    },
-    "11": {
+      },
+      "11": {
+        "timestamp": 11,
+        "flow_metrics": {
+          "timestamp": 11,
+          "inflow_count": 0,
+          "outflow_count": 0,
+          "net_flow": 0,
+          "total_people": 35,
+          "density_level": "high",
+          "average_velocity": 0.05,
+          "movement_vectors": [
+            [
+              0.01,
+              0.01
+            ]
+          ],
+          "congestion_points": [
+            [
+              0.55,
+              0.5
+            ]
+          ],
+          "fire_detected": false,
+          "smoke_detected": false,
+          "violence_detected": false,
+          "weapon_detected": false,
+          "weapon_types": [],
+          "suspicious_behavior": false,
+          "emergency_evacuation": false
+        },
+        "safety_metrics": {},
+        "risk_assessment": {},
         "heatmap_points": [
-            {
-                "x": 0.41,
-                "y": 0.78,
-                "value": 98
-            },
-            {
-                "x": 0.58,
-                "y": 0.8,
-                "value": 98
-            },
-            {
-                "x": 0.78,
-                "y": 0.85,
-                "value": 98
-            },
-            {
-                "x": 0.3,
-                "y": 0.5,
-                "value": 95
-            },
-            {
-                "x": 0.35,
-                "y": 0.45,
-                "value": 95
-            },
-            {
-                "x": 0.4,
-                "y": 0.4,
-                "value": 95
-            },
-            {
-                "x": 0.48,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.55,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.6,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.68,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.75,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.8,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.85,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.9,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.95,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.98,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.92,
-                "y": 0.5,
-                "value": 92
-            },
-            {
-                "x": 0.88,
-                "y": 0.55,
-                "value": 92
-            },
-            {
-                "x": 0.83,
-                "y": 0.6,
-                "value": 92
-            },
-            {
-                "x": 0.78,
-                "y": 0.65,
-                "value": 92
-            },
-            {
-                "x": 0.7,
-                "y": 0.6,
-                "value": 92
-            },
-            {
-                "x": 0.65,
-                "y": 0.55,
-                "value": 92
-            },
-            {
-                "x": 0.5,
-                "y": 0.35,
-                "value": 92
-            },
-            {
-                "x": 0.45,
-                "y": 0.35,
-                "value": 92
-            },
-            {
-                "x": 0.25,
-                "y": 0.35,
-                "value": 92
-            },
-            {
-                "x": 0.15,
-                "y": 0.35,
-                "value": 92
-            },
-            {
-                "x": 0.1,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.05,
-                "y": 0.45,
-                "value": 92
-            },
-            {
-                "x": 0.08,
-                "y": 0.5,
-                "value": 92
-            },
-            {
-                "x": 0.12,
-                "y": 0.55,
-                "value": 92
-            },
-            {
-                "x": 0.18,
-                "y": 0.6,
-                "value": 92
-            },
-            {
-                "x": 0.3,
-                "y": 0.7,
-                "value": 92
-            },
-            {
-                "x": 0.35,
-                "y": 0.75,
-                "value": 92
-            },
-            {
-                "x": 0.2,
-                "y": 0.8,
-                "value": 92
-            },
-            {
-                "x": 0.1,
-                "y": 0.85,
-                "value": 92
-            },
-            {
-                "x": 0.05,
-                "y": 0.9,
-                "value": 92
-            },
-            {
-                "x": 0.15,
-                "y": 0.95,
-                "value": 92
-            },
-            {
-                "x": 0.25,
-                "y": 0.9,
-                "value": 92
-            },
-            {
-                "x": 0.35,
-                "y": 0.85,
-                "value": 92
-            },
-            {
-                "x": 0.45,
-                "y": 0.8,
-                "value": 92
-            },
-            {
-                "x": 0.55,
-                "y": 0.75,
-                "value": 92
-            },
-            {
-                "x": 0.65,
-                "y": 0.7,
-                "value": 92
-            },
-            {
-                "x": 0.75,
-                "y": 0.65,
-                "value": 92
-            },
-            {
-                "x": 0.3,
-                "y": 0.28,
-                "value": 92
-            },
-            {
-                "x": 0.35,
-                "y": 0.25,
-                "value": 92
-            },
-            {
-                "x": 0.4,
-                "y": 0.22,
-                "value": 92
-            },
-            {
-                "x": 0.45,
-                "y": 0.2,
-                "value": 92
-            },
-            {
-                "x": 0.5,
-                "y": 0.2,
-                "value": 92
-            },
-            {
-                "x": 0.55,
-                "y": 0.2,
-                "value": 92
-            },
-            {
-                "x": 0.6,
-                "y": 0.2,
-                "value": 92
-            },
-            {
-                "x": 0.3,
-                "y": 0.3,
-                "value": 92
-            }
+          {
+            "x": 0.41,
+            "y": 0.78,
+            "value": 98
+          },
+          {
+            "x": 0.58,
+            "y": 0.8,
+            "value": 98
+          },
+          {
+            "x": 0.78,
+            "y": 0.85,
+            "value": 98
+          },
+          {
+            "x": 0.3,
+            "y": 0.5,
+            "value": 95
+          },
+          {
+            "x": 0.35,
+            "y": 0.45,
+            "value": 95
+          },
+          {
+            "x": 0.4,
+            "y": 0.4,
+            "value": 95
+          },
+          {
+            "x": 0.48,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.55,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.6,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.68,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.75,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.8,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.85,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.9,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.95,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.98,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.92,
+            "y": 0.5,
+            "value": 92
+          },
+          {
+            "x": 0.88,
+            "y": 0.55,
+            "value": 92
+          },
+          {
+            "x": 0.83,
+            "y": 0.6,
+            "value": 92
+          },
+          {
+            "x": 0.78,
+            "y": 0.65,
+            "value": 92
+          },
+          {
+            "x": 0.7,
+            "y": 0.6,
+            "value": 92
+          },
+          {
+            "x": 0.65,
+            "y": 0.55,
+            "value": 92
+          },
+          {
+            "x": 0.5,
+            "y": 0.35,
+            "value": 92
+          },
+          {
+            "x": 0.45,
+            "y": 0.35,
+            "value": 92
+          },
+          {
+            "x": 0.25,
+            "y": 0.35,
+            "value": 92
+          },
+          {
+            "x": 0.15,
+            "y": 0.35,
+            "value": 92
+          },
+          {
+            "x": 0.1,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.05,
+            "y": 0.45,
+            "value": 92
+          },
+          {
+            "x": 0.08,
+            "y": 0.5,
+            "value": 92
+          },
+          {
+            "x": 0.12,
+            "y": 0.55,
+            "value": 92
+          },
+          {
+            "x": 0.18,
+            "y": 0.6,
+            "value": 92
+          },
+          {
+            "x": 0.3,
+            "y": 0.7,
+            "value": 92
+          },
+          {
+            "x": 0.35,
+            "y": 0.75,
+            "value": 92
+          },
+          {
+            "x": 0.2,
+            "y": 0.8,
+            "value": 92
+          },
+          {
+            "x": 0.1,
+            "y": 0.85,
+            "value": 92
+          },
+          {
+            "x": 0.05,
+            "y": 0.9,
+            "value": 92
+          },
+          {
+            "x": 0.15,
+            "y": 0.95,
+            "value": 92
+          },
+          {
+            "x": 0.25,
+            "y": 0.9,
+            "value": 92
+          },
+          {
+            "x": 0.35,
+            "y": 0.85,
+            "value": 92
+          },
+          {
+            "x": 0.45,
+            "y": 0.8,
+            "value": 92
+          },
+          {
+            "x": 0.55,
+            "y": 0.75,
+            "value": 92
+          },
+          {
+            "x": 0.65,
+            "y": 0.7,
+            "value": 92
+          },
+          {
+            "x": 0.75,
+            "y": 0.65,
+            "value": 92
+          },
+          {
+            "x": 0.3,
+            "y": 0.28,
+            "value": 92
+          },
+          {
+            "x": 0.35,
+            "y": 0.25,
+            "value": 92
+          },
+          {
+            "x": 0.4,
+            "y": 0.22,
+            "value": 92
+          },
+          {
+            "x": 0.45,
+            "y": 0.2,
+            "value": 92
+          },
+          {
+            "x": 0.5,
+            "y": 0.2,
+            "value": 92
+          },
+          {
+            "x": 0.55,
+            "y": 0.2,
+            "value": 92
+          },
+          {
+            "x": 0.6,
+            "y": 0.2,
+            "value": 92
+          },
+          {
+            "x": 0.3,
+            "y": 0.3,
+            "value": 92
+          }
         ],
         "people_count": 51,
         "demographics": {
-            "male_count": 30,
-            "female_count": 21,
-            "child_count": 0,
-            "elder_count": 0
+          "male_count": 30,
+          "female_count": 21,
+          "child_count": 0,
+          "elder_count": 0
         },
         "violence_flag": false,
         "fire_flag": false,
@@ -3435,278 +3851,309 @@
         "crowd_density": "very_high",
         "emergency_evacuation": false,
         "sentiment_analysis": {
-            "dominant_emotions": [
-                "neutral",
-                "calm"
-            ],
-            "crowd_mood": "normal",
-            "energy_level": "medium"
+          "dominant_emotions": [
+            "neutral",
+            "calm"
+          ],
+          "crowd_mood": "normal",
+          "energy_level": "medium"
         },
         "environmental": {
-            "lighting_condition": "well-lit_indoor",
-            "weather_condition": "not_applicable",
-            "vehicles_present": false
+          "lighting_condition": "well-lit_indoor",
+          "weather_condition": "not_applicable",
+          "vehicles_present": false
         }
-    },
-    "12": {
+      },
+      "12": {
+        "timestamp": 12,
+        "flow_metrics": {
+          "timestamp": 12,
+          "inflow_count": 0,
+          "outflow_count": 0,
+          "net_flow": 0,
+          "total_people": 35,
+          "density_level": "high",
+          "average_velocity": 0.04,
+          "movement_vectors": [
+            [
+              0.01,
+              0.0
+            ]
+          ],
+          "congestion_points": [
+            [
+              0.55,
+              0.5
+            ]
+          ],
+          "fire_detected": false,
+          "smoke_detected": false,
+          "violence_detected": false,
+          "weapon_detected": false,
+          "weapon_types": [],
+          "suspicious_behavior": false,
+          "emergency_evacuation": false
+        },
+        "safety_metrics": {},
+        "risk_assessment": {},
         "heatmap_points": [
-            {
-                "x": 0.41,
-                "y": 0.78,
-                "value": 98
-            },
-            {
-                "x": 0.58,
-                "y": 0.8,
-                "value": 98
-            },
-            {
-                "x": 0.78,
-                "y": 0.85,
-                "value": 98
-            },
-            {
-                "x": 0.3,
-                "y": 0.5,
-                "value": 95
-            },
-            {
-                "x": 0.35,
-                "y": 0.45,
-                "value": 95
-            },
-            {
-                "x": 0.4,
-                "y": 0.4,
-                "value": 95
-            },
-            {
-                "x": 0.48,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.55,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.6,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.68,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.75,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.8,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.85,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.9,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.95,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.98,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.92,
-                "y": 0.5,
-                "value": 92
-            },
-            {
-                "x": 0.88,
-                "y": 0.55,
-                "value": 92
-            },
-            {
-                "x": 0.83,
-                "y": 0.6,
-                "value": 92
-            },
-            {
-                "x": 0.78,
-                "y": 0.65,
-                "value": 92
-            },
-            {
-                "x": 0.7,
-                "y": 0.6,
-                "value": 92
-            },
-            {
-                "x": 0.65,
-                "y": 0.55,
-                "value": 92
-            },
-            {
-                "x": 0.5,
-                "y": 0.35,
-                "value": 92
-            },
-            {
-                "x": 0.45,
-                "y": 0.35,
-                "value": 92
-            },
-            {
-                "x": 0.25,
-                "y": 0.35,
-                "value": 92
-            },
-            {
-                "x": 0.15,
-                "y": 0.35,
-                "value": 92
-            },
-            {
-                "x": 0.1,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.05,
-                "y": 0.45,
-                "value": 92
-            },
-            {
-                "x": 0.08,
-                "y": 0.5,
-                "value": 92
-            },
-            {
-                "x": 0.12,
-                "y": 0.55,
-                "value": 92
-            },
-            {
-                "x": 0.18,
-                "y": 0.6,
-                "value": 92
-            },
-            {
-                "x": 0.3,
-                "y": 0.7,
-                "value": 92
-            },
-            {
-                "x": 0.35,
-                "y": 0.75,
-                "value": 92
-            },
-            {
-                "x": 0.2,
-                "y": 0.8,
-                "value": 92
-            },
-            {
-                "x": 0.1,
-                "y": 0.85,
-                "value": 92
-            },
-            {
-                "x": 0.05,
-                "y": 0.9,
-                "value": 92
-            },
-            {
-                "x": 0.15,
-                "y": 0.95,
-                "value": 92
-            },
-            {
-                "x": 0.25,
-                "y": 0.9,
-                "value": 92
-            },
-            {
-                "x": 0.35,
-                "y": 0.85,
-                "value": 92
-            },
-            {
-                "x": 0.45,
-                "y": 0.8,
-                "value": 92
-            },
-            {
-                "x": 0.55,
-                "y": 0.75,
-                "value": 92
-            },
-            {
-                "x": 0.65,
-                "y": 0.7,
-                "value": 92
-            },
-            {
-                "x": 0.75,
-                "y": 0.65,
-                "value": 92
-            },
-            {
-                "x": 0.3,
-                "y": 0.28,
-                "value": 92
-            },
-            {
-                "x": 0.35,
-                "y": 0.25,
-                "value": 92
-            },
-            {
-                "x": 0.4,
-                "y": 0.22,
-                "value": 92
-            },
-            {
-                "x": 0.45,
-                "y": 0.2,
-                "value": 92
-            },
-            {
-                "x": 0.5,
-                "y": 0.2,
-                "value": 92
-            },
-            {
-                "x": 0.55,
-                "y": 0.2,
-                "value": 92
-            },
-            {
-                "x": 0.6,
-                "y": 0.2,
-                "value": 92
-            }
+          {
+            "x": 0.41,
+            "y": 0.78,
+            "value": 98
+          },
+          {
+            "x": 0.58,
+            "y": 0.8,
+            "value": 98
+          },
+          {
+            "x": 0.78,
+            "y": 0.85,
+            "value": 98
+          },
+          {
+            "x": 0.3,
+            "y": 0.5,
+            "value": 95
+          },
+          {
+            "x": 0.35,
+            "y": 0.45,
+            "value": 95
+          },
+          {
+            "x": 0.4,
+            "y": 0.4,
+            "value": 95
+          },
+          {
+            "x": 0.48,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.55,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.6,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.68,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.75,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.8,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.85,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.9,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.95,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.98,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.92,
+            "y": 0.5,
+            "value": 92
+          },
+          {
+            "x": 0.88,
+            "y": 0.55,
+            "value": 92
+          },
+          {
+            "x": 0.83,
+            "y": 0.6,
+            "value": 92
+          },
+          {
+            "x": 0.78,
+            "y": 0.65,
+            "value": 92
+          },
+          {
+            "x": 0.7,
+            "y": 0.6,
+            "value": 92
+          },
+          {
+            "x": 0.65,
+            "y": 0.55,
+            "value": 92
+          },
+          {
+            "x": 0.5,
+            "y": 0.35,
+            "value": 92
+          },
+          {
+            "x": 0.45,
+            "y": 0.35,
+            "value": 92
+          },
+          {
+            "x": 0.25,
+            "y": 0.35,
+            "value": 92
+          },
+          {
+            "x": 0.15,
+            "y": 0.35,
+            "value": 92
+          },
+          {
+            "x": 0.1,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.05,
+            "y": 0.45,
+            "value": 92
+          },
+          {
+            "x": 0.08,
+            "y": 0.5,
+            "value": 92
+          },
+          {
+            "x": 0.12,
+            "y": 0.55,
+            "value": 92
+          },
+          {
+            "x": 0.18,
+            "y": 0.6,
+            "value": 92
+          },
+          {
+            "x": 0.3,
+            "y": 0.7,
+            "value": 92
+          },
+          {
+            "x": 0.35,
+            "y": 0.75,
+            "value": 92
+          },
+          {
+            "x": 0.2,
+            "y": 0.8,
+            "value": 92
+          },
+          {
+            "x": 0.1,
+            "y": 0.85,
+            "value": 92
+          },
+          {
+            "x": 0.05,
+            "y": 0.9,
+            "value": 92
+          },
+          {
+            "x": 0.15,
+            "y": 0.95,
+            "value": 92
+          },
+          {
+            "x": 0.25,
+            "y": 0.9,
+            "value": 92
+          },
+          {
+            "x": 0.35,
+            "y": 0.85,
+            "value": 92
+          },
+          {
+            "x": 0.45,
+            "y": 0.8,
+            "value": 92
+          },
+          {
+            "x": 0.55,
+            "y": 0.75,
+            "value": 92
+          },
+          {
+            "x": 0.65,
+            "y": 0.7,
+            "value": 92
+          },
+          {
+            "x": 0.75,
+            "y": 0.65,
+            "value": 92
+          },
+          {
+            "x": 0.3,
+            "y": 0.28,
+            "value": 92
+          },
+          {
+            "x": 0.35,
+            "y": 0.25,
+            "value": 92
+          },
+          {
+            "x": 0.4,
+            "y": 0.22,
+            "value": 92
+          },
+          {
+            "x": 0.45,
+            "y": 0.2,
+            "value": 92
+          },
+          {
+            "x": 0.5,
+            "y": 0.2,
+            "value": 92
+          },
+          {
+            "x": 0.55,
+            "y": 0.2,
+            "value": 92
+          },
+          {
+            "x": 0.6,
+            "y": 0.2,
+            "value": 92
+          }
         ],
         "people_count": 50,
         "demographics": {
-            "male_count": 29,
-            "female_count": 21,
-            "child_count": 0,
-            "elder_count": 0
+          "male_count": 29,
+          "female_count": 21,
+          "child_count": 0,
+          "elder_count": 0
         },
         "violence_flag": false,
         "fire_flag": false,
@@ -3717,278 +4164,309 @@
         "crowd_density": "very_high",
         "emergency_evacuation": false,
         "sentiment_analysis": {
-            "dominant_emotions": [
-                "neutral",
-                "calm"
-            ],
-            "crowd_mood": "normal",
-            "energy_level": "medium"
+          "dominant_emotions": [
+            "neutral",
+            "calm"
+          ],
+          "crowd_mood": "normal",
+          "energy_level": "medium"
         },
         "environmental": {
-            "lighting_condition": "well-lit_indoor",
-            "weather_condition": "not_applicable",
-            "vehicles_present": false
+          "lighting_condition": "well-lit_indoor",
+          "weather_condition": "not_applicable",
+          "vehicles_present": false
         }
-    },
-    "13": {
+      },
+      "13": {
+        "timestamp": 13,
+        "flow_metrics": {
+          "timestamp": 13,
+          "inflow_count": 0,
+          "outflow_count": 0,
+          "net_flow": 0,
+          "total_people": 35,
+          "density_level": "high",
+          "average_velocity": 0.04,
+          "movement_vectors": [
+            [
+              0.01,
+              0.0
+            ]
+          ],
+          "congestion_points": [
+            [
+              0.55,
+              0.5
+            ]
+          ],
+          "fire_detected": false,
+          "smoke_detected": false,
+          "violence_detected": false,
+          "weapon_detected": false,
+          "weapon_types": [],
+          "suspicious_behavior": false,
+          "emergency_evacuation": false
+        },
+        "safety_metrics": {},
+        "risk_assessment": {},
         "heatmap_points": [
-            {
-                "x": 0.41,
-                "y": 0.78,
-                "value": 98
-            },
-            {
-                "x": 0.58,
-                "y": 0.8,
-                "value": 98
-            },
-            {
-                "x": 0.78,
-                "y": 0.85,
-                "value": 98
-            },
-            {
-                "x": 0.3,
-                "y": 0.5,
-                "value": 95
-            },
-            {
-                "x": 0.35,
-                "y": 0.45,
-                "value": 95
-            },
-            {
-                "x": 0.4,
-                "y": 0.4,
-                "value": 95
-            },
-            {
-                "x": 0.48,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.55,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.6,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.68,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.75,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.8,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.85,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.9,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.95,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.98,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.92,
-                "y": 0.5,
-                "value": 92
-            },
-            {
-                "x": 0.88,
-                "y": 0.55,
-                "value": 92
-            },
-            {
-                "x": 0.83,
-                "y": 0.6,
-                "value": 92
-            },
-            {
-                "x": 0.78,
-                "y": 0.65,
-                "value": 92
-            },
-            {
-                "x": 0.7,
-                "y": 0.6,
-                "value": 92
-            },
-            {
-                "x": 0.65,
-                "y": 0.55,
-                "value": 92
-            },
-            {
-                "x": 0.5,
-                "y": 0.35,
-                "value": 92
-            },
-            {
-                "x": 0.45,
-                "y": 0.35,
-                "value": 92
-            },
-            {
-                "x": 0.25,
-                "y": 0.35,
-                "value": 92
-            },
-            {
-                "x": 0.15,
-                "y": 0.35,
-                "value": 92
-            },
-            {
-                "x": 0.1,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.05,
-                "y": 0.45,
-                "value": 92
-            },
-            {
-                "x": 0.08,
-                "y": 0.5,
-                "value": 92
-            },
-            {
-                "x": 0.12,
-                "y": 0.55,
-                "value": 92
-            },
-            {
-                "x": 0.18,
-                "y": 0.6,
-                "value": 92
-            },
-            {
-                "x": 0.3,
-                "y": 0.7,
-                "value": 92
-            },
-            {
-                "x": 0.35,
-                "y": 0.75,
-                "value": 92
-            },
-            {
-                "x": 0.2,
-                "y": 0.8,
-                "value": 92
-            },
-            {
-                "x": 0.1,
-                "y": 0.85,
-                "value": 92
-            },
-            {
-                "x": 0.05,
-                "y": 0.9,
-                "value": 92
-            },
-            {
-                "x": 0.15,
-                "y": 0.95,
-                "value": 92
-            },
-            {
-                "x": 0.25,
-                "y": 0.9,
-                "value": 92
-            },
-            {
-                "x": 0.35,
-                "y": 0.85,
-                "value": 92
-            },
-            {
-                "x": 0.45,
-                "y": 0.8,
-                "value": 92
-            },
-            {
-                "x": 0.55,
-                "y": 0.75,
-                "value": 92
-            },
-            {
-                "x": 0.65,
-                "y": 0.7,
-                "value": 92
-            },
-            {
-                "x": 0.75,
-                "y": 0.65,
-                "value": 92
-            },
-            {
-                "x": 0.3,
-                "y": 0.28,
-                "value": 92
-            },
-            {
-                "x": 0.35,
-                "y": 0.25,
-                "value": 92
-            },
-            {
-                "x": 0.4,
-                "y": 0.22,
-                "value": 92
-            },
-            {
-                "x": 0.45,
-                "y": 0.2,
-                "value": 92
-            },
-            {
-                "x": 0.5,
-                "y": 0.2,
-                "value": 92
-            },
-            {
-                "x": 0.55,
-                "y": 0.2,
-                "value": 92
-            },
-            {
-                "x": 0.6,
-                "y": 0.2,
-                "value": 92
-            }
+          {
+            "x": 0.41,
+            "y": 0.78,
+            "value": 98
+          },
+          {
+            "x": 0.58,
+            "y": 0.8,
+            "value": 98
+          },
+          {
+            "x": 0.78,
+            "y": 0.85,
+            "value": 98
+          },
+          {
+            "x": 0.3,
+            "y": 0.5,
+            "value": 95
+          },
+          {
+            "x": 0.35,
+            "y": 0.45,
+            "value": 95
+          },
+          {
+            "x": 0.4,
+            "y": 0.4,
+            "value": 95
+          },
+          {
+            "x": 0.48,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.55,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.6,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.68,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.75,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.8,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.85,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.9,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.95,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.98,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.92,
+            "y": 0.5,
+            "value": 92
+          },
+          {
+            "x": 0.88,
+            "y": 0.55,
+            "value": 92
+          },
+          {
+            "x": 0.83,
+            "y": 0.6,
+            "value": 92
+          },
+          {
+            "x": 0.78,
+            "y": 0.65,
+            "value": 92
+          },
+          {
+            "x": 0.7,
+            "y": 0.6,
+            "value": 92
+          },
+          {
+            "x": 0.65,
+            "y": 0.55,
+            "value": 92
+          },
+          {
+            "x": 0.5,
+            "y": 0.35,
+            "value": 92
+          },
+          {
+            "x": 0.45,
+            "y": 0.35,
+            "value": 92
+          },
+          {
+            "x": 0.25,
+            "y": 0.35,
+            "value": 92
+          },
+          {
+            "x": 0.15,
+            "y": 0.35,
+            "value": 92
+          },
+          {
+            "x": 0.1,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.05,
+            "y": 0.45,
+            "value": 92
+          },
+          {
+            "x": 0.08,
+            "y": 0.5,
+            "value": 92
+          },
+          {
+            "x": 0.12,
+            "y": 0.55,
+            "value": 92
+          },
+          {
+            "x": 0.18,
+            "y": 0.6,
+            "value": 92
+          },
+          {
+            "x": 0.3,
+            "y": 0.7,
+            "value": 92
+          },
+          {
+            "x": 0.35,
+            "y": 0.75,
+            "value": 92
+          },
+          {
+            "x": 0.2,
+            "y": 0.8,
+            "value": 92
+          },
+          {
+            "x": 0.1,
+            "y": 0.85,
+            "value": 92
+          },
+          {
+            "x": 0.05,
+            "y": 0.9,
+            "value": 92
+          },
+          {
+            "x": 0.15,
+            "y": 0.95,
+            "value": 92
+          },
+          {
+            "x": 0.25,
+            "y": 0.9,
+            "value": 92
+          },
+          {
+            "x": 0.35,
+            "y": 0.85,
+            "value": 92
+          },
+          {
+            "x": 0.45,
+            "y": 0.8,
+            "value": 92
+          },
+          {
+            "x": 0.55,
+            "y": 0.75,
+            "value": 92
+          },
+          {
+            "x": 0.65,
+            "y": 0.7,
+            "value": 92
+          },
+          {
+            "x": 0.75,
+            "y": 0.65,
+            "value": 92
+          },
+          {
+            "x": 0.3,
+            "y": 0.28,
+            "value": 92
+          },
+          {
+            "x": 0.35,
+            "y": 0.25,
+            "value": 92
+          },
+          {
+            "x": 0.4,
+            "y": 0.22,
+            "value": 92
+          },
+          {
+            "x": 0.45,
+            "y": 0.2,
+            "value": 92
+          },
+          {
+            "x": 0.5,
+            "y": 0.2,
+            "value": 92
+          },
+          {
+            "x": 0.55,
+            "y": 0.2,
+            "value": 92
+          },
+          {
+            "x": 0.6,
+            "y": 0.2,
+            "value": 92
+          }
         ],
         "people_count": 50,
         "demographics": {
-            "male_count": 29,
-            "female_count": 21,
-            "child_count": 0,
-            "elder_count": 0
+          "male_count": 29,
+          "female_count": 21,
+          "child_count": 0,
+          "elder_count": 0
         },
         "violence_flag": false,
         "fire_flag": false,
@@ -3999,278 +4477,309 @@
         "crowd_density": "very_high",
         "emergency_evacuation": false,
         "sentiment_analysis": {
-            "dominant_emotions": [
-                "neutral",
-                "calm"
-            ],
-            "crowd_mood": "normal",
-            "energy_level": "medium"
+          "dominant_emotions": [
+            "neutral",
+            "calm"
+          ],
+          "crowd_mood": "normal",
+          "energy_level": "medium"
         },
         "environmental": {
-            "lighting_condition": "well-lit_indoor",
-            "weather_condition": "not_applicable",
-            "vehicles_present": false
+          "lighting_condition": "well-lit_indoor",
+          "weather_condition": "not_applicable",
+          "vehicles_present": false
         }
-    },
-    "14": {
+      },
+      "14": {
+        "timestamp": 14,
+        "flow_metrics": {
+          "timestamp": 14,
+          "inflow_count": 0,
+          "outflow_count": 0,
+          "net_flow": 0,
+          "total_people": 35,
+          "density_level": "high",
+          "average_velocity": 0.04,
+          "movement_vectors": [
+            [
+              0.01,
+              0.0
+            ]
+          ],
+          "congestion_points": [
+            [
+              0.55,
+              0.5
+            ]
+          ],
+          "fire_detected": false,
+          "smoke_detected": false,
+          "violence_detected": false,
+          "weapon_detected": false,
+          "weapon_types": [],
+          "suspicious_behavior": false,
+          "emergency_evacuation": false
+        },
+        "safety_metrics": {},
+        "risk_assessment": {},
         "heatmap_points": [
-            {
-                "x": 0.41,
-                "y": 0.78,
-                "value": 98
-            },
-            {
-                "x": 0.58,
-                "y": 0.8,
-                "value": 98
-            },
-            {
-                "x": 0.78,
-                "y": 0.85,
-                "value": 98
-            },
-            {
-                "x": 0.3,
-                "y": 0.5,
-                "value": 95
-            },
-            {
-                "x": 0.35,
-                "y": 0.45,
-                "value": 95
-            },
-            {
-                "x": 0.4,
-                "y": 0.4,
-                "value": 95
-            },
-            {
-                "x": 0.48,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.55,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.6,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.68,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.75,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.8,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.85,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.9,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.95,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.98,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.92,
-                "y": 0.5,
-                "value": 92
-            },
-            {
-                "x": 0.88,
-                "y": 0.55,
-                "value": 92
-            },
-            {
-                "x": 0.83,
-                "y": 0.6,
-                "value": 92
-            },
-            {
-                "x": 0.78,
-                "y": 0.65,
-                "value": 92
-            },
-            {
-                "x": 0.7,
-                "y": 0.6,
-                "value": 92
-            },
-            {
-                "x": 0.65,
-                "y": 0.55,
-                "value": 92
-            },
-            {
-                "x": 0.5,
-                "y": 0.35,
-                "value": 92
-            },
-            {
-                "x": 0.45,
-                "y": 0.35,
-                "value": 92
-            },
-            {
-                "x": 0.25,
-                "y": 0.35,
-                "value": 92
-            },
-            {
-                "x": 0.15,
-                "y": 0.35,
-                "value": 92
-            },
-            {
-                "x": 0.1,
-                "y": 0.4,
-                "value": 92
-            },
-            {
-                "x": 0.05,
-                "y": 0.45,
-                "value": 92
-            },
-            {
-                "x": 0.08,
-                "y": 0.5,
-                "value": 92
-            },
-            {
-                "x": 0.12,
-                "y": 0.55,
-                "value": 92
-            },
-            {
-                "x": 0.18,
-                "y": 0.6,
-                "value": 92
-            },
-            {
-                "x": 0.3,
-                "y": 0.7,
-                "value": 92
-            },
-            {
-                "x": 0.35,
-                "y": 0.75,
-                "value": 92
-            },
-            {
-                "x": 0.2,
-                "y": 0.8,
-                "value": 92
-            },
-            {
-                "x": 0.1,
-                "y": 0.85,
-                "value": 92
-            },
-            {
-                "x": 0.05,
-                "y": 0.9,
-                "value": 92
-            },
-            {
-                "x": 0.15,
-                "y": 0.95,
-                "value": 92
-            },
-            {
-                "x": 0.25,
-                "y": 0.9,
-                "value": 92
-            },
-            {
-                "x": 0.35,
-                "y": 0.85,
-                "value": 92
-            },
-            {
-                "x": 0.45,
-                "y": 0.8,
-                "value": 92
-            },
-            {
-                "x": 0.55,
-                "y": 0.75,
-                "value": 92
-            },
-            {
-                "x": 0.65,
-                "y": 0.7,
-                "value": 92
-            },
-            {
-                "x": 0.75,
-                "y": 0.65,
-                "value": 92
-            },
-            {
-                "x": 0.3,
-                "y": 0.28,
-                "value": 92
-            },
-            {
-                "x": 0.35,
-                "y": 0.25,
-                "value": 92
-            },
-            {
-                "x": 0.4,
-                "y": 0.22,
-                "value": 92
-            },
-            {
-                "x": 0.45,
-                "y": 0.2,
-                "value": 92
-            },
-            {
-                "x": 0.5,
-                "y": 0.2,
-                "value": 92
-            },
-            {
-                "x": 0.55,
-                "y": 0.2,
-                "value": 92
-            },
-            {
-                "x": 0.6,
-                "y": 0.2,
-                "value": 92
-            }
+          {
+            "x": 0.41,
+            "y": 0.78,
+            "value": 98
+          },
+          {
+            "x": 0.58,
+            "y": 0.8,
+            "value": 98
+          },
+          {
+            "x": 0.78,
+            "y": 0.85,
+            "value": 98
+          },
+          {
+            "x": 0.3,
+            "y": 0.5,
+            "value": 95
+          },
+          {
+            "x": 0.35,
+            "y": 0.45,
+            "value": 95
+          },
+          {
+            "x": 0.4,
+            "y": 0.4,
+            "value": 95
+          },
+          {
+            "x": 0.48,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.55,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.6,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.68,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.75,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.8,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.85,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.9,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.95,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.98,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.92,
+            "y": 0.5,
+            "value": 92
+          },
+          {
+            "x": 0.88,
+            "y": 0.55,
+            "value": 92
+          },
+          {
+            "x": 0.83,
+            "y": 0.6,
+            "value": 92
+          },
+          {
+            "x": 0.78,
+            "y": 0.65,
+            "value": 92
+          },
+          {
+            "x": 0.7,
+            "y": 0.6,
+            "value": 92
+          },
+          {
+            "x": 0.65,
+            "y": 0.55,
+            "value": 92
+          },
+          {
+            "x": 0.5,
+            "y": 0.35,
+            "value": 92
+          },
+          {
+            "x": 0.45,
+            "y": 0.35,
+            "value": 92
+          },
+          {
+            "x": 0.25,
+            "y": 0.35,
+            "value": 92
+          },
+          {
+            "x": 0.15,
+            "y": 0.35,
+            "value": 92
+          },
+          {
+            "x": 0.1,
+            "y": 0.4,
+            "value": 92
+          },
+          {
+            "x": 0.05,
+            "y": 0.45,
+            "value": 92
+          },
+          {
+            "x": 0.08,
+            "y": 0.5,
+            "value": 92
+          },
+          {
+            "x": 0.12,
+            "y": 0.55,
+            "value": 92
+          },
+          {
+            "x": 0.18,
+            "y": 0.6,
+            "value": 92
+          },
+          {
+            "x": 0.3,
+            "y": 0.7,
+            "value": 92
+          },
+          {
+            "x": 0.35,
+            "y": 0.75,
+            "value": 92
+          },
+          {
+            "x": 0.2,
+            "y": 0.8,
+            "value": 92
+          },
+          {
+            "x": 0.1,
+            "y": 0.85,
+            "value": 92
+          },
+          {
+            "x": 0.05,
+            "y": 0.9,
+            "value": 92
+          },
+          {
+            "x": 0.15,
+            "y": 0.95,
+            "value": 92
+          },
+          {
+            "x": 0.25,
+            "y": 0.9,
+            "value": 92
+          },
+          {
+            "x": 0.35,
+            "y": 0.85,
+            "value": 92
+          },
+          {
+            "x": 0.45,
+            "y": 0.8,
+            "value": 92
+          },
+          {
+            "x": 0.55,
+            "y": 0.75,
+            "value": 92
+          },
+          {
+            "x": 0.65,
+            "y": 0.7,
+            "value": 92
+          },
+          {
+            "x": 0.75,
+            "y": 0.65,
+            "value": 92
+          },
+          {
+            "x": 0.3,
+            "y": 0.28,
+            "value": 92
+          },
+          {
+            "x": 0.35,
+            "y": 0.25,
+            "value": 92
+          },
+          {
+            "x": 0.4,
+            "y": 0.22,
+            "value": 92
+          },
+          {
+            "x": 0.45,
+            "y": 0.2,
+            "value": 92
+          },
+          {
+            "x": 0.5,
+            "y": 0.2,
+            "value": 92
+          },
+          {
+            "x": 0.55,
+            "y": 0.2,
+            "value": 92
+          },
+          {
+            "x": 0.6,
+            "y": 0.2,
+            "value": 92
+          }
         ],
         "people_count": 50,
         "demographics": {
-            "male_count": 29,
-            "female_count": 21,
-            "child_count": 0,
-            "elder_count": 0
+          "male_count": 29,
+          "female_count": 21,
+          "child_count": 0,
+          "elder_count": 0
         },
         "violence_flag": false,
         "fire_flag": false,
@@ -4281,17 +4790,29 @@
         "crowd_density": "very_high",
         "emergency_evacuation": false,
         "sentiment_analysis": {
-            "dominant_emotions": [
-                "neutral",
-                "calm"
-            ],
-            "crowd_mood": "normal",
-            "energy_level": "medium"
+          "dominant_emotions": [
+            "neutral",
+            "calm"
+          ],
+          "crowd_mood": "normal",
+          "energy_level": "medium"
         },
         "environmental": {
-            "lighting_condition": "well-lit_indoor",
-            "weather_condition": "not_applicable",
-            "vehicles_present": false
+          "lighting_condition": "well-lit_indoor",
+          "weather_condition": "not_applicable",
+          "vehicles_present": false
         }
+      }
+    },
+    "future_forecast": {
+      "incident_probability": 0.09000000000000001,
+      "prediction_confidence": 0.9249999999999999,
+      "predicted_incident_type": "none",
+      "time_to_incident_seconds": 600,
+      "risk_factors": [
+        "multiple_congestion_points"
+      ],
+      "recommended_action": "no_action",
+      "alert_level": "green"
     }
-}
+  }

@@ -29,21 +29,31 @@ def get_latest_analysis(cctv_data: Dict[str, Any]) -> Dict[str, Any]:
     if not cctv_data:
         return {}
     
+    # Access timestamps nested structure
+    timestamps_data = cctv_data.get('timestamps', {})
+    if not timestamps_data:
+        return {}
+    
     # Get the latest timestamp
-    timestamps = sorted([int(k) for k in cctv_data.keys() if k.isdigit()])
+    timestamps = sorted([int(k) for k in timestamps_data.keys() if k.isdigit()])
     if not timestamps:
         return {}
     
     latest_timestamp = str(timestamps[-1])
-    return cctv_data.get(latest_timestamp, {})
+    return timestamps_data.get(latest_timestamp, {})
 
 def get_timestamp_analysis(cctv_data: Dict[str, Any], timestamp_index: int) -> Dict[str, Any]:
     """Get analysis data for a specific timestamp index"""
     if not cctv_data:
         return {}
     
+    # Access timestamps nested structure
+    timestamps_data = cctv_data.get('timestamps', {})
+    if not timestamps_data:
+        return {}
+    
     # Get sorted timestamps
-    timestamps = sorted([int(k) for k in cctv_data.keys() if k.isdigit()])
+    timestamps = sorted([int(k) for k in timestamps_data.keys() if k.isdigit()])
     if not timestamps:
         return {}
     
@@ -51,7 +61,7 @@ def get_timestamp_analysis(cctv_data: Dict[str, Any], timestamp_index: int) -> D
     actual_index = timestamp_index % len(timestamps)
     timestamp_key = str(timestamps[actual_index])
     
-    analysis_data = cctv_data.get(timestamp_key, {})
+    analysis_data = timestamps_data.get(timestamp_key, {})
     # Add metadata about the cycling
     analysis_data['timestamp_info'] = {
         'current_index': actual_index,
@@ -77,7 +87,10 @@ def get_summary_stats(cctv_data: Dict[str, Any]) -> Dict[str, Any]:
     high_density_count = 0
     security_alerts = 0
     
-    for timestamp_data in cctv_data.values():
+    # Access timestamps nested structure
+    timestamps_data = cctv_data.get('timestamps', {})
+    
+    for timestamp_data in timestamps_data.values():
         if isinstance(timestamp_data, dict):
             people_count = timestamp_data.get('people_count', 0)
             people_counts.append(people_count)
@@ -109,8 +122,9 @@ async def get_cctv_feeds():
         feeds = []
         for cctv_id in sorted(all_data.keys()):
             camera_num = cctv_id.replace('cctv_', '')
-            # Get timeline info for each camera
-            timestamps = sorted([int(k) for k in all_data[cctv_id].keys() if k.isdigit()])
+            # Get timeline info for each camera from the nested 'timestamps' object
+            timestamps_data = all_data[cctv_id].get('timestamps', {})
+            timestamps = sorted([int(k) for k in timestamps_data.keys() if k.isdigit()])
             feeds.append({
                 "id": cctv_id,
                 "name": f"Camera {camera_num}",
@@ -140,11 +154,15 @@ async def get_cctv_feed_data(cctv_id: str, timestamp_index: Optional[int] = None
             
         summary_stats = get_summary_stats(cctv_data)
         
+        # Get prediction data from the root level of the merged analysis
+        future_forecast = cctv_data.get('future_forecast', {})
+        
         return {
             "cctv_id": cctv_id,
             "name": f"Camera {cctv_id.replace('cctv_', '')}",
             "current_analysis": current_data,
             "summary_stats": summary_stats,
+            "future_forecast": future_forecast,
             "last_updated": current_data.get('timestamp', 0)
         }
     except HTTPException:
