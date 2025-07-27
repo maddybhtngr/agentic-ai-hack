@@ -84,10 +84,106 @@ class FlowPredictor:
         # Prediction thresholds
         self.CONGESTION_THRESHOLD = 0.7
         self.VELOCITY_THRESHOLD = 2.0  # meters per second
-        self.DENSITY_THRESHOLD = 50  # people per square meter equivalent
+        self.forecasting_model = None
+        self.prediction_cache = {}
+        
+        # Initialize with known available dataset (from recent runs)
+        self.cached_dataset_resource = 'projects/537730884870/locations/us-central1/datasets/601408121381847040'
+        
+        # Dynamic model discovery (no hardcoding)
+        self.available_model_resources = []
+        
+        # Dynamically discover available models
+        self._discover_available_models()
+        
+        # Try to load existing trained model
+        self._initialize_existing_model()
         
         print(f"🚀 FlowPredictor initialized with Vertex AI Vision + Forecasting for '{self.project_id}'")
-        print("🎯 Features: Gemini 2.5 Pro Flow Analysis + Vertex AI Forecasting + 10min Prediction")
+        print(f"🎯 Features: Gemini 2.5 Pro Flow Analysis + Vertex AI Forecasting + 10min Prediction")
+        print(f"💾 Cached Dataset: {self.cached_dataset_resource}")
+        print(f"🧠 Model Status: {'✅ Ready' if self.forecasting_model else '⏳ Will train on demand'}")
+        
+        # Show relationship between datasets and models
+        self._show_dataset_model_relationship()
+
+    def _discover_available_models(self):
+        """Dynamically discover available trained models in the project"""
+        try:
+            print("🔍 Dynamically discovering available forecasting models...")
+            
+            # List all models in the project/location
+            models = aiplatform.Model.list(
+                # Note: Vertex AI models don't have specific model_type filter
+                # We'll filter by checking display_name patterns instead
+                order_by='create_time desc'  # Get newest first
+            )
+            
+            # Filter for successfully trained forecasting models
+            for model in models:
+                try:
+                    # Check if it's a forecasting model by display name
+                    display_name = getattr(model, 'display_name', '').lower()
+                    if ('forecast' in display_name or 'flow-incident' in display_name or 
+                        'time-series' in display_name) and model.state == "SUCCEEDED":
+                        
+                        model_resource = model.resource_name
+                        self.available_model_resources.append(model_resource)
+                        print(f"✅ Found forecasting model: {display_name} - {model_resource}")
+                        
+                except Exception as e:
+                    print(f"⚠️ Could not check model: {e}")
+                    continue
+            
+            if not self.available_model_resources:
+                print("🎯 No trained forecasting models found in project")
+            else:
+                print(f"📊 Discovered {len(self.available_model_resources)} available models")
+                
+        except Exception as e:
+            print(f"⚠️ Error discovering models: {e}")
+            print("🔄 Will proceed without pre-trained models")
+
+    def _initialize_existing_model(self):
+        """Try to load existing trained models from known resources"""
+        for model_resource in self.available_model_resources:
+            try:
+                print(f"🔄 Attempting to load existing model: {model_resource}")
+                model = aiplatform.Model(model_resource)
+                
+                # Verify model is ready
+                if model.state == "SUCCEEDED":
+                    self.forecasting_model = model
+                    self.forecasting_model_resource = model_resource
+                    print(f"✅ Successfully loaded existing trained model: {model_resource}")
+                    return
+                else:
+                    print(f"⚠️ Model {model_resource} not ready (state: {model.state})")
+                    
+            except Exception as e:
+                print(f"⚠️ Could not load model {model_resource}: {e}")
+                continue
+        
+        print("🎯 No existing trained models available - will train on demand")
+
+    def _show_dataset_model_relationship(self):
+        """Explain the relationship between datasets and models"""
+        print()
+        print("📊 DATASET → MODEL RELATIONSHIP:")
+        print(f"  📁 Dataset: Contains training data (people counts, timestamps, risk scores)")
+        print(f"  🧠 Model: ML model trained FROM the dataset to make predictions")
+        print(f"  🔄 Flow: Dataset → AutoMLForecastingTrainingJob → Model → Predictions")
+        print()
+        if self.available_model_resources:
+            print(f"  ✅ Found {len(self.available_model_resources)} models trained in this project")
+            for i, model_resource in enumerate(self.available_model_resources, 1):
+                model_id = model_resource.split('/')[-1]
+                print(f"    {i}. Model ID: {model_id}")
+        else:
+            print(f"  ⚠️ No models found - will create new model from dataset when needed")
+            print(f"  📊 Dataset available: {self.cached_dataset_resource.split('/')[-1]}")
+            print(f"  🔄 Next: AutoMLForecastingTrainingJob will create model from this dataset")
+        print()
 
     def analyze_video_flow(self, video_path: str, cctv_id: str) -> Dict[int, FlowMetrics]:
         """Analyze video for people flow patterns using Vertex AI Vision + Gemini"""
@@ -779,9 +875,9 @@ Respond with ONLY the JSON, no other text.
         # Step 1: Analyze video flow (get all historical data)
         flow_metrics = self.analyze_video_flow(video_path, cctv_id)
         
-        # Step 2: Generate ONE stable forecast using ALL historical data
-        print("🔮 Generating stable forecast using complete historical data...")
-        future_forecast = self.generate_stable_forecast(flow_metrics, cctv_id)
+        # Step 2: Generate HYBRID forecast using both rule-based and ML approaches
+        print("🔮 Generating hybrid forecast using rule-based + ML analysis...")
+        future_forecast = self.enhanced_predict_incidents(flow_metrics, len(flow_metrics)-1, cctv_id)
         
         # Step 3: Build result with historical analysis + future forecast
         predictions = {}
@@ -872,31 +968,55 @@ Respond with ONLY the JSON, no other text.
         print("🤖 Training Vertex AI Forecasting model...")
         
         try:
-            # Upload training data to GCS
-            bucket_name = f"flow-forecasting-{self.project_id}".lower().replace('_', '-')
+            # DISABLED: Upload training data to GCS (only using existing datasets)
+            # bucket_name = f"flow-forecasting-{self.project_id}".lower().replace('_', '-')
+            # 
+            # try:
+            #     bucket = self.storage_client.bucket(bucket_name)
+            #     if not bucket.exists():
+            #         bucket = self.storage_client.create_bucket(bucket_name, location=self.location)
+            # except Exception:
+            #     bucket = self.storage_client.bucket(bucket_name)
+            # 
+            # # Save training data to GCS
+            # training_file = f"training_data_{int(pd.Timestamp.now().timestamp())}.csv"
+            # blob = bucket.blob(f"training/{training_file}")
+            # blob.upload_from_string(training_data.to_csv(index=False), content_type='text/csv')
+            # 
+            # gcs_source = f"gs://{bucket_name}/training/{training_file}"
+            # print(f"Training data uploaded to: {gcs_source}")
             
-            try:
-                bucket = self.storage_client.bucket(bucket_name)
-                if not bucket.exists():
-                    bucket = self.storage_client.create_bucket(bucket_name, location=self.location)
-            except Exception:
-                bucket = self.storage_client.bucket(bucket_name)
+            print("⚠️ GCS upload disabled - using existing datasets only")
             
-            # Save training data to GCS
-            training_file = f"training_data_{int(pd.Timestamp.now().timestamp())}.csv"
-            blob = bucket.blob(f"training/{training_file}")
-            blob.upload_from_string(training_data.to_csv(index=False), content_type='text/csv')
+            # Smart dataset reuse logic - ONLY USE EXISTING DATASETS
+            dataset = None
+            if hasattr(self, 'cached_dataset_resource') and self.cached_dataset_resource:
+                try:
+                    print(f"🔄 Attempting to reuse existing dataset: {self.cached_dataset_resource}")
+                    dataset = TabularDataset(self.cached_dataset_resource)
+                    print("✅ Successfully reusing existing TabularDataset")
+                except Exception as e:
+                    print(f"⚠️ Could not reuse dataset: {e}")
+                    dataset = None
             
-            gcs_source = f"gs://{bucket_name}/training/{training_file}"
-            print(f"Training data uploaded to: {gcs_source}")
+            # DISABLED: Create new dataset only if reuse failed
+            if dataset is None:
+                print("❌ NEW DATASET CREATION DISABLED - Only reusing existing datasets")
+                print("⚠️ No available dataset found for reuse")
+                return None
+                
+            # # COMMENTED OUT: New dataset creation code
+            # if dataset is None:
+            #     print("🎯 Creating new TabularDataset...")
+            #     dataset = TabularDataset.create(
+            #         display_name=f"flow-prediction-dataset-{int(pd.Timestamp.now().timestamp())}",
+            #         gcs_source=gcs_source
+            #     )
+            #     # Cache the dataset resource for future reuse
+            #     self.cached_dataset_resource = dataset.resource_name
+            #     print(f"✅ New dataset created and cached: {dataset.resource_name}")
             
-            # Create dataset
-            dataset = TabularDataset.create(
-                display_name=f"flow-prediction-dataset-{int(pd.Timestamp.now().timestamp())}",
-                gcs_source=gcs_source
-            )
-            
-            # Create and launch training job
+            # Create and launch training job (FIXED: parameters moved to run method)
             training_job = AutoMLForecastingTrainingJob(
                 display_name=f"flow-incident-forecasting-{int(pd.Timestamp.now().timestamp())}",
                 optimization_objective="minimize-rmse",
@@ -904,12 +1024,7 @@ Respond with ONLY the JSON, no other text.
                     "timestamp": "timestamp",
                     "cctv_id": "categorical",
                     "incident_risk_score": "numeric"
-                },
-                data_granularity_unit="second",
-                data_granularity_count=1,
-                forecast_horizon=600,  # Predict 10 minutes ahead
-                context_window=120,   # Use 2 minutes of history
-                predefined_split_column_name=None
+                }
             )
             
             model = training_job.run(
@@ -917,15 +1032,43 @@ Respond with ONLY the JSON, no other text.
                 target_column="incident_risk_score",
                 time_column="timestamp",
                 time_series_identifier_column="cctv_id",
+                unavailable_at_forecast_columns=[],
+                available_at_forecast_columns=["people_count", "density_numeric", "average_velocity", "net_flow", "congestion_points"],
+                forecast_horizon=600,
+                data_granularity_unit="second",
+                data_granularity_count=1,
+                context_window=120,
                 training_fraction_split=0.8,
                 validation_fraction_split=0.1,
                 test_fraction_split=0.1,
-                sync=False  # Run asynchronously
+                sync=False
             )
             
-            print(f"✅ Forecasting model training started: {model.resource_name}")
-            return model.resource_name
+            # Handle async training result
+            print(f"⚠️ ASYNC TRAINING NOTE: Model training initiated but not immediately available")
+            print(f"🔄 Training job will run in background for ~15-30 minutes")
+            print(f"✅ System will use rule-based prediction until ML model is ready")
             
+            # Store training job reference for future model retrieval
+            self.forecasting_training_job = training_job
+            
+            # Try to get the model resource name from the training job
+            try:
+                if hasattr(training_job, 'resource_name'):
+                    training_job_name = training_job.resource_name
+                    print(f"📋 Training job resource: {training_job_name}")
+                    # Store this for future model availability checking
+                    self.forecasting_training_job_resource = training_job_name
+                else:
+                    training_job_name = f"async-training-{int(pd.Timestamp.now().timestamp())}"
+                    print(f"📋 Training job started: {training_job_name}")
+                    
+                return training_job_name
+                
+            except Exception as e:
+                print(f"⚠️ Could not get training job details: {e}")
+                return "async-training-started"
+                
         except Exception as e:
             print(f"❌ Error training forecasting model: {e}")
             return None
@@ -1043,31 +1186,118 @@ Respond with ONLY the JSON, no other text.
 
     def enhanced_predict_incidents(self, flow_metrics: Dict[int, FlowMetrics], 
                                  current_timestamp: int, cctv_id: str) -> PredictionResult:
-        """Enhanced prediction using both rule-based and Vertex AI forecasting"""
-        print(f"🔮 Enhanced incident prediction for CCTV {cctv_id} at timestamp {current_timestamp}")
+        """Hybrid prediction using confidence-based selection between rule-based and ML"""
+        print(f"🔮 Hybrid incident prediction for CCTV {cctv_id} - analyzing {len(flow_metrics)} timestamps")
         
-        # Prepare recent data for Vertex AI prediction
+        # Generate Rule-Based Prediction (for immediate threats)
+        print("🛡️ Generating rule-based prediction (incident triggers)...")
+        rule_based_prediction = self.generate_stable_forecast(flow_metrics, cctv_id)
+        
+        # Check for immediate high-confidence threats
+        immediate_threats = self._check_immediate_threats(flow_metrics)
+        
+        if immediate_threats['has_immediate_threat']:
+            # For fire/weapons/violence: Use rule-based with maximum confidence
+            print(f"🚨 IMMEDIATE THREAT DETECTED: {immediate_threats['threat_types']}")
+            print("✅ Using HIGH-CONFIDENCE rule-based prediction for immediate threat")
+            rule_based_prediction.prediction_confidence = 0.95  # High confidence for immediate threats
+            return rule_based_prediction
+        
+        # For complex crowd patterns: Try ML prediction
+        print("🤖 Attempting ML-based prediction for crowd patterns...")
         df = self.prepare_forecasting_data(flow_metrics, cctv_id)
         
-        # Try Vertex AI prediction first
-        vertex_prediction = self.predict_with_vertex_ai(df)
-        
-        if vertex_prediction:
-            # Use Vertex AI prediction
-            print("✅ Using Vertex AI forecasting prediction")
-            return PredictionResult(
-                incident_probability=vertex_prediction['incident_probability'],
-                prediction_confidence=vertex_prediction['prediction_confidence'],
-                predicted_incident_type=vertex_prediction['predicted_incident_type'],
-                time_to_incident_seconds=vertex_prediction['time_to_incident_seconds'],
-                risk_factors=vertex_prediction['risk_factors'],
-                recommended_action=vertex_prediction['recommended_action'],
-                alert_level=vertex_prediction['alert_level']
-            )
+        # Smart model training logic with improved async handling
+        if self.forecasting_model is None and len(df) >= 15:
+            # Check if we have a stored model resource from previous training
+            if hasattr(self, 'forecasting_model_resource') and self.forecasting_model_resource:
+                print(f"🔄 Found existing model resource: {self.forecasting_model_resource}")
+                try:
+                    # Try to load the existing model
+                    self.forecasting_model = aiplatform.Model(self.forecasting_model_resource)
+                    print("✅ Successfully loaded existing ML model")
+                except Exception as e:
+                    print(f"⚠️ Could not load existing model: {e}")
+                    self.forecasting_model = None
+            
+            # Only train new model if we still don't have one
+            if self.forecasting_model is None:
+                print(f"🎯 Attempting ML model training with {len(df)} data points...")
+                training_result = self.train_forecasting_model(df)
+                if training_result:
+                    print("✅ ML training initiated (async - will be available later)")
+                    # Don't try to use the model immediately for async training
+                    print("⚠️ Using rule-based prediction while ML model trains")
+                else:
+                    print("⚠️ ML model training failed - using rule-based prediction")
+        elif self.forecasting_model is not None:
+            print("✅ Using existing ML model for prediction")
         else:
-            # Fallback to rule-based prediction
-            print("⚠️ Falling back to rule-based prediction")
-            return self.predict_incidents(flow_metrics, current_timestamp)
+            print(f"⚠️ Insufficient data for ML training ({len(df)}/15 required) - using rule-based")
+        
+        vertex_prediction_dict = self.predict_with_vertex_ai(df)
+        
+        if vertex_prediction_dict and vertex_prediction_dict.get('prediction_confidence', 0) > 0.7:
+            # ML has high confidence - use ML prediction
+            ml_prediction = PredictionResult(
+                incident_probability=vertex_prediction_dict['incident_probability'],
+                prediction_confidence=vertex_prediction_dict['prediction_confidence'],
+                predicted_incident_type=vertex_prediction_dict['predicted_incident_type'],
+                time_to_incident_seconds=vertex_prediction_dict['time_to_incident_seconds'],
+                risk_factors=vertex_prediction_dict['risk_factors'],
+                recommended_action=vertex_prediction_dict['recommended_action'],
+                alert_level=vertex_prediction_dict['alert_level']
+            )
+            
+            print(f"🤖 ML confidence: {ml_prediction.prediction_confidence:.1%}")
+            print(f"🛡️ Rule confidence: {rule_based_prediction.prediction_confidence:.1%}")
+            
+            # Confidence-based selection
+            if ml_prediction.prediction_confidence > rule_based_prediction.prediction_confidence:
+                print("✅ Using ML prediction (higher confidence)")
+                return ml_prediction
+            else:
+                print("✅ Using rule-based prediction (higher confidence)")
+                return rule_based_prediction
+        else:
+            # ML failed or low confidence - use rule-based
+            print("⚠️ ML unavailable/low confidence - using rule-based prediction")
+            return rule_based_prediction
+
+    def _check_immediate_threats(self, flow_metrics: Dict[int, FlowMetrics]) -> Dict:
+        """Check for immediate high-confidence threats (fire, weapons, violence)"""
+        immediate_threats = {
+            'has_immediate_threat': False,
+            'threat_types': [],
+            'confidence': 0.95
+        }
+        
+        # Check all timestamps for immediate threats
+        for timestamp, fm in flow_metrics.items():
+            if fm.fire_detected:
+                immediate_threats['has_immediate_threat'] = True
+                immediate_threats['threat_types'].append('fire')
+            
+            if fm.smoke_detected:
+                immediate_threats['has_immediate_threat'] = True
+                immediate_threats['threat_types'].append('smoke')
+            
+            if fm.weapon_detected:
+                immediate_threats['has_immediate_threat'] = True
+                immediate_threats['threat_types'].extend(['weapons'] + fm.weapon_types)
+            
+            if fm.violence_detected:
+                immediate_threats['has_immediate_threat'] = True
+                immediate_threats['threat_types'].append('violence')
+            
+            if fm.emergency_evacuation:
+                immediate_threats['has_immediate_threat'] = True
+                immediate_threats['threat_types'].append('emergency_evacuation')
+        
+        # Remove duplicates
+        immediate_threats['threat_types'] = list(set(immediate_threats['threat_types']))
+        
+        return immediate_threats
 
 
 # Alias for backward compatibility
