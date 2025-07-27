@@ -17,7 +17,7 @@ async def fetch_crowd_data_from_backend() -> dict:
     """Fetches crowd data from the backend API."""
     try:
         async with httpx.AsyncClient() as client:
-            response = await client.get("http://localhost:8000/zones/crowd/details")
+            response = await client.get("https://backend-service-178028895966.us-central1.run.app/zones/crowd/details")
             response.raise_for_status()
             return response.json()
     except Exception as e:

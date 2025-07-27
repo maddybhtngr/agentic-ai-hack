@@ -29,7 +29,7 @@ function CommandCenter() {
 
   // Video endpoint mapping for each camera
   const getVideoUrl = (cameraId) => {
-    const backendUrl = 'https://backend-service-178028895966.us-central1.run.app'; // Backend API URL
+    const backendUrl = 'https://backend-service-178028895966.us-central1.run.app'; // Production backend URL
     return `${backendUrl}/cctv/videos/${cameraId}`;
   };
 
@@ -501,11 +501,11 @@ function CommandCenter() {
                               onError={(e) => {
                                 console.error(`Error loading video for ${cam.id}:`, e);
                               }}
-                                                         >
-                               <source 
-                                 src={getVideoUrl(cam.id)} 
-                                 type="video/mp4" 
-                               />
+                            >
+                              <source 
+                                src={getVideoUrl(cam.id)} 
+                                type="video/mp4" 
+                              />
                               <div style={{
                                 position: 'absolute',
                                 top: '50%',

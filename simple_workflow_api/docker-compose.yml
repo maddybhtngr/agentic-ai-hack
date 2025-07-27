@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  workflow-api:
+    build: .
+    ports:
+      - "8002:8002"
+    environment:
+      - HOST=0.0.0.0
+      - PORT=8002
+      # Backend API connection - adjust if backend is in Docker
+      - BACKEND_URL=http://host.docker.internal:8000
+    volumes:
+      # Mount for development (optional - uncomment for live reloading)
+      # - .:/app
+    restart: unless-stopped
+    depends_on:
+      # If running both services together
+      # - backend
+    extra_hosts:
+      # Allow connection to host machine (for backend running on host)
+      - "host.docker.internal:host-gateway"
+
+  # Optional: Full stack with backend
+  # backend:
+  #   build: ../backend
+  #   ports:
+  #     - "8000:8000"
+  #   environment:
+  #     - DEBUG=True
+  #     - HOST=0.0.0.0
+  #     - PORT=8000
+
+# Optional: Create a network for inter-service communication
+# networks:
+#   app-network:
+#     driver: bridge 

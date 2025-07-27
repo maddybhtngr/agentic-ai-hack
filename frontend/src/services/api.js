@@ -1,5 +1,6 @@
 // API Configuration
 const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || 'https://backend-service-178028895966.us-central1.run.app').replace(/^http:/, 'https:')
+// const API_BASE_URL = "http://localhost:8000"
 const WORKFLOW_API_URL = (import.meta.env.VITE_WORKFLOW_API_URL || 'https://backend-service-2-178028895966.us-central1.run.app').replace(/^http:/, 'https:')
 
 // API Service functions

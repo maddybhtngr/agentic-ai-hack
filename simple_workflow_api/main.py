@@ -31,7 +31,7 @@ async def root():
         "endpoints": {
             "crowd_monitoring": "/api/v1/monitor-crowd"
         },
-        "backend_integration": "http://localhost:8000/zones/crowd/details",
+        "backend_integration": "https://backend-service-178028895966.us-central1.run.app/zones/crowd/details",
         "health_check": "/health"
     }
 
@@ -42,7 +42,7 @@ async def health_check():
         "status": "healthy",
         "service": "Crowd Monitoring API",
         "workflows_available": ["crowd_monitoring"],
-        "backend_connection": "http://localhost:8000"
+        "backend_connection": "https://backend-service-178028895966.us-central1.run.app"
     }
 
 # Main Endpoint: Real-time Crowd Monitoring Workflow
@@ -93,7 +93,7 @@ async def get_workflow_info():
             "method": "GET",
             "description": "Fetch Live Data → Analyze Density → Incident Decision",
             "agents": ["crowd_data_analyzer", "incident_notifier"],
-            "data_source": "http://localhost:8000/zones/crowd/details",
+            "data_source": "https://backend-service-178028895966.us-central1.run.app/zones/crowd/details",
             "density_levels": ["LOW", "MODERATE", "HIGH", "OVERFLOWING"],
             "use_cases": [
                 "Real-time crowd safety monitoring",
