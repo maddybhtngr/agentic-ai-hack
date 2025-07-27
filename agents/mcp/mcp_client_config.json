@@ -1,0 +1,22 @@
+{
+  "mcpServers": {
+    "venue-management-local": {
+      "transport": {
+        "type": "http",
+        "url": "http://localhost:8001/mcp/"
+      },
+      "name": "Venue Management MCP Server (Local)",
+      "description": "Local FastMCP server for venue and facility management",
+      "version": "1.0.0"
+    },
+    "venue-management-firebase": {
+      "transport": {
+        "type": "http",
+        "url": "https://us-central1-perfect-lantern-466808-i1.cloudfunctions.net/mcpserver"
+      },
+      "name": "Venue Management MCP Server (Firebase)",
+      "description": "Firebase-hosted MCP server for venue and facility management",
+      "version": "1.0.0"
+    }
+  }
+}

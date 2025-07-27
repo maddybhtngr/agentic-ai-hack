@@ -1,0 +1,11 @@
+# Firebase Functions Framework
+functions-framework>=3.8.2
+flask>=3.0.3
+
+# FastMCP Venue Management Server
+fastmcp>=0.6.0
+
+# Optional: Testing
+requests>=2.28.0
+
+# Note: sqlite3, json, math, datetime are Python built-ins
