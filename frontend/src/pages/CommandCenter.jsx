@@ -4,7 +4,7 @@ import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import AppBar from '../components/AppBar';
 import Sidebar from '../components/Sidebar';
 import FloatingAssistant from '../components/FloatingAssistant';
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState, useEffect, useRef } from 'react';
 import { Modal, TextInput, Button } from '@mantine/core';
 import { IconPencil, IconPlus } from '@tabler/icons-react';
 import { apiService } from '../services/api';
@@ -26,10 +26,14 @@ function CommandCenter() {
   const [editCameraName, setEditCameraName] = useState('');
   const [newCameraName, setNewCameraName] = useState('');
   const [heatMapsEnabled, setHeatMapsEnabled] = useState(true);
+  
+  // Ref for predictions scroll container to preserve scroll position
+  const predictionsScrollRef = useRef(null);
+  const [scrollPosition, setScrollPosition] = useState(0);
 
   // Video endpoint mapping for each camera
   const getVideoUrl = (cameraId) => {
-    const backendUrl = 'https://backend-service-178028895966.us-central1.run.app'; // Production backend URL
+    const backendUrl = 'http://localhost:8000/'; // Production backend URL
     return `${backendUrl}/cctv/videos/${cameraId}`;
   };
 
@@ -127,10 +131,20 @@ function CommandCenter() {
           // Immediately fetch new data for this camera
           apiService.getCCTVFeedData(camera.id, newIndexes[camera.id])
             .then(result => {
+              // Preserve scroll position before data update
+              const currentScrollTop = predictionsScrollRef.current?.scrollTop || 0;
+              
               setCctvData(prevData => ({
                 ...prevData,
                 [result.cctv_id]: result
               }));
+              
+              // Restore scroll position after data update
+              setTimeout(() => {
+                if (predictionsScrollRef.current) {
+                  predictionsScrollRef.current.scrollTop = currentScrollTop;
+                }
+              }, 0);
             })
             .catch(err => console.error(`Error updating ${camera.id}:`, err));
           
@@ -374,31 +388,35 @@ function CommandCenter() {
             {/* Camera Grid */}
             <Grid gutter="xl" align="stretch">
               {cameras.map((cam, idx) => {
+                // CRITICAL FIX: Do not render the camera card until its data has been loaded.
+                if (!cctvData?.[cam.id]) {
+                  return null; // Or a loading skeleton
+                }
                 // Get real CCTV data for this camera
-                const cameraData = cctvData[cam.id] || {};
-                const currentAnalysis = cameraData.current_analysis || {};
-                const summaryStats = cameraData.summary_stats || {};
-                const timestampInfo = currentAnalysis.timestamp_info || {};
-                const currentTimestampIndex = cameraTimestampIndexes[cam.id] || 0;
+                const cameraData = cctvData?.[cam.id] || {};
+                const currentAnalysis = cameraData?.current_analysis || {};
+                const summaryStats = cameraData?.summary_stats || {};
+                const timestampInfo = currentAnalysis?.timestamp_info || {};
+                const currentTimestampIndex = cameraTimestampIndexes?.[cam.id] || 0;
                 
                 // Extract real data
-                const peopleCount = currentAnalysis.people_count || 0;
-                const crowdDensity = currentAnalysis.crowd_density || 'low';
-                const demographics = currentAnalysis.demographics || {};
-                const sentiment = currentAnalysis.sentiment_analysis || {};
+                const peopleCount = currentAnalysis?.people_count || 0;
+                const crowdDensity = currentAnalysis?.crowd_density || 'low';
+                const demographics = currentAnalysis?.demographics || {};
+                const sentiment = currentAnalysis?.sentiment_analysis || {};
                 
                 // Security alerts
-                const violenceAlert = currentAnalysis.violence_flag || false;
-                const weaponAlert = currentAnalysis.weapon_detected || false;
-                const fireAlert = currentAnalysis.fire_flag || false;
-                const smokeAlert = currentAnalysis.smoke_flag || false;
+                const violenceAlert = currentAnalysis?.violence_flag || false;
+                const weaponAlert = currentAnalysis?.weapon_detected || false;
+                const fireAlert = currentAnalysis?.fire_flag || false;
+                const smokeAlert = currentAnalysis?.smoke_flag || false;
                 const hasAlert = violenceAlert || weaponAlert || fireAlert || smokeAlert;
                 
                 // Calculate faces count from demographics
-                const faces = (demographics.male_count || 0) + (demographics.female_count || 0);
+                const faces = (demographics?.male_count || 0) + (demographics?.female_count || 0);
                 
                 // Quality metric based on data availability and analysis confidence
-                const quality = currentAnalysis.timestamp ? 
+                const quality = currentAnalysis?.timestamp ? 
                   Math.min(95, 70 + (peopleCount > 0 ? 15 : 0) + (Object.keys(demographics).length > 0 ? 10 : 0)) 
                   : 50;
                 
@@ -476,7 +494,7 @@ function CommandCenter() {
                           {/* CCTV Content - Heatmap or Video */}
                           {heatMapsEnabled ? (
                             <CCTVHeatMapOverlay 
-                              heatmapPoints={currentAnalysis.heatmap_points || []}
+                              heatmapPoints={currentAnalysis?.heatmap_points || []}
                               width={600}
                               height={400}
                               maxOpacity={0.9}
@@ -559,7 +577,7 @@ function CommandCenter() {
                           )}
                           
                           {/* Timestamp Progress Indicator */}
-                          {timestampInfo.total_timestamps && (
+                          {timestampInfo?.total_timestamps && (
                             <div
                               style={{
                                 position: 'absolute',
@@ -575,7 +593,7 @@ function CommandCenter() {
                               <div
                                 style={{
                                   height: '100%',
-                                  width: `${timestampInfo.progress_percentage || 0}%`,
+                                  width: `${timestampInfo?.progress_percentage || 0}%`,
                                   background: 'linear-gradient(90deg, #667eea 0%, #764ba2 100%)',
                                   borderRadius: 2,
                                   transition: 'width 0.5s ease'
@@ -585,7 +603,7 @@ function CommandCenter() {
                           )}
 
                           {/* Timestamp Info Badge */}
-                          {timestampInfo.total_timestamps && (
+                          {timestampInfo?.total_timestamps && (
                             <div
                               style={{
                                 position: 'absolute',
@@ -600,7 +618,7 @@ function CommandCenter() {
                                 zIndex: 16
                               }}
                             >
-                              {timestampInfo.current_index + 1}/{timestampInfo.total_timestamps}
+                              {timestampInfo?.current_index + 1}/{timestampInfo?.total_timestamps}
                             </div>
                           )}
                           
@@ -697,13 +715,16 @@ function CommandCenter() {
                               Overview
                             </Tabs.Tab>
                             <Tabs.Tab value="demographics" leftSection={<IconUsersGroup size={14} />}>
-                              People
+                              Demographics
                             </Tabs.Tab>
                             <Tabs.Tab value="security" leftSection={<IconShield size={14} />}>
                               Security
                             </Tabs.Tab>
                             <Tabs.Tab value="sentiment" leftSection={<IconMoodSmile size={14} />}>
-                              Mood
+                              Sentiment
+                            </Tabs.Tab>
+                            <Tabs.Tab value="predictions" leftSection={<IconActivity size={14} />}>
+                              Predictions
                             </Tabs.Tab>
                           </Tabs.List>
 
@@ -798,7 +819,7 @@ function CommandCenter() {
                                     borderRadius: rem(6),
                                     textAlign: 'center'
                                   }}>
-                                    <Text size="lg" fw={700} c="blue">{demographics.male_count || 0}</Text>
+                                    <Text size="lg" fw={700} c="blue">{demographics?.male_count || 0}</Text>
                                     <Text size="xs" c="dimmed">Males</Text>
                                   </div>
                                   <div style={{
@@ -807,7 +828,7 @@ function CommandCenter() {
                                     borderRadius: rem(6),
                                     textAlign: 'center'
                                   }}>
-                                    <Text size="lg" fw={700} c="pink">{demographics.female_count || 0}</Text>
+                                    <Text size="lg" fw={700} c="pink">{demographics?.female_count || 0}</Text>
                                     <Text size="xs" c="dimmed">Females</Text>
                                   </div>
                                   <div style={{
@@ -816,7 +837,7 @@ function CommandCenter() {
                                     borderRadius: rem(6),
                                     textAlign: 'center'
                                   }}>
-                                    <Text size="lg" fw={700} c="green">{demographics.child_count || 0}</Text>
+                                    <Text size="lg" fw={700} c="green">{demographics?.child_count || 0}</Text>
                                     <Text size="xs" c="dimmed">Children</Text>
                                   </div>
                                   <div style={{
@@ -825,7 +846,7 @@ function CommandCenter() {
                                     borderRadius: rem(6),
                                     textAlign: 'center'
                                   }}>
-                                    <Text size="lg" fw={700} c="violet">{demographics.elder_count || 0}</Text>
+                                    <Text size="lg" fw={700} c="violet">{demographics?.elder_count || 0}</Text>
                                     <Text size="xs" c="dimmed">Elders</Text>
                                   </div>
                                 </div>
@@ -849,21 +870,21 @@ function CommandCenter() {
                                   <Group justify="space-between">
                                     <Text size="sm">Suspicious Behavior:</Text>
                                     <Badge 
-                                      color={currentAnalysis.suspicious_behavior ? 'orange' : 'green'} 
+                                      color={currentAnalysis?.suspicious_behavior ? 'orange' : 'green'} 
                                       variant="filled" 
                                       size="sm"
                                     >
-                                      {currentAnalysis.suspicious_behavior ? 'YES' : 'NO'}
+                                      {currentAnalysis?.suspicious_behavior ? 'YES' : 'NO'}
                                     </Badge>
                                   </Group>
                                   <Group justify="space-between">
                                     <Text size="sm">Emergency Evacuation:</Text>
                                     <Badge 
-                                      color={currentAnalysis.emergency_evacuation ? 'red' : 'green'} 
+                                      color={currentAnalysis?.emergency_evacuation ? 'red' : 'green'} 
                                       variant="filled" 
                                       size="sm"
                                     >
-                                      {currentAnalysis.emergency_evacuation ? 'YES' : 'NO'}
+                                      {currentAnalysis?.emergency_evacuation ? 'YES' : 'NO'}
                                     </Badge>
                                   </Group>
                                 </Stack>
@@ -883,7 +904,7 @@ function CommandCenter() {
                                       textAlign: 'center'
                                     }}>
                                       <Text size="xs" fw={600}>Lighting</Text>
-                                      <Text size="xs" c="dimmed">{currentAnalysis.environmental?.lighting_condition || 'Unknown'}</Text>
+                                      <Text size="xs" c="dimmed">{currentAnalysis?.environmental?.lighting_condition || 'Unknown'}</Text>
                                     </div>
                                     <div style={{
                                       background: '#f8fafc',
@@ -892,7 +913,7 @@ function CommandCenter() {
                                       textAlign: 'center'
                                     }}>
                                       <Text size="xs" fw={600}>Weather</Text>
-                                      <Text size="xs" c="dimmed">{currentAnalysis.environmental?.weather_condition || 'Unknown'}</Text>
+                                      <Text size="xs" c="dimmed">{currentAnalysis?.environmental?.weather_condition || 'Unknown'}</Text>
                                     </div>
                                     <div style={{
                                       background: '#f8fafc',
@@ -901,7 +922,7 @@ function CommandCenter() {
                                       textAlign: 'center'
                                     }}>
                                       <Text size="xs" fw={600}>Vehicles</Text>
-                                      <Text size="xs" c="dimmed">{currentAnalysis.environmental?.vehicles_present ? 'Yes' : 'No'}</Text>
+                                      <Text size="xs" c="dimmed">{currentAnalysis?.environmental?.vehicles_present ? 'Yes' : 'No'}</Text>
                                     </div>
                                   </div>
                                 </div>
@@ -915,12 +936,12 @@ function CommandCenter() {
                                   <Group justify="space-between">
                                     <Text size="sm">Overall Mood:</Text>
                                     <Badge 
-                                      color={sentiment.crowd_mood === 'agitated' ? 'red' : 
-                                             sentiment.crowd_mood === 'calm' ? 'green' : 'blue'} 
+                                      color={sentiment?.crowd_mood === 'agitated' ? 'red' : 
+                                             sentiment?.crowd_mood === 'calm' ? 'green' : 'blue'} 
                                       variant="light" 
                                       size="sm"
                                     >
-                                      {sentiment.crowd_mood || 'Neutral'}
+                                      {sentiment?.crowd_mood || 'Neutral'}
                                     </Badge>
                                   </Group>
                                   <Group justify="space-between">
@@ -930,17 +951,17 @@ function CommandCenter() {
                                       variant="light" 
                                       size="sm"
                                     >
-                                      {(sentiment.energy_level || 'low').charAt(0).toUpperCase() + (sentiment.energy_level || 'low').slice(1)}
+                                      {(sentiment?.energy_level || 'low').charAt(0).toUpperCase() + (sentiment?.energy_level || 'low').slice(1)}
                                     </Badge>
                                   </Group>
                                 </Stack>
 
                                 {/* Dominant Emotions */}
-                                {sentiment.dominant_emotions && sentiment.dominant_emotions.length > 0 && (
+                                {sentiment?.dominant_emotions && sentiment?.dominant_emotions.length > 0 && (
                                   <div>
                                     <Text size="sm" fw={600} c="blue" mb="xs" mt="md">Dominant Emotions:</Text>
                                     <Group gap="xs">
-                                      {sentiment.dominant_emotions.map((emotion, idx) => (
+                                      {sentiment?.dominant_emotions.map((emotion, idx) => (
                                         <Badge 
                                           key={idx}
                                           variant="light" 
@@ -955,21 +976,153 @@ function CommandCenter() {
                                 )}
 
                                 {/* Timeline Info */}
-                                {timestampInfo.total_timestamps && (
+                                {timestampInfo?.total_timestamps && (
                                   <div>
                                     <Text size="sm" fw={600} c="gray" mb="xs" mt="md">Timeline:</Text>
                                     <Group gap="xs">
                                       <Badge variant="light" color="gray" size="sm">
-                                        Frame {timestampInfo.current_index + 1} / {timestampInfo.total_timestamps}
+                                        Frame {timestampInfo?.current_index + 1} / {timestampInfo?.total_timestamps}
                                       </Badge>
                                       <Badge variant="light" color="cyan" size="sm">
-                                        {Math.round(timestampInfo.progress_percentage || 0)}% Complete
+                                        {Math.round(timestampInfo?.progress_percentage || 0)}% Complete
                                       </Badge>
                                     </Group>
                                   </div>
                                 )}
                               </Stack>
                             </Tabs.Panel>
+
+                            <Tabs.Panel value="predictions">
+                              <div 
+                                ref={predictionsScrollRef}
+                                style={{ 
+                                  maxHeight: '450px', 
+                                  overflowY: 'auto', 
+                                  paddingRight: '12px', 
+                                  paddingBottom: '16px',
+                                  marginBottom: '8px'
+                                }}>
+                                <Stack gap="sm">
+                                {/* Flow Metrics */}
+                                <div>
+                                  <Text size="sm" fw={600} c="blue" mb="xs">🔁 Flow Metrics</Text>
+                                  <Grid gutter="xs">
+                                    <Grid.Col span={6}>
+                                      <Paper withBorder p="xs" style={{ textAlign: 'center' }}>
+                                        <Text size="xl" fw={700} c="blue">
+                                          {currentAnalysis?.flow_metrics?.inflow_count || 0}
+                                        </Text>
+                                        <Text size="xs" c="dimmed">Inflow</Text>
+                                      </Paper>
+                                    </Grid.Col>
+                                    <Grid.Col span={6}>
+                                      <Paper withBorder p="xs" style={{ textAlign: 'center' }}>
+                                        <Text size="xl" fw={700} c="orange">
+                                          {currentAnalysis?.flow_metrics?.outflow_count || 0}
+                                        </Text>
+                                        <Text size="xs" c="dimmed">Outflow</Text>
+                                      </Paper>
+                                    </Grid.Col>
+                                    <Grid.Col span={6}>
+                                      <Paper withBorder p="xs" style={{ textAlign: 'center' }}>
+                                        <Text size="xl" fw={700} c="green">
+                                          {currentAnalysis?.flow_metrics?.net_flow || 0}
+                                        </Text>
+                                        <Text size="xs" c="dimmed">Net Flow</Text>
+                                      </Paper>
+                                    </Grid.Col>
+                                    <Grid.Col span={6}>
+                                      <Paper withBorder p="xs" style={{ textAlign: 'center' }}>
+                                        <Text size="xl" fw={700} c="violet">
+                                          {(currentAnalysis?.flow_metrics?.density_level || 'low').charAt(0).toUpperCase() + (currentAnalysis?.flow_metrics?.density_level || 'low').slice(1)}
+                                        </Text>
+                                        <Text size="xs" c="dimmed">Density</Text>
+                                      </Paper>
+                                    </Grid.Col>
+                                  </Grid>
+                                </div>
+
+                                {/* Future Forecast */}
+                                <div>
+                                  <Text size="sm" fw={600} c="orange" mb="xs">🔮 Future Forecast</Text>
+                                  <Stack gap="xs">
+                                    <Group justify="space-between">
+                                      <Text size="sm">Incident Probability:</Text>
+                                      <Badge 
+                                        color={((cctvData?.[cam.id]?.future_forecast?.incident_probability || 0) * 100) >= 70 ? 'red' : 
+                                               ((cctvData?.[cam.id]?.future_forecast?.incident_probability || 0) * 100) >= 40 ? 'orange' : 'green'} 
+                                        size="sm"
+                                      >
+                                        {((cctvData?.[cam.id]?.future_forecast?.incident_probability || 0) * 100).toFixed(1)}%
+                                      </Badge>
+                                    </Group>
+                                    <Group justify="space-between">
+                                      <Text size="sm">Risk Level:</Text>
+                                      <Badge 
+                                        color={((cctvData?.[cam.id]?.future_forecast?.incident_probability || 0) * 100) >= 70 ? 'red' : 
+                                               ((cctvData?.[cam.id]?.future_forecast?.incident_probability || 0) * 100) >= 40 ? 'orange' : 'green'} 
+                                        size="sm"
+                                      >
+                                        {((cctvData?.[cam.id]?.future_forecast?.incident_probability || 0) * 100) >= 70 ? 'High' : 
+                                         ((cctvData?.[cam.id]?.future_forecast?.incident_probability || 0) * 100) >= 40 ? 'Medium' : 'Low'}
+                                      </Badge>
+                                    </Group>
+                                    <Group justify="space-between">
+                                      <Text size="sm">Time to Incident:</Text>
+                                      <Text size="sm" fw={500} c="orange">
+                                        {(() => {
+                                          const timeToIncident = cctvData[cam.id]?.future_forecast?.time_to_incident_seconds || 0;
+                                          if (timeToIncident > 0) {
+                                            const minutes = Math.floor(timeToIncident / 60);
+                                            const seconds = timeToIncident % 60;
+                                            return minutes > 0 ? `${minutes}m ${seconds}s` : `${seconds}s`;
+                                          }
+                                          return '--';
+                                        })()}
+                                      </Text>
+                                    </Group>
+                                  </Stack>
+                                </div>
+
+                                {/* Incident Details */}
+                                <div>
+                                  <Text size="sm" fw={600} c="red" mb="xs">⚠️ Incident Prediction Details</Text>
+                                  <Stack gap="xs">
+                                    <Group justify="space-between">
+                                      <Text size="sm">Predicted Type:</Text>
+                                      <Text size="sm" fw={500}>
+                                        {(cctvData[cam.id]?.future_forecast?.predicted_incident_type || 'None').charAt(0).toUpperCase() + 
+                                         (cctvData[cam.id]?.future_forecast?.predicted_incident_type || 'None').slice(1)}
+                                      </Text>
+                                    </Group>
+                                    <Group justify="space-between">
+                                      <Text size="sm">Alert Level:</Text>
+                                      <Badge 
+                                        color={cctvData[cam.id]?.future_forecast?.alert_level === 'red' ? 'red' : 
+                                               cctvData[cam.id]?.future_forecast?.alert_level === 'yellow' ? 'yellow' : 'green'} 
+                                        size="sm"
+                                      >
+                                        {(cctvData[cam.id]?.future_forecast?.alert_level || 'green').toUpperCase()}
+                                      </Badge>
+                                    </Group>
+                                    {/* Risk Factors */}
+                                    {cctvData[cam.id]?.future_forecast?.risk_factors && cctvData[cam.id].future_forecast.risk_factors.length > 0 && (
+                                      <div>
+                                        <Text size="sm" fw={600} c="red" mb="xs">Risk Factors:</Text>
+                                        <Group gap="4px">
+                                          {cctvData[cam.id].future_forecast.risk_factors.map((factor, idx) => (
+                                            <Badge key={idx} color="red" size="xs">
+                                              {factor.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
+                                            </Badge>
+                                          ))}
+                                        </Group>
+                                      </div>
+                                    )}
+                                  </Stack>
+                                </div>
+                              </Stack>
+                            </div>
+                          </Tabs.Panel>
                           </div>
                         </Tabs>
                       </div>
