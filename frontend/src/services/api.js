@@ -1,6 +1,6 @@
 // API Configuration
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://backend-service-178028895966.us-central1.run.app'
-const WORKFLOW_API_URL = import.meta.env.VITE_WORKFLOW_API_URL || 'https://backend-service-2-178028895966.us-central1.run.app'
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || 'https://backend-service-178028895966.us-central1.run.app').replace(/^http:/, 'https:')
+const WORKFLOW_API_URL = (import.meta.env.VITE_WORKFLOW_API_URL || 'https://backend-service-2-178028895966.us-central1.run.app').replace(/^http:/, 'https:')
 
 // API Service functions
 export const apiService = {
@@ -729,7 +729,7 @@ export const apiService = {
 
   // Assistant API calls
   async queryAssistant(query) {
-    const response = await fetch(`${API_BASE_URL}/assistant`, {
+    const response = await fetch(`${API_BASE_URL}/assistant/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
