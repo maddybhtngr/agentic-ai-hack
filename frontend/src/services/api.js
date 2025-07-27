@@ -193,7 +193,14 @@ export const apiService = {
 
   // Zone Management API calls
   async getAllZones() {
-    const response = await fetch(`${API_BASE_URL}/zones/`)
+    const url = `${API_BASE_URL}/zones/`;
+    console.log('🐛 DEBUG getAllZones:');
+    console.log('  API_BASE_URL:', API_BASE_URL);
+    console.log('  VITE_API_BASE_URL:', import.meta.env.VITE_API_BASE_URL);
+    console.log('  Final URL:', url);
+    console.log('  URL Protocol:', new URL(url).protocol);
+    
+    const response = await fetch(url)
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`)
     }
@@ -201,7 +208,13 @@ export const apiService = {
   },
 
   async getZoneCrowdDetails(zoneId) {
-    const response = await fetch(`${API_BASE_URL}/zones/${zoneId}/details`)
+    const url = `${API_BASE_URL}/zones/${zoneId}/details`;
+    console.log('🐛 DEBUG getZoneCrowdDetails:');
+    console.log('  API_BASE_URL:', API_BASE_URL);
+    console.log('  Final URL:', url);
+    console.log('  URL Protocol:', new URL(url).protocol);
+    
+    const response = await fetch(url)
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`)
     }
@@ -209,7 +222,13 @@ export const apiService = {
   },
 
   async getAllZonesCrowdDetails() {
-    const response = await fetch(`${API_BASE_URL}/zones/crowd/details`)
+    const url = `${API_BASE_URL}/zones/crowd/details`;
+    console.log('🐛 DEBUG getAllZonesCrowdDetails:');
+    console.log('  API_BASE_URL:', API_BASE_URL);
+    console.log('  Final URL:', url);
+    console.log('  URL Protocol:', new URL(url).protocol);
+    
+    const response = await fetch(url)
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`)
     }
